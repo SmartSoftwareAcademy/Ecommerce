@@ -1,0 +1,372 @@
+<template>
+  <div>
+    <v-container>
+      <v-alert
+        :value="showAlert"
+        :type="alert_type"
+        @click:close="showAlert = false"
+        dismissible
+      >
+        {{ message }}
+      </v-alert>
+      <div class="row">
+        <div class="col-md-5 col-sm-5 col-xs-12">
+          <v-carousel>
+            <v-carousel-item
+              v-for="image in product.images"
+              :src="image.image"
+              :key="image.id"
+            >
+            </v-carousel-item>
+          </v-carousel>
+        </div>
+        <div class="col-md-7 col-sm-7 col-xs-12">
+          <v-breadcrumbs class="pb-0" :items="breadcrums"></v-breadcrumbs>
+          <div class="pl-6 containers">
+            <p class="display-3 mb-0">{{ getFirstTwoWords(product.title) }}</p>
+            <v-card-actions class="pa-0 p-1 bg-light">
+              <p class="headline font-weight-light pt-3" v-if="product.discount_price">
+                KShs.{{ product.discount_price
+                }}<del style="" class="subtitle-1 font-weight-thin text-danger"
+                  >&nbsp;KShs.{{ new Intl.NumberFormat().format(product.price) }}</del
+                >
+              </p>
+              <p class="headline font-weight-light pt-3 text-warning" v-else>
+                KShs.{{ product.price }}
+              </p>
+              <v-spacer></v-spacer>
+              <v-rating
+                v-model="highestreview"
+                class=""
+                background-color="warning lighten-3"
+                color="warning"
+                dense
+              ></v-rating>
+              <span class="body-2 font-weight-thin text-primary">
+                {{ highestRatingCount }} Customer Reviews</span
+              >
+            </v-card-actions>
+            <p class="subtitle-1 font-weight-thin">{{ product.title }}</p>
+            <p class="subtitle-3 font-weight-thin">
+              Shipping From:<span class="fa fa-shipping-fast text-warning">
+                {{ product.vendor.address[0].city }} by
+                <span class="badge badge-info bg-info">{{
+                  product.vendor.name
+                }}</span></span
+              >
+            </p>
+            <div class="row">
+              <div class="col-sm-6">
+                <p class="title">SIZE</p>
+              </div>
+              <div class="row bg-light p-0 m-0">
+                <p class="my-2">AVAILABLE COLORS:</p>
+              </div>
+            </div>
+            <p class="title mt-2">QUANTITY</p>
+            <v-text-field
+              type="number"
+              outlined
+              style="width: 100px"
+              v-model="quantity"
+              :value="1"
+              :step="1"
+              min="1"
+              dense
+            ></v-text-field>
+            <v-btn
+              class="warning white--text"
+              outlined
+              tile
+              dense
+              @click="addToCart(product)"
+              ><v-icon>mdi-cart</v-icon> ADD TO CART</v-btn
+            >
+            <v-btn class="ml-4 pl-4" outlined tile @click="addFavorites(product)"
+              ><v-icon class="text-secondary">mdi-heart</v-icon>ADD TO FAVOURITES</v-btn
+            >
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12 col-xs-12 col-md-12">
+          <v-tabs>
+            <v-tab>Description</v-tab>
+            <v-tab>REVIEWS</v-tab>
+            <v-tab-item>
+              <p class="pt-10 subtitle-1 font-weight-thin">
+                {{ product.description }}
+              </p>
+            </v-tab-item>
+            <v-tab-item>
+              <v-list three-line="true" avatar="true" class="overflow-auto">
+                <v-list-item-group v-model="item" color="primary">
+                  <v-list-item v-for="(item, i) in reviews" :key="i" inactive="true">
+                    <v-list-item-avatar class="bg-primary">
+                      <v-text class="text-white">{{ item.user.username }}</v-text>
+                    </v-list-item-avatar>
+                    <v-list-item-content>
+                      <v-list-item-title v-html="item.user.username"></v-list-item-title
+                      ><v-rating
+                        v-model="item.rating"
+                        class=""
+                        background-color="warning lighten-3"
+                        color="warning"
+                        dense
+                      ></v-rating>
+                      <v-list-item-subtitle v-html="item.text"></v-list-item-subtitle>
+                    </v-list-item-content>
+                  </v-list-item>
+                </v-list-item-group>
+              </v-list>
+            </v-tab-item>
+          </v-tabs>
+          <v-card-text class="pa-0 pt-4" tile outlined>
+            <p class="subtitle-1 font-weight-light pt-3 text-center">
+              YOU MIGHT ALSO LIKE
+            </p>
+            <v-divider></v-divider>
+            <div class="row text-center">
+              <div
+                class="col-md-3 col-sm-4 col-xs-12 text-center"
+                v-for="product in relatedProducts"
+                :key="product.id"
+              >
+                <v-hover v-slot:default="{ hover }" open-delay="200">
+                  <v-card :elevation="hover ? 16 : 2">
+                    <v-img
+                      class="white--text align-end"
+                      height="200px"
+                      :src="product.images[0].image"
+                    >
+                      <v-card-title class="text-danger">{{
+                        product.categories[0].name
+                      }}</v-card-title>
+                    </v-img>
+
+                    <v-card-text class="text--primary text-center">
+                      <div>
+                        <p class="badge badge-pill bg-info">
+                          Upto
+                          {{
+                            (
+                              ((product.price - product.discount_price) / product.price) *
+                              100
+                            ).toFixed(2)
+                          }}% Extra Discount
+                        </p>
+                      </div>
+                      <div>{{ getFirstTwoWords(product.title) }}</div>
+                    </v-card-text>
+
+                    <div class="text-center">
+                      <v-btn class="ma-2" outlined color="info"> Explore </v-btn>
+                    </div>
+                  </v-card>
+                </v-hover>
+              </div>
+            </div>
+          </v-card-text>
+        </div>
+      </div>
+    </v-container>
+    <v-card class="accent">
+      <v-container>
+        <v-row no-gutters>
+          <v-col class="col-12 col-md-4 col-sm-12">
+            <v-row>
+              <v-col class="col-12 col-sm-3 pr-4 hidden-sm-only" align="right">
+                <v-icon class="display-2">mdi-truck</v-icon>
+              </v-col>
+              <v-col class="col-12 col-sm-9 pr-4">
+                <h3 class="font-weight-light">FREE SHIPPING & RETURN</h3>
+                <p class="font-weight-thin">Free Shipping over $300</p>
+              </v-col>
+            </v-row>
+          </v-col>
+          <v-col class="col-12 col-md-4 col-sm-12">
+            <v-row>
+              <v-col class="col-12 col-sm-3 pr-4" align="right">
+                <v-icon class="display-2">mdi-cash-usd</v-icon>
+              </v-col>
+              <v-col class="col-12 col-sm-9 pr-4">
+                <h3 class="font-weight-light">MONEY BACK GUARANTEE</h3>
+                <p class="font-weight-thin">30 Days Money Back Guarantee</p>
+              </v-col>
+            </v-row>
+          </v-col>
+          <v-col class="col-12 col-md-4 col-sm-12">
+            <v-row>
+              <v-col class="col-12 col-sm-3 pr-4" align="right">
+                <v-icon class="display-2">mdi-headset</v-icon>
+              </v-col>
+              <v-col class="col-12 col-sm-9 pr-4">
+                <h3 class="font-weight-light">020-800-456-747</h3>
+                <p class="font-weight-thin">24/7 Available Support</p>
+              </v-col>
+            </v-row>
+          </v-col>
+        </v-row>
+      </v-container>
+    </v-card>
+  </div>
+</template>
+<script>
+//import { mapActions } from 'vuex';
+//import cart from '@/state/modules/cart';
+import axios from "axios";
+import Swal from "sweetalert2";
+
+export default {
+  data() {
+    return {
+      rating: 4.5,
+      breadcrums: [
+        {
+          text: "Home",
+          disabled: false,
+          href: "/",
+        },
+        {
+          text: this.$route.params.product.maincategory.name,
+          disabled: false,
+          href: "/",
+        },
+        {
+          text: this.getFirstTwoWords(this.$route.params.product.title),
+          disabled: true,
+          href: "/",
+        },
+      ],
+      item: 5,
+      reviews: [
+        {
+          user: "Kelly",
+          title: "Lorem ipsum dolor",
+          rating: 4,
+          subtitle:
+            "<span class='text--primary'>Britta Holt</span> &mdash; Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+        },
+      ],
+      product: null,
+      stock: null,
+      quantity: 1,
+      relatedProducts: [],
+      size: "",
+      color: "",
+      sizes: [],
+      colors: [],
+      message: "Operation successful!",
+      alert_type: "error",
+      showAlert: false,
+      highestreview: 1,
+    };
+  },
+
+  computed: {
+    highestRatingCount() {
+      const highestRating = Math.max(...this.reviews.map((review) => review.rating));
+      const highestRatingReviews = this.reviews.filter(
+        (review) => review.rating === highestRating
+      );
+      return highestRatingReviews.length;
+    },
+  },
+  mounted() {
+    this.updatearrays();
+  },
+  methods: {
+    updatearrays() {
+      Swal.fire({
+        title: "Please Wait !",
+        html: "Loading data...", // add html attribute if you want or remove
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        willOpen: () => {
+          Swal.showLoading();
+        },
+      });
+      axios
+        .get(window.$http + `stock/?prod_id=2/${this.$route.params.product.id}/`)
+        .then((response) => {
+          this.stock = response.data["product"];
+          this.relatedProducts = response.data["related_products"];
+          axios
+            .get(window.$http + `reviews?sku=${this.$route.params.product.sku}`)
+            .then((response) => {
+              if (response.data["results"].length > 0) {
+                this.reviews = response.data["results"];
+                const highestRating = Math.max(
+                  ...this.reviews.map((review) => review.rating)
+                );
+                this.highestreview = this.reviews.filter(
+                  (review) => review.rating === highestRating
+                )[0].rating;
+              }
+            });
+          Swal.close();
+        })
+        .catch((e) => {
+          Swal.fire({
+            position: "center",
+            icon: "error",
+            title: "" + e,
+            showConfirmButton: true,
+          }).then((e) => {
+            Swal.close(e);
+          });
+        });
+    },
+    getFirstTwoWords(str) {
+      const regex = /^\w+\b\s+\w+\b\s+\w+\b/; // regular expression to match first two words
+      const result = str.match(regex);
+      return result ? result[0] : ""; // return the matched string or empty string if no match
+    },
+    addToCart(product) {
+      if (!localStorage.getItem("user")) {
+        this.$router.push({ name: "login" });
+        return;
+      }
+      var price = product.price;
+      if (product.discount_price > 0) {
+        price = product.discount_price;
+        product.price = price;
+      }
+      var cartItem = {
+        product: product,
+        size: this.size,
+        color: this.color,
+        quantity: this.quantity,
+        item_subtotal: price, // cart subtotal
+        tax: 0.16, // tax
+        item_total: price * this.quantity,
+      };
+      this.$store.dispatch("cart/addProductToCart", cartItem);
+      this.message = "Success!Item added to cart!";
+      this.alert_type = "success";
+      this.showAlert = true;
+    },
+    addFavorites(product) {
+      if (!localStorage.getItem("user")) {
+        this.$router.push({ name: "login" });
+        return;
+      }
+      var price = product.price;
+      if (product.discount_price > 0) {
+        price = product.discount_price;
+        product.price = price;
+      }
+      var favItem = {
+        product: product,
+        item_subtotal: price, // cart subtotal
+        item_total: price * this.quantity,
+      };
+      this.$store.dispatch("favorites/addProductTofavorites", favItem);
+      this.message = "Success!Item added to Favorites!";
+      this.alert_type = "success";
+      this.showAlert = true;
+      console.log(this.$store.state.favorites);
+    },
+  },
+};
+</script>

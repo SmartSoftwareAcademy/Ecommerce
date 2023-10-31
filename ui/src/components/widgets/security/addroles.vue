@@ -1,0 +1,554 @@
+<script>
+import Swal from "sweetalert2";
+import axios from "../../../Axiosconfig";
+var CryptoJS = require("crypto-js");
+
+//import html2canvas from "html2canvas";
+//import rptheader from "@/components/report/header.js";
+
+export default {
+    props: {
+
+    },
+    components: {},
+    data() {
+        return {
+            title: "",
+            items: [
+                {
+                    text: "USER: " + JSON.parse(localStorage.user).username,
+                },
+                {
+                    text: "Role List",
+                    active: true,
+                },
+            ],
+            rname: "",
+            description: "",
+            selectedlists: [],
+            addroleslog: false,
+            username: "titus.owuor@tdbsoft.co.ke",
+            id: "",
+            filter: null,
+            filterOn: [],
+            sortBy: "id",
+            sortDesc: true,
+            name: "",
+            myindex: "",
+            modaltitle: "Add",
+            lists: ["Dashboard",
+                "DataAlignment",
+                "IndicatorMappingRules",
+                "IndicatorComparison",
+                "DataQuality",
+                "Indicators",
+                "AllIndicators",
+                "Categories",
+                "Security",
+                "DataPullSchedule",
+                "Roles",
+                "Users",
+                "PasswordPolicy",
+                "Reports",],
+        };
+    },
+    watch: {
+        addroleslog(newValue) {
+            var curentuser = JSON.parse(localStorage.user).email
+            var currentdate = new Date();
+            const data = {
+                datetime: currentdate,
+                useremail: curentuser,
+                application: window.navigator.userAgent,
+                details: `Add Roles:${newValue},\nDetails(role name:${this.rname},\ndescription:${this.description},\nscreens[${this.selectedlists}])`,
+                computer: window.localStorage.clientip
+            }
+            axios
+                .post(window.$http + "AuditLogs", data, { headers: window.$headers })
+                .then(response => {
+                    console.log(response.data)
+                })
+                .catch(e => {
+                    console.log(e)
+                })
+        }
+    },
+    computed: {
+        /**
+         * Total no. of records
+         */
+        rows() {
+            return this.orderData.length;
+        },
+    },
+    mounted() {
+        // Set the initial number of items
+        this.focusInput();
+        this.totalRows = this.items.length;
+        this.fetchscreens();
+    },
+    methods: {
+        fetchscreens() {
+            //alert(window.$http);
+
+            Swal.fire({
+                title: "Please Wait !",
+                html: "Loading data...", // add html attribute if you want or remove
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                willOpen: () => {
+                    Swal.showLoading();
+                },
+            });
+            axios
+                .get(`listroles/`)
+                .then((response) => {
+                    // JSON responses are automatically parsed.
+                    this.lists = [
+                        "Dashboard",
+                        "DataAlignment",
+                        "IndicatorMappingRules",
+                        "IndicatorComparison",
+                        "FacilityMapping",
+                        "DataQuality",
+                        "Indicators",
+                        "AllIndicators",
+                        "Categories",
+                        "Security",
+                        "DataPullSchedule",
+                        "Roles",
+                        "Users",
+                        "PasswordPolicy",
+                        "Reports",
+                    ];
+                    this.screenlist = response.data;
+
+                    response.data.forEach((e) => {
+                        this.screenlist.push(e.screens);
+                    });
+                    //console.log(this.orderData);
+
+                    Swal.close();
+                })
+                .catch((e) => {
+                    Swal.fire({
+                        position: "center",
+                        icon: "error",
+                        title: "" + e,
+                        showConfirmButton: true,
+                    }).then((e) => {
+                        Swal.close(e);
+                    });
+
+                    //throw e;
+                });
+        },
+        focusInput() {
+            this.$refs.rname.focus();
+        },
+        gettime() {
+            //2021-06-11T09:05:53.07
+            //2021-5-11T12:54.48
+            var DateNow = new Date();
+            var DateNowString;
+            DateNow.setDate(DateNow.getDate() + 20);
+            DateNowString =
+                DateNow.getFullYear() +
+                "-" +
+                ("0" + (DateNow.getMonth() + 1)).slice(-2) +
+                "-" +
+                ("0" + DateNow.getDate()).slice(-2) +
+                "T" +
+                ("0" + DateNow.getHours()).slice(-2) +
+                ":" +
+                ("0" + DateNow.getMinutes()).slice(-2) +
+                ":" +
+                ("0" + DateNow.getSeconds()).slice(-2) +
+                "." +
+                ("0" + DateNow.getMilliseconds()).slice(-2);
+            return DateNowString;
+        },
+
+        /**
+         * Search the table data with search input
+         */
+        onFiltered(filteredItems) {
+            // Trigger pagination to update the number of buttons/pages due to filtering
+            this.totalRows = filteredItems.length;
+            this.currentPage = 1;
+        },
+        handleSubmit() {
+            //alert(this.rname);
+            //console.log("Error on submit");
+        },
+        addroleforscreen(data) {
+            // var data = {
+            //   roleid: this.roleid,
+            //   controlid: this.screenid,
+            //   select: 1,
+            // };
+            axios
+                .post(window.$http + `controlselection/`, data, { headers: { "Authorization": `Bearer ${CryptoJS.AES.decrypt(JSON.parse(localStorage.user).token, "mnopqr").toString(CryptoJS.enc.Utf8).trim()}` } })
+                .then((response) => {
+                    this.screenlist = response;
+                    // JSON responses are automatically parsed.
+                    //post
+                    Swal.close();
+                })
+                .catch((e) => {
+                    Swal.fire({
+                        position: "center",
+                        icon: "error",
+                        title: "" + e,
+                        showConfirmButton: true,
+                    }).then((e) => {
+                        Swal.close(e);
+                    });
+
+                    //throw e;
+                });
+        },
+        add() {
+            //var timenow = this.gettime();
+            //console.log(timenow);
+            if (this.rname.trim() == "") {
+                Swal.fire("Please enter Role Name!", {
+                    className: "alert-custom",
+                });
+                return;
+            }
+
+            axios
+                .post("listroles", {
+                    id: 0,
+                    role_name: this.rname,
+                    userrole_deletedstatus: false,
+                    screens: this.selectedlists.toString()
+                })
+                .then((response) => {
+                    //this.screenlist = response;
+                    console.log(response.data);
+                    this.addroleslog = true;
+                    Swal.fire({
+                        position: "center",
+                        icon: "success",
+                        title: "Your work has been saved",
+                        showConfirmButton: false,
+                        timer: 1500,
+                    }).then((result) => {
+                        result;
+                        this.clearvalues();
+                        var orderid = this.orderData.length + 1;
+                        this.orderData.push({
+                            id: orderid,
+                            name: this.rname,
+                            screens: this.selectedlists,
+                        });
+                    });
+                    console.log(response);
+                })
+                .catch(function (error) {
+                    Swal.fire({
+                        position: "center",
+                        icon: "error",
+                        title: "Error on submmission. Check Servers.",
+                        showConfirmButton: false,
+                        timer: 1500,
+                    }).then((result) => {
+                        result;
+                        this.clearvalues();
+                    });
+                    console.log(error);
+                });
+        },
+        editrec() {
+            if (this.name.trim() == "") {
+                Swal.fire("Please enter  Allowable Tolerance Name!");
+                return;
+            }
+
+            //alert(this.myindex);
+            this.orderData[this.myindex].id = this.id;
+            this.orderData[this.myindex].name = this.name;
+            this.orderData[this.myindex].pix = this.pix;
+            Swal.fire({
+                position: "center",
+                icon: "success",
+                title: "Your work has been saved",
+                showConfirmButton: false,
+                timer: 1500,
+            });
+        },
+        position() {
+            if (Number(this.saw) < 0) {
+                Swal.fire(
+                    "Single Axle. Please enter value greater than or equla to 0."
+                );
+                //this.$refs.saw.focus();
+                return;
+            }
+            if (Number(this.gaw) < 0) {
+                Swal.fire("Group Axle. Please enter value greater than or equla to 0.");
+                //this.$refs.gaw.focus();
+                return;
+            }
+            if (Number(this.gvw) < 0) {
+                Swal.fire(
+                    "Gross Vehicle Weight. Please enter value greater than or equla to 0!"
+                );
+                //this.$refs.gvw.focus();
+                return;
+            }
+
+            var orderid = this.orderData.length + 1;
+
+            this.orderData.push({
+                id: orderid,
+                datetime: this.gettime(),
+                username: this.username,
+                saw: this.saw,
+                gaw: this.gaw,
+                gvw: this.gvw,
+            });
+            this.clearvalues();
+            Swal.fire({
+                position: "center",
+                icon: "success",
+                title: "Your work has been saved",
+                showConfirmButton: false,
+                timer: 1500,
+                className: "alert-custom",
+            });
+        },
+        deleterec(index, id, name) {
+            //alert(rolename);
+            this.id = id;
+            this.name = name;
+            Swal.fire({
+                title: "Are you sure, you want to delete " + this.name + "?",
+                text: "You won't be able to revert this!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#000000",
+                cancelButtonColor: "#f46a6a",
+                confirmButtonText: "Yes, delete it!",
+            }).then((result) => {
+                if (result.value) {
+                    this.orderData.splice(index, 1);
+                    //this.$delete(this.orderData, this.id - 1);
+                    Swal.fire("Deleted!", this.name + " has been deleted.", "success");
+                }
+            });
+        },
+        clearvalues() {
+            //alert();
+            //this.rname = "";
+            //this.description = "";
+            //this.allToLeft();
+            //this.lists = [];
+        },
+        oneToRight() {
+            // if (this.rname.trim() == "") {
+            //   Swal.fire("Please enter Role Name!", {
+            //     className: "alert-custom",
+            //   });
+            //   return;
+            // }
+            //console.log("allToRight");
+
+            var select = document.getElementById("lists").value;
+            //alert(select);
+            //var res = select.split("-");
+
+            //select = res[1];
+            //var indexselect = res[0];
+            if (select == undefined) {
+                return;
+            }
+
+            //alert(select);
+            if (select != "") {
+                this.selectedlists.push(select);
+                var del = this.lists.indexOf(select);
+                //alert(del);
+                this.lists.splice(del, 1);
+            }
+        },
+        oneToLeft() {
+            var select = document.getElementById("selectedlists").value;
+            //var res = select.split("-");
+            //select = res[1];
+            //var indexselect = res[0];
+            //alert("" + select);
+            if (select == undefined) {
+                return;
+            }
+            if (select != "") {
+                this.lists.push(select);
+                //this.lists.push(select);
+                var del = this.selectedlists.indexOf(select);
+                this.selectedlists.splice(del, 1);
+                //this.selectedlists.splice(indexselect, 1);
+            }
+        },
+        allToRight() {
+            // alert(this.lists.length);
+            //console.log("allToRight");
+            var del = this.lists.length;
+            if (this.lists[0] == undefined) {
+                return;
+            }
+            //alert(del + "");
+            for (var i = 0; i <= this.lists.length; i++) {
+                //alert(i + "");
+                this.selectedlists.push(this.lists[i]);
+                //var del = this.lists.indexOf(this.lists[i]);
+            }
+            this.lists.splice(0, del);
+        },
+        allToLeft() {
+            if (this.selectedlists[0] == undefined) {
+                return;
+            }
+
+            var del = this.selectedlists.length;
+            for (var i = 0; i < this.selectedlists.length; i++) {
+                this.lists.push(this.selectedlists[i]);
+                //  var del = this.selectedlists.indexOf(this.selectedlists[i]);
+                //this.selectedlists.splice(del, 1);
+            }
+            this.selectedlists.splice(0, del);
+        },
+        populate() {
+            //alert("");
+            if (this.selectedlists.length <= 0) {
+                Swal.fire({ title: "Please select a screen!" });
+            }
+            if (this.rname == "") {
+                Swal.fire({ title: "Please enter role name!" });
+            }
+
+            if (this.description == "") {
+                Swal.fire({ title: "Please enter description!" });
+            }
+
+            Swal.fire({
+                position: "center",
+                icon: "success",
+                title: "Role name added" + this.rname,
+                showConfirmButton: false,
+                timer: 3500,
+            });
+            //this.selectedlists = this.lists;
+        },
+    },
+};
+</script>
+
+<template>
+    <Layout>
+        <PageHeader :title="[editmode ? 'Edit Roles' : 'Add Roles']" :items="items" />
+        <div>
+            <form @submit.prevent="handleSubmit()">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="col-sm-12">
+                                    <div class="input-group">
+                                        <div class="input-group-text col-sm-4">Role Name:</div>
+                                        <input :disabled="editmode" ref="rname" class="form-control" placeholder="role Name"
+                                            v-model="rname" />
+                                    </div>
+                                </div>
+
+                                <div class="mt-3"></div>
+                                <div class="row">
+                                    <div class="col-sm">
+                                        <div class="">Select Screens / Windows / Page:</div>
+
+                                        <select class="form-control" size="15" id="lists" multiple>
+                                            <option :id="index" :value="list" v-for="(list, index) in lists" :key="list">
+                                                {{ list }}
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="col-sm">
+                                        <div class="row mb-4"></div>
+                                        <div class="row mb-4"></div>
+                                        <div class="row mb-4"></div>
+                                        <div class="row mb-2">
+                                            <button class="btn btn-secondary" @click="allToRight()">
+                                                Add All &raquo;
+                                            </button>
+                                        </div>
+
+                                        <div class="row mb-4">
+                                            <button class="btn btn-secondary" @click="oneToRight()">
+                                                Add Selected&rsaquo;
+                                            </button>
+                                        </div>
+                                        <div class="row mb-4"></div>
+                                        <div class="row mb-2">
+                                            <button class="btn btn-danger" @click="oneToLeft()">
+                                                &lsaquo; Remove Selected
+                                            </button>
+                                        </div>
+                                        <div class="row">
+                                            <button class="btn btn-danger" @click="allToLeft()">
+                                                &laquo; Remove All
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm">
+                                        <div>Selected Screens / Windows / Page:</div>
+                                        <select class="form-control" size="15" id="selectedlists" multiple>
+                                            <option :id="index" v-for="(selectedlist, index) in selectedlists"
+                                                :value="selectedlist" :key="selectedlist">
+                                                {{ selectedlist }}
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-10"></div>
+                            <div class="col-sm-2">
+                                <button v-show="!editmode" class="btn btn-primary" @click="add()">
+                                    Add Role
+                                </button>
+                                <button v-show="editmode" class="btn btn-primary" @click="edit()">
+                                    Edit Role
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </Layout>
+</template>
+//#print {
+  //height: 11in;
+  //width: 8.5in;
+//}
+<style scoped>
+.changebg {
+    background-color: #f7f6ebfb;
+}
+
+.alert-custom {
+    background-color: yellow;
+}
+
+.swal-overlay {
+    background-color: rgba(43, 165, 137, 0.45);
+}
+
+.swal-modal {
+    background-color: rgba(63, 255, 106, 0.69);
+    border: 3px solid white;
+}
+</style>
