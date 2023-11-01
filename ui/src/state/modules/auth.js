@@ -27,10 +27,10 @@ export const actions = {
     },
 
     // Logs in the current user.
-    logIn({ commit, dispatch, getters }, { username, password } = {}) {
+    logIn({ commit, dispatch, getters }, { email, password } = {}) {
         if (getters.loggedIn) return dispatch('validate')
 
-        return getFirebaseBackend().loginUser(username, password).then((response) => {
+        return getFirebaseBackend().loginUser(email, password).then((response) => {
             const user = response
             commit('SET_CURRENT_USER', user)
             return user

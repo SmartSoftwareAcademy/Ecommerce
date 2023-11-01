@@ -16,8 +16,21 @@ class ProductSizeInline(admin.TabularInline):
     model=ProductSize
     extra=1
 
-@admin.register(Products)
+class ProductImagesInline(admin.TabularInline):
+    model=ProductImages
+    extra=1
+
 class ProductsAdmin(admin.ModelAdmin):
-    inlines = [ProductColorInline,ProductSizeInline]
-    list_display = ['title', 'price', 'availability', 'is_new_arrival', 'is_flash_sale', 'is_deal_of_the_day', 'is_top_pick']
-    list_filter = ['availability', 'is_new_arrival', 'is_flash_sale', 'is_deal_of_the_day', 'is_top_pick']
+    inlines = [ProductImagesInline,ProductColorInline,ProductSizeInline,]
+    list_display = ['title', 'availability', 'usage','is_new_arrival', 'is_flash_sale', 'is_deal_of_the_day', 'is_top_pick']
+    list_filter = ['availability','usage', 'is_new_arrival', 'is_flash_sale', 'is_deal_of_the_day', 'is_top_pick']
+
+    fieldsets = (
+        ('Product Information', {
+            'fields': ('maincategory', 'vendor', 'model', 'sku', 'serial', 'title', 'description', 'price', 'discount_price', 'status', 'date_added', 'weight', 'dimentions')
+        }),
+        ('Classifications',{
+            'fields': ('usage','availability', 'is_new_arrival', 'is_flash_sale', 'is_deal_of_the_day', 'is_top_pick')
+        })
+        )
+admin.site.register(Products,ProductsAdmin)

@@ -74,7 +74,7 @@ class SupplierViewSet(APIView):
             if vendor != None:
                 vendor.suppliers.add(suplier)
             vendor.save()
-            return JsonResponse({"id": suplier.id, "name": suplier.name, "address": list(suplier.address.values("id", "state", "city", "box","phone", "other_phone", "defualt_address"))}, safe=False)
+            return JsonResponse({"id": suplier.id, "name": suplier.name, "address": list(suplier.address.values("id", "state", "city", "box","phone", "other_phone", "default_address"))}, safe=False)
         return Response("Error", status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, pk, format=None):
@@ -109,12 +109,12 @@ class CustomerViewSet(viewsets.ModelViewSet):
             items = vendor.customers.all()
             for item in items:
                 context.append(
-                    {"id": item.id, "user": item.user, "address": list(item.addresses.values("id", "region", "city" "phone", "other_phone", "defualt_address"))})
+                    {"id": item.id, "user": item.user, "address": list(item.addresses.values("id", "region", "city" "phone", "other_phone", "default_address"))})
         else:
             items = Customer.objects.all()
             for item in items:
                 context.append(
-                    {"id": item.id, "user": item.user, "address": list(item.address.values("id", "region", "city", "phone", "other_phone", "defualt_address"))})
+                    {"id": item.id, "user": item.user, "address": list(item.address.values("id", "region", "city", "phone", "other_phone", "default_address"))})
         # print(context)
         return Response(context)
 
@@ -179,11 +179,16 @@ class addressViewSet(viewsets.ModelViewSet):
             "address_label": incoming_data.get('address_label'),
             "phone": incoming_data.get('phone'),
             "other_phone": incoming_data.get('other_phone'),
-            "defualt_Address": incoming_data.get('defualt_address'),
+            "default_address": incoming_data.get('default_address'),
             "customer": customer.id,
             "region": region.id,
             "city": city.id,
         }
+        if address_data['default_address']==True:
+            default_addr=AddressBook.objects.filter(customer=customer,default_address=True).first()
+            if default_addr:
+                default_addr.default_address=False
+                default_addr.save()
 
         serializer = AddressBookSerializer(data=address_data)
 
@@ -192,6 +197,45 @@ class addressViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=201)
         else:
             return Response(serializer.errors, status=400)
+
+    def update(self, request, *args, **kwargs):
+        # Get the address instance to update
+        instance = self.get_object()
+
+        # Map the incoming data to the expected format
+        incoming_data = request.data
+        customer_id = incoming_data.get('customer')
+        region_name = incoming_data.get('region')
+        city_name = incoming_data.get('city')
+
+        # Retrieve or create Region and City objects based on names
+        customer = Customer.objects.filter(user__id=customer_id).first()
+        if region_name:
+            region = DeliveryRegions.objects.filter(region__icontains=region_name).first()
+        if city_name:
+            city = PickupStations.objects.filter(pickup_location__icontains=city_name).first()
+
+        # Create the updated address data
+        address_data = {
+            "address_label": incoming_data.get('address_label'),
+            "phone": incoming_data.get('phone'),
+            "other_phone": incoming_data.get('other_phone'),
+            "default_address": incoming_data.get('default_address'),
+            "customer": customer.id,
+            "region": region.id if region else None,  # Use None if region is not specified
+            "city": city.id if city else None,  # Use None if city is not specified
+        }
+        if address_data['default_address']==True:
+            default_addr=AddressBook.objects.filter(customer=customer,default_address=True).first()
+            default_addr.default_address=False
+            default_addr.save()
+        serializer = AddressBookSerializer(instance, data=address_data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class BusinessaddressViewSet(viewsets.ModelViewSet):
     queryset = BusinessAddress.objects.all()

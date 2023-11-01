@@ -16,11 +16,11 @@ export const userService = {
     },
 };
 
-function login(username, password) {
+function login(email, password) {
     const requestOptions = {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ email, password }),
     };
     //var sanitizedScreens = [];
     return fetch(window.$http + "login/", requestOptions)
@@ -33,7 +33,7 @@ function login(username, password) {
             if (user.user.token) {
                 let responseJson = {
                     id: user.user.id,
-                    username: username,
+                    username: user.username,
                     name: user.user.fullname,
                     phone: user.user.phone,
                     email: user.user.email,
@@ -51,17 +51,20 @@ function login(username, password) {
                 }
                 // store user details and jwt token in local storage to keep user logged in between page refreshes
                 localStorage.setItem("user", JSON.stringify(responseJson));
+                localStorage.setItem("user_addresses", JSON.stringify(user.addresses));
                 if (user.addresses.length>0) {
+                    console.log(user.addresses)
                     localStorage.setItem("addresses", JSON.stringify(user.addresses));
                     store.dispatch('address/addAddresses', user.addresses);
-                    var len = user.addresses.address.filter((e) => e.defualt_address === true).length;
+                    var len = user.addresses.address.filter((e) => e.default_address === true).length;
                     var addr = null;
                     if (len > 0) {
-                        addr = user.addresses.address.filter((e) => e.defualt_address === true)[0];
+                        addr = user.addresses.address.filter((e) => e.default_address === true)[0];
+                        console.log(addr)
                         store.dispatch('address/addDefaultAddresses', addr);
                         localStorage.setItem("default_address", JSON.stringify(addr))
                         axios
-                            .get(window.$http + `pickup_stations?region=` + addr.region, {
+                            .get(window.$http + `pickup_stations?region=` + addr.region__region, {
                                 headers: {
                                     "Content-Type": ["application/json"],
                                     Authorization: 'Token ' + user.user.token,
@@ -79,7 +82,7 @@ function login(username, password) {
                         store.dispatch('address/addDefaultAddresses', addr);
                         localStorage.setItem("default_address", JSON.stringify(addr));
                         axios
-                            .get(window.$http + `delivery_addresses?region=` + addr.region, {
+                            .get(window.$http + `delivery_addresses?region=` + addr.region__region, {
                                 headers: {
                                     "Content-Type": ["application/json"],
                                     Authorization: 'Token ' + user.user.token,

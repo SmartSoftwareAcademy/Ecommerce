@@ -127,20 +127,21 @@
         <div class="row text-center">
           <div
             class="col-md-3 col-sm-6 col-xs-12"
-            v-for="pro in filteredProducts"
-            :key="pro.id"
+            v-for="item in filteredProducts"
+            :key="item.id"
           >
             <v-hover v-slot:default="{ hover }">
               <v-card class="mx-auto" color="grey lighten-4" max-width="600">
                 <v-img
+                  v-if="item.product.images.length > 0"
                   class="white--text align-end"
-                  :aspect-ratio="16 / 9"
-                  height="200px"
-                  :src="pro.images[0].image"
+                  :aspect-ratio="6 / 6"
+                  :src="
+                    item.product.images[0]
+                      ? item.product.images[0].image
+                      : 'https://placehold.co/600x400/000000/FFFFFF.png'
+                  "
                 >
-                  <v-card-title class="text-danger"
-                    >{{ pro.categories[0].name }}
-                  </v-card-title>
                   <v-expand-transition>
                     <div
                       v-if="hover"
@@ -149,14 +150,17 @@
                     >
                       <router-link
                         v-if="hover"
-                        :to="{ name: 'Product Detail', params: { product: pro } }"
+                        :to="{
+                          name: 'Product Detail',
+                          params: { stockitem: item },
+                        }"
                         class="badge badge-pill badge-success"
                         outlined
                         ><v-btn href="#" class="bd-primary" icon>
                           <v-icon class="text-primary">mdi-eye</v-icon>
                         </v-btn>
                       </router-link>
-                      <v-btn href="#" class="" @click="addFavorites(pro)" icon>
+                      <v-btn href="#" class="" @click="addFavorites(item)" icon>
                         <v-icon class="text-warning">mdi-heart</v-icon>
                       </v-btn>
                     </div>
@@ -166,13 +170,29 @@
                   <div>
                     <router-link
                       v-if="hover"
-                      :to="{ name: 'Product Detail', params: { product: pro } }"
+                      :to="{ name: 'Product Detail', params: { stockitem: item } }"
                       style="text-decoration: none"
-                      >{{ pro.title }}</router-link
+                      >{{ item.product.title }}</router-link
                     >
                   </div>
-                  <div>KShs.{{ pro.price }}</div>
+                  <div v-if="!item.size">KShs.{{ item.product.price }}</div>
+                  <div v-if="item.size">
+                    {{ item.size.size }}{{ item.size.unit.name }} KShs.{{
+                      item.size.unit_price
+                    }}
+                  </div>
                 </v-card-text>
+                <v-card-title
+                  class="d-inline-block text-white"
+                  v-for="cat in item.product.maincategory.categories"
+                  :key="cat.id"
+                >
+                  <span class="d-inline badge badge-pill bg-warning"
+                    ><a @click="applyFilter(cat.name)" href="#" class="text-white">{{
+                      cat.name
+                    }}</a></span
+                  >
+                </v-card-title>
               </v-card>
             </v-hover>
           </div>
@@ -200,7 +220,7 @@ export default {
   data() {
     return {
       page: 1,
-      pageSize: 6,
+      pageSize: 8,
       breadcrums: [
         {
           text: "Home",
@@ -261,9 +281,15 @@ export default {
     },
     filteredProducts() {
       return this.products
-        .filter((product) => {
-          const price = parseFloat(product.price);
-          return price >= this.range[0] && price <= this.range[1];
+        .filter((item) => {
+          if (!item.size) {
+            const price = parseFloat(item.product.price);
+            return price >= this.range[0] && price <= this.range[1];
+          }
+          if (item.size) {
+            const price = parseFloat(item.size.unit_price);
+            return price >= this.range[0] && price <= this.range[1];
+          }
         })
         .slice(this.startIndex, this.endIndex);
     },
@@ -294,15 +320,19 @@ export default {
         },
       });
       axios
-        .get(window.$http + `products?filter=` + filter)
+        .get(window.$http + `stock?filter=` + filter)
         .then((response) => {
           var cat = this.$route.params.category;
           if (cat != null) {
             this.products = response.data["results"].filter(
               (e) =>
-                e.categories.filter((x) => x.name == cat.name) ||
-                e.subcategories.filter((y) => y.name == cat.name)
+                e.product.maincategory.name === cat.name ||
+                e.product.maincategory.categories.some((x) => x.name === cat.name) ||
+                e.product.maincategory.categories.some((x) =>
+                  x.Subcategories.some((y) => y.name === cat.name)
+                )
             );
+            console.log(this.products);
           } else {
             this.products = response.data["results"];
             axios.get(window.$http + `categories`).then((response) => {

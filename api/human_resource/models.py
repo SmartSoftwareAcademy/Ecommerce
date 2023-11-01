@@ -45,6 +45,10 @@ class BusinessAddress(models.Model):
     other_phone = models.CharField(
         max_length=15, default="07000043578", blank=True, null=True)
 
+    class Meta:
+        managed = True
+        verbose_name_plural = "Business Addresses"
+
     def __str__(self):
         return self.box
 
@@ -57,7 +61,12 @@ class AddressBook(models.Model):
         max_length=15, default="07000043578", blank=True, null=True)
     region=models.ForeignKey("DeliveryRegions",on_delete=models.CASCADE,related_name='address')
     city=models.ForeignKey("PickupStations",on_delete=models.CASCADE,related_name='address')
-    defualt_Address = models.BooleanField(default=False)
+    postal_code=models.CharField(max_length=100,default="57-40100", blank=True, null=True)
+    default_address = models.BooleanField(default=False,verbose_name="Default Address")
+
+    class Meta:
+        managed = True
+        verbose_name_plural = "AddressBook"
 
     def __str__(self):
         return self.customer.user.first_name+" "+self.customer.user.last_name

@@ -20,7 +20,7 @@ JAZZMIN_SETTINGS = {
     "site_icon": "/logo/logo.png",
 
     # Welcome text on the login screen
-    "welcome_sign": "Welcome to Real Estate Admin",
+    "welcome_sign": "Welcome to BengoBox Admin",
 
     # Copyright on the footer
     "copyright": f"Copyright © Bengomall @ {datetime.now().year}. All Rights reserved.",

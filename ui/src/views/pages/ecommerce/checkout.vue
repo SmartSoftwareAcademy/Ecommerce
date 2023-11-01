@@ -47,7 +47,7 @@ export default {
       phone_number: "",
       other_phone: "",
       delivery_address: "",
-      defualt_address: false,
+      default_address: false,
       addresses: [],
       useraddr: null,
       user: null,
@@ -88,7 +88,7 @@ export default {
     this.cartItems = this.$route.params.cartItems;
     this.user = JSON.parse(localStorage.user);
     this.orderNo = this.$route.params.orderNo;
-    console.log(this.address.addresses);
+    console.log(this.useraddr);
   },
   methods: {
     getuserAddress() {
@@ -149,7 +149,7 @@ export default {
               :phone_number="phone_number"
               :other_phone="other_phone"
               :delivery_address="delivery_address"
-              :defualt_address="defualt_address"
+              :default_address="default_address"
             />
           </b-modal>
         </div>
@@ -205,9 +205,14 @@ export default {
                             {{ useraddr.address_label }}
                           </h5>
                           <p>
-                            <span>{{ useraddr.city }} - {{ useraddr.region }}</span>
+                            <span
+                              >{{ useraddr.postal_code }},{{
+                                useraddr.city__pickup_location || useraddr.city
+                              }}
+                              - {{ useraddr.region__region || useraddr.region }}</span
+                            >
                             <br />
-                            <span>{{ useraddr.phone }}</span>
+                            <span>{{ useraddr.phone }}/{{ useraddr.other_phone }}</span>
                           </p>
                         </div>
                       </div>
@@ -251,7 +256,10 @@ export default {
                               {{ dateTo }}
                             </p>
                             <v-divider></v-divider>
-                            <p>{{ useraddr.region }}, {{ addr.description }}</p>
+                            <p>
+                              {{ useraddr.region_region || useraddr.region }},
+                              {{ addr.description }}
+                            </p>
                             <a class="mt-1" :href="addr.google_pin" target="_blank"
                               >View on map
                             </a>

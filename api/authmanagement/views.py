@@ -1,5 +1,5 @@
 from http import client
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate,login
 from .serializers import *
 from rest_framework.authtoken.models import Token
 from rest_framework import generics
@@ -68,17 +68,18 @@ class LoginView(APIView):
     serializer_class = UserSerializer
 
     def post(self, request,):
-        username = request.data.get("username")
-        password = request.data.get("password")
+        email = request.data.get('email')
+        password = request.data.get('password')
+        # print(request.data)
         addresses = {}
-        user = authenticate(username=username, password=password)
-        print(user)
+        user = authenticate(request,email=email, password=password)
+        print(user.first_name)
         # try:
         vendor = Vendor.objects.filter(user=user).first()
         customer = Customer.objects.filter(user=user).first()
         supplier = Supplier.objects.filter(user=user).first()
         if customer != None:
-           addresses['address'] = customer.addresses.values("id", "region__region","city__pickup_location")
+           addresses['address'] = customer.addresses.values("id","customer__user__first_name","customer__user__last_name","phone","other_phone","postal_code","region__region","city__pickup_location","default_address","address_label")
         if supplier != None:
             addresses['address'] = supplier.address.values("id", "state",
                                                              "city", "box", "city", "street_or_road","phone", "other_phone")
@@ -88,8 +89,9 @@ class LoginView(APIView):
         # except Exception as e:
         #     print(e)
         if user:
+            login(request,user)
             token,created=Token.objects.get_or_create(user=user)
-            return Response({"user": {"username": user.username, "email": user.email, "phone": user.phone, "fullname": user.first_name+" "+user.last_name, "id": user.id, "token": token.key}, 'addresses': addresses, "roles": [n['name'] for n in user.groups.values("name") if user.groups]})
+            return Response({"user": {"username": user.username, "email": user.email, "phone": user.phone,"pic":user.pic.url, "fullname": user.first_name+" "+user.last_name, "id": user.id, "token": token.key}, 'addresses': addresses, "roles": [n['name'] for n in user.groups.values("name") if user.groups]})
         else:
             return Response({"error": "Wrong Credentials"}, status=status.HTTP_401_UNAUTHORIZED)
 

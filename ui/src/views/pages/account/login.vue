@@ -87,11 +87,11 @@ export default {
               })
           );*/
         } else if (process.env.VUE_APP_DEFAULT_AUTH === "bengoboxAuth") {
-          const { username, password } = this;
-          if (username && password) {
+          const { email, password } = this;
+          if (email && password) {
             this.tryingToLogIn = true;
             this.$store.dispatch("authfack/login", {
-              username,
+              email,
               password,
             });
           }
@@ -120,46 +120,84 @@ export default {
             <div class="card">
               <div class="card-body p-4" style="background-color: orange">
                 <div class="text-center mt-2">
-                  <h5 class="text-success">
-                    Welcome...! Please Login To Continue
-                  </h5>
+                  <h5 class="text-success">Welcome...! Please Login To Continue</h5>
                 </div>
                 <div class="p-2 mt-4">
-                  <b-alert v-model="isAuthError" variant="danger" class="mt-3" dismissible>{{ authError }}</b-alert>
+                  <b-alert
+                    v-model="isAuthError"
+                    variant="danger"
+                    class="mt-3"
+                    dismissible
+                    >{{ authError }}</b-alert
+                  >
 
                   <div v-if="notification.message" :class="'alert ' + notification.type">
                     {{ notification.message }}
                   </div>
 
                   <b-form @submit.prevent="tryToLogIn">
-                    <b-form-group id="input-group-1" class="mb-3" label="Username or email" label-for="input-1">
-                      <b-form-input id="input-1" v-model="username" type="text" placeholder="Username or email"
-                        style="color: black;background: transparent;border: solid 1px black;">
+                    <b-form-group
+                      id="input-group-1"
+                      class="mb-3"
+                      label="Email"
+                      label-for="input-1"
+                    >
+                      <b-form-input
+                        id="input-1"
+                        v-model="email"
+                        type="text"
+                        placeholder="Email"
+                        style="
+                          color: black;
+                          background: transparent;
+                          border: solid 1px black;
+                        "
+                      >
                       </b-form-input>
                     </b-form-group>
 
                     <b-form-group id="input-group-2" class="mb-3">
                       <label for="input-2">Password</label>
-                      <b-form-input id="input-2" v-model="password" type="password" placeholder="Enter password" :class="{
-                        'is-invalid': submitted && $v.password.$error,
-                      }" style="
-                                                                                                color: black;
-                                                                                                background: transparent;
-                                                                                                border: solid 1px black;
-                                                                                              "></b-form-input>
-                      <div v-if="submitted && !$v.password.required" class="invalid-feedback">
+                      <b-form-input
+                        id="input-2"
+                        v-model="password"
+                        type="password"
+                        placeholder="Enter password"
+                        :class="{
+                          'is-invalid': submitted && $v.password.$error,
+                        }"
+                        style="
+                          color: black;
+                          background: transparent;
+                          border: solid 1px black;
+                        "
+                      ></b-form-input>
+                      <div
+                        v-if="submitted && !$v.password.required"
+                        class="invalid-feedback"
+                      >
                         Password is required.
                       </div>
                     </b-form-group>
                     <div class="form-check">
-                      <input type="checkbox" class="form-check-input" id="auth-remember-check" />
-                      <label class="form-check-label" for="auth-remember-check">Remember me</label>
+                      <input
+                        type="checkbox"
+                        class="form-check-input"
+                        id="auth-remember-check"
+                      />
+                      <label class="form-check-label" for="auth-remember-check"
+                        >Remember me</label
+                      >
                       <div class="float-end">
-                        <router-link to="/forgot-password" class="text-success">Forgot password?</router-link>
+                        <router-link to="/forgot-password" class="text-success"
+                          >Forgot password?</router-link
+                        >
                       </div>
                     </div>
                     <div class="mt-3 text-end">
-                      <b-button type="submit" variant="primary" class="w-sm">Log In</b-button>
+                      <b-button type="submit" variant="primary" class="w-sm"
+                        >Log In</b-button
+                      >
                     </div>
 
                     <div class="mt-4 text-center">
@@ -169,17 +207,26 @@ export default {
 
                       <ul class="list-inline">
                         <li class="list-inline-item">
-                          <a href="javascript:void()" class="social-list-item bg-primary text-white border-primary">
+                          <a
+                            href="javascript:void()"
+                            class="social-list-item bg-primary text-white border-primary"
+                          >
                             <i class="mdi mdi-facebook"></i>
                           </a>
                         </li>
                         <li class="list-inline-item">
-                          <a href="javascript:void()" class="social-list-item bg-info text-white border-info">
+                          <a
+                            href="javascript:void()"
+                            class="social-list-item bg-info text-white border-info"
+                          >
                             <i class="mdi mdi-twitter"></i>
                           </a>
                         </li>
                         <li class="list-inline-item">
-                          <a href="javascript:void()" class="social-list-item bg-danger text-white border-danger">
+                          <a
+                            href="javascript:void()"
+                            class="social-list-item bg-danger text-white border-danger"
+                          >
                             <i class="mdi mdi-google"></i>
                           </a>
                         </li>
@@ -189,7 +236,9 @@ export default {
                     <div class="mt-4 text-center">
                       <p class="mb-0">
                         Don't have an account ? Get Started
-                        <router-link to="/register" class="fw-medium text-success">Here</router-link>
+                        <router-link to="/register" class="fw-medium text-success"
+                          >Here</router-link
+                        >
                       </p>
                     </div>
                   </b-form>
@@ -199,7 +248,8 @@ export default {
               <!-- end card -->
             </div>
             <div class="mt-5 text-center">
-              <p>TDBSoft © {{ new Date().getFullYear() }}. Crafted with
+              <p>
+                TDBSoft © {{ new Date().getFullYear() }}. Crafted with
                 <i class="mdi mdi-heart text-danger"></i> by TDBSoft
               </p>
             </div>

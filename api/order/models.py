@@ -13,7 +13,7 @@ class Order(models.Model):
     payment_status = models.CharField(max_length=50, default='pending')
     confirm_status = models.CharField(max_length=50, default='pending')
     dispatch_status = models.CharField(max_length=50, default='pending')
-    address = models.ForeignKey(PickupStations, on_delete=models.CASCADE)
+    address = models.ForeignKey(PickupStations, on_delete=models.CASCADE,blank=True,null=True)
     delivery_from_date = models.DateTimeField(blank=True, null=True)
     delivery_to_date = models.DateTimeField(blank=True, null=True)
     delivered_status = models.CharField(max_length=100, default='pending')

@@ -56,7 +56,7 @@ export default {
             phone_number: "",
             other_phone: "",
             delivery_address: "",
-            defualt_address: false,
+            default_address: false,
             addresses: [],
         };
     },
@@ -180,7 +180,7 @@ export default {
                 <addAddress @getuserAddress="updatearray()" :editmode="false" :selectmode="false" :modaltitle="''" :id="0"
                     :selectedCity="null" :selectedTown="selectedTown" :zip_code="zip_code" :first_name="first_name"
                     :last_name="last_name" :phone_number="phone_number" :other_phone="other_phone"
-                    :delivery_address="delivery_address" :defualt_address="defualt_address" />
+                    :delivery_address="delivery_address" :default_address="default_address" />
             </b-modal>
         </div>
     </div>

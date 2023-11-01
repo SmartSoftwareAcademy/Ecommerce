@@ -22,7 +22,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('groups', 'first_name', 'last_name',
-                  'username', 'email', 'phone', 'pic', 'organisation')
+                  'username', 'email','phone', 'pic', 'organisation')
 
     def test_thread(selft):
         print("sending email...")

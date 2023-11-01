@@ -13,7 +13,7 @@
         <div class="col-md-5 col-sm-5 col-xs-12">
           <v-carousel>
             <v-carousel-item
-              v-for="image in product.images"
+              v-for="image in $route.params.stockitem.product.images"
               :src="image.image"
               :key="image.id"
             >
@@ -23,17 +23,46 @@
         <div class="col-md-7 col-sm-7 col-xs-12">
           <v-breadcrumbs class="pb-0" :items="breadcrums"></v-breadcrumbs>
           <div class="pl-6 containers">
-            <p class="display-3 mb-0">{{ getFirstTwoWords(product.title) }}</p>
+            <p class="display-3 mb-0">
+              {{ getFirstTwoWords($route.params.stockitem.product.title) }}
+            </p>
             <v-card-actions class="pa-0 p-1 bg-light">
-              <p class="headline font-weight-light pt-3" v-if="product.discount_price">
-                KShs.{{ product.discount_price
-                }}<del style="" class="subtitle-1 font-weight-thin text-danger"
-                  >&nbsp;KShs.{{ new Intl.NumberFormat().format(product.price) }}</del
+              <div v-if="!$route.params.stockitem.size">
+                <p
+                  class="headline font-weight-light pt-3"
+                  v-if="$route.params.stockitem.product.discount_price"
                 >
-              </p>
-              <p class="headline font-weight-light pt-3 text-warning" v-else>
-                KShs.{{ product.price }}
-              </p>
+                  KShs.{{ $route.params.stockitem.product.discount_price
+                  }}<del style="" class="subtitle-1 font-weight-thin text-danger"
+                    >&nbsp;KShs.{{
+                      new Intl.NumberFormat().format(
+                        $route.params.stockitem.product.price
+                      )
+                    }}</del
+                  >
+                </p>
+                <p class="headline font-weight-light pt-3 text-warning" v-else>
+                  KShs.{{ $route.params.stockitem.product.price }}
+                </p>
+              </div>
+              <div v-else>
+                <p
+                  class="headline font-weight-light pt-3"
+                  v-if="$route.params.stockitem.size.unit_discount_price"
+                >
+                  KShs.{{ $route.params.stockitem.size.unit_discount_price
+                  }}<del style="" class="subtitle-1 font-weight-thin text-danger"
+                    >&nbsp;KShs.{{
+                      new Intl.NumberFormat().format(
+                        $route.params.stockitem.size.unit_price
+                      )
+                    }}</del
+                  >
+                </p>
+                <p class="headline font-weight-light pt-3 text-warning" v-else>
+                  KShs.{{ $route.params.stockitem.size.unit_price }}
+                </p>
+              </div>
               <v-spacer></v-spacer>
               <v-rating
                 v-model="highestreview"
@@ -46,21 +75,28 @@
                 {{ highestRatingCount }} Customer Reviews</span
               >
             </v-card-actions>
-            <p class="subtitle-1 font-weight-thin">{{ product.title }}</p>
+            <p class="subtitle-1 font-weight-thin">
+              {{ $route.params.stockitem.product.title }}
+            </p>
             <p class="subtitle-3 font-weight-thin">
               Shipping From:<span class="fa fa-shipping-fast text-warning">
-                {{ product.vendor.address[0].city }} by
+                Official Store by
                 <span class="badge badge-info bg-info">{{
-                  product.vendor.name
+                  $route.params.stockitem.product.vendor.name
                 }}</span></span
               >
             </p>
             <div class="row">
-              <div class="col-sm-6">
-                <p class="title">SIZE</p>
+              <div class="col-sm-6" v-if="$route.params.stockitem.size">
+                <p class="title">
+                  UNIT PACKAGING: {{ $route.params.stockitem.size.size }}
+                  {{ this.$route.params.stockitem.size.unit.name }}
+                </p>
               </div>
               <div class="row bg-light p-0 m-0">
-                <p class="my-2">AVAILABLE COLORS:</p>
+                <p class="my-2" v-if="stockitem.color">
+                  COLOR:{{ $route.params.stockitem.color.color }}
+                </p>
               </div>
             </div>
             <p class="title mt-2">QUANTITY</p>
@@ -79,10 +115,14 @@
               outlined
               tile
               dense
-              @click="addToCart(product)"
+              @click="addToCart($route.params.stockitem)"
               ><v-icon>mdi-cart</v-icon> ADD TO CART</v-btn
             >
-            <v-btn class="ml-4 pl-4" outlined tile @click="addFavorites(product)"
+            <v-btn
+              class="ml-4 pl-4"
+              outlined
+              tile
+              @click="addFavorites($route.params.stockitem)"
               ><v-icon class="text-secondary">mdi-heart</v-icon>ADD TO FAVOURITES</v-btn
             >
           </div>
@@ -95,7 +135,7 @@
             <v-tab>REVIEWS</v-tab>
             <v-tab-item>
               <p class="pt-10 subtitle-1 font-weight-thin">
-                {{ product.description }}
+                {{ this.$route.params.stockitem.product.description }}
               </p>
             </v-tab-item>
             <v-tab-item>
@@ -136,17 +176,44 @@
                   <v-card :elevation="hover ? 16 : 2">
                     <v-img
                       class="white--text align-end"
-                      height="200px"
+                      :aspect-ratio="6 / 6"
                       :src="product.images[0].image"
                     >
-                      <v-card-title class="text-danger">{{
-                        product.categories[0].name
-                      }}</v-card-title>
+                      <v-card-title
+                        class="text-danger d-inline-block mt-2"
+                        v-for="cat in product.maincategory.categories"
+                        :key="cat.id"
+                      >
+                        {{ cat.name }}</v-card-title
+                      >
                     </v-img>
 
                     <v-card-text class="text--primary text-center">
-                      <div>
-                        <p class="badge badge-pill bg-info">
+                      <div v-if="$route.params.stockitem.size">
+                        <p
+                          class="badge badge-pill bg-info"
+                          v-if="$route.params.stockitem.size.unit_dicount_price > 0"
+                        >
+                          {{
+                            (
+                              ((parseFloat($route.params.stockitem.size.unit_price) -
+                                parseFloat(
+                                  $route.params.stockitem.size.unit_dicount_price
+                                )) /
+                                parseFloat($route.params.stockitem.size.unit_price)) *
+                              100
+                            ).toFixed(2)
+                          }}
+                        </p>
+                        <p class="badge badge-pill bg-info" v-else>
+                          Upto 2 % Extra Discount
+                        </p>
+                      </div>
+                      <div v-else>
+                        <p
+                          class="badge badge-pill bg-info"
+                          v-if="product.discount_price > 0"
+                        >
                           Upto
                           {{
                             (
@@ -154,6 +221,9 @@
                               100
                             ).toFixed(2)
                           }}% Extra Discount
+                        </p>
+                        <p class="badge badge-pill bg-info" v-else>
+                          Upto 2 % Extra Discount
                         </p>
                       </div>
                       <div>{{ getFirstTwoWords(product.title) }}</div>
@@ -228,12 +298,12 @@ export default {
           href: "/",
         },
         {
-          text: this.$route.params.product.maincategory.name,
+          text: this.$route.params.stockitem.product.maincategory.name,
           disabled: false,
           href: "/",
         },
         {
-          text: this.getFirstTwoWords(this.$route.params.product.title),
+          text: this.getFirstTwoWords(this.$route.params.stockitem.product.title),
           disabled: true,
           href: "/",
         },
@@ -249,7 +319,7 @@ export default {
         },
       ],
       product: null,
-      stock: null,
+      stockitem: this.$route.params.stockitem,
       quantity: 1,
       relatedProducts: [],
       size: "",
@@ -273,6 +343,7 @@ export default {
     },
   },
   mounted() {
+    this.stockitem = this.$route.params.stockitem;
     this.updatearrays();
   },
   methods: {
@@ -287,12 +358,11 @@ export default {
         },
       });
       axios
-        .get(window.$http + `stock/?prod_id=2/${this.$route.params.product.id}/`)
+        .get(window.$http + `products/${this.$route.params.stockitem.product.id}/`)
         .then((response) => {
-          this.stock = response.data["product"];
-          this.relatedProducts = response.data["related_products"];
+          this.relatedProducts = response.data.related_products;
           axios
-            .get(window.$http + `reviews?sku=${this.$route.params.product.sku}`)
+            .get(window.$http + `reviews?sku=${this.$route.params.stockitem.product.sku}`)
             .then((response) => {
               if (response.data["results"].length > 0) {
                 this.reviews = response.data["results"];
@@ -322,20 +392,37 @@ export default {
       const result = str.match(regex);
       return result ? result[0] : ""; // return the matched string or empty string if no match
     },
-    addToCart(product) {
+    addToCart(item) {
       if (!localStorage.getItem("user")) {
         this.$router.push({ name: "login" });
         return;
       }
-      var price = product.price;
-      if (product.discount_price > 0) {
-        price = product.discount_price;
-        product.price = price;
+      console.log(item);
+      var price = 0;
+      if (item.size != null) {
+        console.log("Has size...");
+        if (item.size.unit_dicount_price > 0) {
+          price = item.size.unit_dicount_price;
+          item.product.price = price;
+          item.size.unit_price = price;
+        } else {
+          price = item.size.unit_price;
+          item.product.price = price;
+        }
+      } else {
+        if (item.product.discount_price > 0) {
+          price = item.product.discount_price;
+          item.product.price = price;
+        } else {
+          price = item.product.price;
+        }
       }
+      console.log(item);
+
       var cartItem = {
-        product: product,
-        size: this.size,
-        color: this.color,
+        product: item.product,
+        size: item.size,
+        color: item.color,
         quantity: this.quantity,
         item_subtotal: price, // cart subtotal
         tax: 0.16, // tax
@@ -346,18 +433,30 @@ export default {
       this.alert_type = "success";
       this.showAlert = true;
     },
-    addFavorites(product) {
+    addFavorites(item) {
       if (!localStorage.getItem("user")) {
         this.$router.push({ name: "login" });
         return;
       }
-      var price = product.price;
-      if (product.discount_price > 0) {
-        price = product.discount_price;
-        product.price = price;
+      var price = 0;
+      if (item.size) {
+        if (item.unit_discount_price > 0) {
+          price = item.unit_discount_price;
+          item.product.price = price;
+          item.size.unit_price = price;
+        } else {
+          price = item.size.unit_price;
+        }
+      } else {
+        if (item.product.discount_price > 0) {
+          price = item.product.discount_price;
+          item.product.price = price;
+        } else {
+          price = item.product.price;
+        }
       }
       var favItem = {
-        product: product,
+        product: item.product,
         item_subtotal: price, // cart subtotal
         item_total: price * this.quantity,
       };

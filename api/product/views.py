@@ -32,15 +32,20 @@ class ProductViewSet(viewsets.ModelViewSet):
         except Exception as e:
             print(e)
         print(vendor)
-        if search_item != None and not user.is_authenticated:
-            queryset = queryset.filter(Q(maincategory__name__icontains=search_item) | Q(categories__name__icontains=search_item) | Q(
-                subcategories__name__icontains=search_item))
+        if search_item and not user.is_authenticated:
+            queryset = queryset.filter(Q(maincategory__name__icontains=search_item) | Q(maincategory__categories__name__icontains=search_item))
         if user.is_authenticated:
-            if vendor != None and search_item != None:
-                queryset = queryset.filter(Q(maincategory__name__icontains=search_item) | Q(categories__name__icontains=search_item) | Q(
-                    subcategories__name__icontains=search_item) & Q(vendor=vendor))
-            else:
-                queryset = queryset.filter(vendor=vendor)
+            if search_item:
+                maincategory_filter = Q(maincategory__name__icontains=search_item)
+                categories_filter = Q(maincategory__categories__name__icontains=search_item)
+
+                if vendor:
+                    # Combine the maincategory and categories filters with the vendor filter
+                    queryset = queryset.filter((maincategory_filter | categories_filter) & Q(vendor=vendor))
+                else:
+                    # If no vendor is specified, apply the maincategory and categories filters
+                    queryset = queryset.filter(maincategory_filter | categories_filter)
+
         return queryset
 
     def retrieve(self, request, *args, **kwargs):
@@ -62,8 +67,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         related_products = Products.objects.filter(
              Q(title__icontains=product.title)
             | Q(description__icontains=product.description)
-            | Q(categories__in=product.categories.all())
-            | Q(subcategories__in=product.subcategories.all())
+            | Q(maincategory__categories__in=product.maincategory.categories.all())
         ).exclude(id=product.id).distinct()[:5]
         return related_products
 

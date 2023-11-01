@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import *
 # Register your models here.
-admin.site.register([Employee, Supplier,BusinessAddress])
+admin.site.register([Employee, Supplier,BusinessAddress,AddressBook])
 
 class PickupStationsInline(admin.StackedInline):
     model=PickupStations

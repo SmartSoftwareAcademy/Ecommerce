@@ -7,13 +7,13 @@
           <div class="row">
             <div class="col-lg-4">
               <div class="form-group mb-4">
-                <label for="first_name">Address Label</label>
+                <label for="address_label">Address Label</label>
                 <input
                   type="email"
                   class="form-control"
                   v-model="address_label"
                   :disabled="selectmode"
-                  id="address_lable"
+                  id="address_label"
                   placeholder="Enter Adress Label"
                 />
               </div>
@@ -24,7 +24,7 @@
                 <input
                   type="text"
                   class="form-control"
-                  v-model="phone_number"
+                  v-model="phone"
                   :disabled="selectmode"
                   id="billing-phone"
                   placeholder="Enter Phone no."
@@ -72,10 +72,9 @@
             <div class="col-lg-4">
               <div class="form-group mb-0">
                 <v-text-field
-                  v-model="box"
-                  :items="box"
+                  v-model="postal_code"
                   :disabled="selectmode"
-                  label="Address"
+                  label="Postal Code"
                   placeholder="567-40100"
                 ></v-text-field>
               </div>
@@ -83,7 +82,7 @@
             <div class="row">
               <div class="form-group mb-0">
                 <v-checkbox
-                  v-model="defualt_address"
+                  v-model="default_address"
                   class="m-auto"
                   label="Set as default shipping address"
                 ></v-checkbox>
@@ -139,11 +138,11 @@ export default {
     id: Number,
     selectedCity: String,
     selectedTown: String,
-    box: String,
+    postal_code: String,
     address_label: String,
-    phone_number: String,
+    phone: String,
     other_phone: String,
-    defualt_address: Boolean,
+    default_address: Boolean,
   },
   components: { PageHeader, VAutocomplete },
   data() {
@@ -182,11 +181,11 @@ export default {
         this.addr = this.$route.params.address;
         this.id = this.addr.id;
         this.address_label = this.addr.address_label;
-        this.phone_number = this.addr.phone;
+        this.phone = this.addr.phone;
         this.other_phone = this.addr.other_phone;
-        this.selectedCity = this.addr.region;
-        this.box = this.addr.box;
-        this.defualt_address = this.addr.defualt_address;
+        this.selectedCity = this.addr.region__region;
+        this.postal_code = this.addr.postal_code;
+        this.default_address = this.addr.default_address;
         this.editmode = this.$route.params.editmode;
         this.modaltitle = this.$route.params.modaltitle;
       }
@@ -208,12 +207,12 @@ export default {
         city: this.selectedTown[0],
         address_label: this.address_label,
         other_phone: this.other_phone,
-        phone: this.phone_number,
-        box: this.box,
-        defualt_address: this.defualt_address,
+        phone: this.phone,
+        postal_code: this.postal_code,
+        default_address: this.default_address,
       };
       axios
-        .post(`address/`, data)
+        .post(`addresses/`, data)
         .then(() => {
           this.$store.dispatch("address/addDefaultAddresses", data);
           localStorage.setItem("default_address", JSON.stringify(data));
@@ -249,14 +248,15 @@ export default {
     },
     editAddress() {
       var data = {
+        customer: JSON.parse(localStorage.user).id,
         id: this.id,
-        region: this.selectedCity,
-        city: this.selectedTown,
+        region: this.selectedCity[0],
+        city: this.selectedTown[0],
         address_label: this.address_label,
         other_phone: this.other_phone,
         phone: this.phone,
-        box: this.box,
-        defualt_address: this.defualt_address,
+        postal_code: this.postal_code,
+        default_address: this.default_address,
       };
       axios
         .put(`addresses/` + this.id + "/", data)

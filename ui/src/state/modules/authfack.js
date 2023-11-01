@@ -10,8 +10,8 @@ export const state = user
 export const actions = {
     // Logs in the user.
     // eslint-disable-next-line no-unused-vars
-    login({ dispatch, commit }, { username, password }) {
-        commit('loginRequest', { username });
+    login({ dispatch, commit }, { email, password }) {
+        commit('loginRequest', { email });
         Swal.fire({
             icon: "info",
             title: "Please Wait...!",
@@ -23,7 +23,7 @@ export const actions = {
             },
         });
 
-        userService.login(username, password)
+        userService.login(email, password)
             .then(
                 user => {
                     commit('loginSuccess', user);

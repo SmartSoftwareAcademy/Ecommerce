@@ -28,18 +28,18 @@
                       >{{ item.product.title }}</router-link
                     >
                   </h5>
-                  <p class="mb-1" v-if="item.color !== ''">
+                  <p class="mb-1" v-if="item.color !== null">
                     Color :
                     <span class="fw-medium badge badge-pill bg-warning">{{
-                      item.color
+                      item.color.color
                     }}</span>
                   </p>
                   <p>
                     Size :
                     <span
                       class="fw-medium badge badge-pill bg-warning"
-                      v-if="item.size !== ''"
-                      >{{ item.size }}</span
+                      v-if="item.size !== null"
+                      >{{ item.size.size }} {{ item.size.unit.name }}</span
                     >
                   </p>
                 </div>

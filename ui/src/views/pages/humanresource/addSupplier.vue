@@ -53,7 +53,7 @@ export default {
             address_label: "",
             phone_number: "",
             other_phone: "",
-            defualt_address: false,
+            default_address: false,
             addresses: [],
         };
     },
@@ -177,7 +177,7 @@ export default {
                 <addAddress @getuserAddress="updatearray()" :editmode="false" :selectmode="false" :modaltitle="''" :id="0"
                     :selectedCity="null" :selectedTown="selectedTown" :address_label="address_label"
                     :phone_number="phone_number" :other_phone="other_phone"
-                    :defualt_address="defualt_address" />
+                    :default_address="default_address" />
             </b-modal>
         </div>
     </div>
