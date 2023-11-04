@@ -13,12 +13,14 @@ from rest_framework import permissions, authentication
 from rest_framework.decorators import action
 from django.db.models import Q
 from .serializers import *
+from rest_framework.pagination import LimitOffsetPagination
 
 
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
     permission_classes = [permissions.IsAuthenticated,]
+    pagination_class = LimitOffsetPagination  # Enable Limit and Offset Pagination
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -50,6 +52,7 @@ class OrderItemViewSet(viewsets.ModelViewSet):
     queryset = OrderItem.objects.all()
     serializer_class = OrderItemSerializer
     permission_classes = [permissions.IsAuthenticated,]
+    pagination_class = LimitOffsetPagination  # Enable Limit and Offset Pagination
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -81,6 +84,7 @@ class InvoicesViewSet(viewsets.ModelViewSet):
     queryset = Invoice.objects.all()
     serializer_class = InvoicesSerializer
     permission_classes = [permissions.IsAuthenticated,]
+    pagination_class = LimitOffsetPagination  # Enable Limit and Offset Pagination
 
     def get_queryset(self):
         queryset = super().get_queryset()

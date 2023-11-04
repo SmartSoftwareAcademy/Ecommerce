@@ -368,18 +368,30 @@ export default {
           });
         });
     },
-    addFavorites(product) {
+    addFavorites(item) {
       if (!localStorage.getItem("user")) {
         this.$router.push({ name: "login" });
         return;
       }
-      var price = product.price;
-      if (product.discount_price > 0) {
-        price = product.discount_price;
-        product.price = price;
+      var price = 0;
+      if (item.size) {
+        if (item.unit_discount_price > 0) {
+          price = item.unit_discount_price;
+          item.product.price = price;
+          item.size.unit_price = price;
+        } else {
+          price = item.size.unit_price;
+        }
+      } else {
+        if (item.product.discount_price > 0) {
+          price = item.product.discount_price;
+          item.product.price = price;
+        } else {
+          price = item.product.price;
+        }
       }
       var favItem = {
-        product: product,
+        product: item.product,
         item_subtotal: price, // cart subtotal
         item_total: price * this.quantity,
       };

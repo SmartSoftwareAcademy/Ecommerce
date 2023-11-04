@@ -16,10 +16,10 @@ from .serializers import *
 from human_resource.models import Supplier
 from stockinventory.models import StockInventory
 from stockinventory.serializers import *
+import json
+from rest_framework.pagination import LimitOffsetPagination
 
 # add product
-
-
 @api_view(['POST', 'PUT'])
 @permission_classes([permissions.IsAuthenticated,])
 def addProduct(request, id=0):
@@ -33,27 +33,23 @@ def addProduct(request, id=0):
         status = request.POST.get('status')
         weight = request.POST.get('weight')
         dimentions = request.POST.get('dimensions')
-        material = request.POST.get('material')
-        color = request.POST.get('color')
-        size = request.POST.get('size')
+        colors = json.loads(request.POST.get('colors'))
+        sizes = json.loads(request.POST.get('sizes'))
         availability = request.POST.get('availability')
         maincategory = MainCategory.objects.get(
             id=request.POST.get('maincategories'))
         category = Category.objects.filter(
-            name__in=request.POST.get('categories'))
+            name__in=json.loads(request.POST.get('categories')))
         subcategories = Subcategory.objects.filter(
-            name__in=request.POST.get('subcategories'))
-        vendor = Vendor.objects.get(
-            user__id__in=request.POST.get('vendor'))
+            name__in=json.loads(request.POST.get('subcategories')))
+        vendor = Vendor.objects.filter(user__id=int(request.POST.get('vendor'))).first()
         productimages = request.FILES.getlist('images')
         stock_level = request.POST.get('stock_level')
         reorder_level = request.POST.get('reorder_level')
-        supplier = Supplier.objects.get(
-            id__in=request.POST.get('supplier'))
+        supplier = Supplier.objects.filter(id=int(request.POST.get('supplier'))).first()
         if id == 0:
             # add product
             product = Products(
-                sku=sku,
                 model=model,
                 title=title,
                 description=description,
@@ -62,99 +58,106 @@ def addProduct(request, id=0):
                 status=status,
                 weight=weight,
                 dimentions=dimentions,
-                availability=availability
             )
             product.vendor = vendor
             product.save()
-            # add inventory
-            stock = StockInventory(product=product, stock_level=stock_level,
-                                   reorder_level=reorder_level, supplier=supplier)
-            stock.save()
             subcats = []
             maincat = None
             if maincategory:
                 maincat = MainCategory.objects.get(id=maincategory.pk)
                 product.maincategory = maincat
             if category:
-                cats = Category.objects.filter(name__in=category)
-                for cat in cats:
-                    product.categories.add(cat)
+                for cat in category:
                     maincat.categories.add(cat)
                     if subcategories:
-                        subcats = Category.objects.filter(
-                            name__in=subcategories)
-                        for sbc in subcats:
-                            product.subcategories.add(sbc)
+                        for sbc in subcategories:
                             cat.Subcategories.add(sbc)
+            if len(sizes)==0 and len(colors)==0:
+               stock,created=StockInventory.objects.get_or_create(product=product,availability=availability,
+                                                                 sku=sku,stock_level=stock_level,
+                                                                  reorder_level=reorder_level,size=None,color=None,
+                                                                  supplier=supplier)
             # add variations
-            if material:
-                material, created = Variations.objects.get_or_create(
-                    title='material', description=material, count=stock_level)
-                product.variations.add(material)
-            if color:
-                for cl in str(color).split(','):
-                    c, created = Variations.objects.get_or_create(
-                        title='color', description=cl, count=stock_level)
-                    product.variations.add(c)
-            if size:
-                for s in str(size).split(','):
-                    sz, created = Variations.objects.get_or_create(
-                        title='color', description=s, count=stock_level)
-                    product.variations.add(sz)
+            if len(sizes)>0:
+                print(sizes)
+                for s in sizes:
+                    print(s)
+                    item_unit,created=Unit.objects.get_or_create(unit_title=s['unit'],unit_symbol=s['unit'])
+                    sz, created = ProductSize.objects.get_or_create(product=product,size=s['size'],
+                                                                    unit_price=s['unit_price'],
+                                                                    unit_discount_price=s['unit_dicount_price'])
+                    sz.unit=item_unit
+                    sz.save()
+                    stock,created=StockInventory.objects.get_or_create(product=product,availability=availability,
+                                                                       usage=s['usage'],sku=s['sku'],serial=s['serial'],
+                                                                        size=None,color=None,supplier=supplier)
+                    stock.size=sz
+                    stock.stock_level=s['stock_level']
+                    stock.reorder_level=s['reorder_level']
+                    stock.save()
+            if len(colors)>0:
+                for cl in colors:
+                    color, created = ProductColor.objects.get_or_create(product=product,color=cl['color'])
+                    stock,created=StockInventory.objects.get_or_create(product=product,availability=availability,usage=cl['usage'],sku=cl['sku'],serial=cl['serial'],size=None,color=None,supplier=supplier)
+                    stock.color=color
+                    stock.stock_level=cl['stock_level']
+                    stock.reorder_level=cl['reorder_level']
+                    stock.save()
             if productimages:
                 for img in productimages:
-                    product.images.create(image=img)
+                    _,created=ProductImages.objects.get_or_create(product=product,image=img)
             product.save()
         else:
             # upate product
             product_instance = Products.objects.get(id=id)
-            product_instance.sku = sku
             product_instance.title = title
             product_instance.description = description
             product_instance.weight = weight
             product_instance.dimentions = dimentions
             product_instance.model = model
             product_instance.status = 1
-            product_instance.availability = availability
             product_instance.price = price
             product_instance.discount_price = discount_price
             product_instance.vendor = vendor
-            # update inventory
-            stock = StockInventory.objects.get(product=product_instance)
-            stock.stock_level = stock_level
-            stock.reorder_level = reorder_level
-            stock.supplier = supplier
-            stock.save()
             product_instance.maincategory = maincategory
             for cat in category:
-                product_instance.categories.set(cat)
                 maincategory.categories.set(cat)
                 subcats = Category.objects.filter(
                     name__in=subcategories)
                 for sbc in subcats:
-                    product_instance.subcategories.set(sbc)
+                    product_instance.maincategory.categories.set(sbc)
                     cat.Subcategories.set(sbc)
-            # update variations
-            if material:
-                material, created = Variations.objects.update_or_create(
-                    title='material', description=material, count=stock_level)
-                product_instance.variations.set([material])
-            if color:
-                for cl in str(color).split(','):
-                    c, created = Variations.objects.update_or_create(
-                        title='color', description=cl, count=stock_level)
-                    product_instance.variations.set([c])
-            if size:
-                for s in str(size).split(','):
-                    sz, created = Variations.objects.update_or_create(
-                        title='color', description=s, count=stock_level)
-                    product_instance.variations.set([sz])
+             # update inventory
+            stockinventory = StockInventory.objects.filter(product=product_instance)
+            for stock in stockinventory:
+                stock.stock_level = stock_level
+                stock.reorder_level = reorder_level
+                stock.supplier = supplier
+                # update variations
+                if len(colors) > 0:
+                    for cl in colors:
+                        color = ProductColor.objects.filter(product=product_instance)
+                        for c in color:
+                            c.color=cl['color']
+                            c.save()
+                            stock.color=c
+                if len(sizes)>0:
+                    for s in sizes:
+                        sz= ProductSize.objects.filter(product=product_instance)
+                        for size in sz:
+                            size.size=s['size']
+                            size.unit_price=s['unit_price']
+                            size.unit_discount_price=s['unit_discount_price']
+                            size.save()
+                            stock.size=size
+                #update stock
+                stock.save()
             if productimages:
                 for img in productimages:
-                    p, updated = product_instance.images.update_or_create(
+                    p, updated = ProductImages.objects.update_or_create(
+                        product=product,
                         image=img)
             product_instance.save()
-            print(product_instance)
         return Response({'msg': 'Your work has been  saved!', 'status': 'success!', 'icon': 'success'})
     # except Exception as e:
     #     return Response({'msg': str(e), 'status': 'Failed!', 'icon': 'error'})
@@ -165,27 +168,33 @@ def addProduct(request, id=0):
 class MainCategoryViewSet(viewsets.ModelViewSet):
     queryset = MainCategory.objects.all()
     serializer_class = MainCategoriesSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes =()
+    pagination_class = LimitOffsetPagination  # Enable Limit and Offset Pagination
+
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategoriesSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes =()
+    pagination_class = LimitOffsetPagination  # Enable Limit and Offset Pagination
 
 
 class SubCategoryViewSet(viewsets.ModelViewSet):
     queryset = Subcategory.objects.all()
     serializer_class = SubCategoriesSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = ()
+    pagination_class = LimitOffsetPagination  # Enable Limit and Offset Pagination
 
 
 class ProductColorViewSet(viewsets.ModelViewSet):
     queryset = ProductColor.objects.all()
     serializer_class = productColorSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes =()
+    pagination_class = LimitOffsetPagination  # Enable Limit and Offset Pagination
 
 class ProductSizeViewSet(viewsets.ModelViewSet):
     queryset = ProductSize.objects.all()
     serializer_class = productSizeSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = ()
+    pagination_class = LimitOffsetPagination  # Enable Limit and Offset Pagination

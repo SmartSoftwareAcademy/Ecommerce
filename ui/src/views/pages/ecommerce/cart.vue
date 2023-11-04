@@ -256,13 +256,15 @@ export default {
         // If not, generate a new random number
         randomNumber = Math.floor(Math.random() * 100000) + 1000000;
       }
-      return randomNumber + Number(new Date().getDay());
+      return randomNumber + new Date().getTime();
     },
     cartItems() {
       return this.$store.state.cart;
     },
   },
-  mounted() {},
+  mounted() {
+    this.quantity = this.$store.state.cart.item.quantity;
+  },
   methods: {
     decrementQuantity(item) {
       if (item.quantity > 1) {

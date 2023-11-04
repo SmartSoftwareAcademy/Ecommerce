@@ -4,37 +4,6 @@ from product.models import *
 from human_resource.models import *
 
 
-class Unit(models.Model):
-    unit_title = models.CharField(max_length=50)
-    unit_symbol = models.CharField(max_length=5)
-
-    def __str__(self):
-        return self.unit_symbol
-
-    class Meta:
-        db_table = "units"
-        managed = True
-        verbose_name_plural = "Units"
-
-
-class SpecialOffers(models.Model):
-    offer_title = models.CharField(max_length=200)
-    label = models.CharField(max_length=50, choices=(
-        ("New", "New"), ("Hot", "Hot"), ("Premium", "Premium"), ("Sponsored", "Sponsored")), default="Hot")
-    offer_from_date = models.DateField()
-    offer_to_date = models.DateField()
-    products = models.ManyToManyField(Products)
-
-    def __str__(self):
-        return self.offer_title
-
-    class Meta:
-        db_table = 'special_offers'
-        managed = True
-        verbose_name = 'Special Offer'
-        verbose_name_plural = 'Special Offers'
-
-
 class Sales(models.Model):
     attendant = models.ForeignKey(
         Employee, on_delete=models.DO_NOTHING, related_name="sales", blank=True, null=True)
@@ -67,8 +36,7 @@ class Sales(models.Model):
 class salesItems(models.Model):
     sale = models.ForeignKey(
         Sales, on_delete=models.CASCADE, related_name='salesitems')
-    product = models.ForeignKey(
-        Products, on_delete=models.CASCADE, related_name='salesitems')
+    sku=models.CharField(max_length=100,default="103")
     price = models.FloatField(default=0)
     qty = models.FloatField(default=0)
     total = models.FloatField(default=0)
@@ -76,7 +44,7 @@ class salesItems(models.Model):
     date_updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.product.title
+        return self.sale.code+"-"+self.sku
 
     class Meta:
         db_table = 'salesitems'

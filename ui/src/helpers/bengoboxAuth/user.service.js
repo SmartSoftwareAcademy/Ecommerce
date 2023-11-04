@@ -52,7 +52,7 @@ function login(email, password) {
                 // store user details and jwt token in local storage to keep user logged in between page refreshes
                 localStorage.setItem("user", JSON.stringify(responseJson));
                 localStorage.setItem("user_addresses", JSON.stringify(user.addresses));
-                if (user.addresses.length>0) {
+                if (JSON.stringify(user.addresses).includes('address')) {
                     console.log(user.addresses)
                     localStorage.setItem("addresses", JSON.stringify(user.addresses));
                     store.dispatch('address/addAddresses', user.addresses);

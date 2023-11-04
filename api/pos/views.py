@@ -68,22 +68,19 @@ def save_pos(request):
         total = [total]
     for sku in skus:
         print(sku)
-        product = Products.objects.get(sku=sku)
-        if product:
-            sale.save()
-            stock = StockInventory.objects.get(product=product)
-            stock.stock_level -= int(qty[i])
-            stock.save()
-        if int(stock.stock_level) < int(qty[i]):
+        inventory = StockInventory.objects.filter(sku=sku).first()
+        if int(inventory.stock_level) < int(qty[i]):
             resp['title'] = 'Failed!'
             resp['icon'] = 'warning'
-            resp['msg'] = 'Product quantity selected exceeds stock units! Cannot complete sale!'
+            resp['msg'] = f'<p>Product quantity selected exceeds stock units {inventory.stock_level}!<br/> Cannot complete sale!<br />Please consider restocking or select a lower quantity!</p>'
             return Response(resp)
-        print({'sale': sale, 'product': product,
-               'qty': qty[i], 'price': price[i], 'total': total[i]})
-        salesItems(sale=sale, product=product,
+        if inventory:
+            sale.save()
+            inventory.stock_level -= int(qty[i])
+            inventory.save()
+        salesItems(sale=sale, product=inventory.product,
                    qty=qty[i], price=price[i], total=total[i]).save()
-        i += int(1)
+        i += 1
     resp['title'] = 'success'
     resp['icon'] = 'success'
     resp['msg'] = "Sales item saved!"
@@ -100,9 +97,10 @@ def save_pos(request):
 def salesList(request):
     sales = Sales.objects.values(
         "id", "code", "date_updated", "status", "paymethod", "grand_total")
-    sale_data = []
+    sales_data=[]
     for sale in sales:
         data = {}
+        sale_items=[]
         # for field in sale._meta.get_fields(include_parents=False):
         #     if field.related_model is None:
         #         data[field.name] = getattr(sale, field.name)
@@ -113,13 +111,15 @@ def salesList(request):
         data["paymethod"] = sale['paymethod']
         data["grand_total"] = sale["grand_total"]
         # items = []
-        for item in salesItems.objects.filter(sale=sale['id']).values("id", "product__sku", "product__title", "qty", "price", "total"):
-            sale_data.append({"sales_details": data, "id": item['id'], "sku": item['product__sku'], "product_title": item['product__title'],
+        for item in salesItems.objects.filter(sale=sale['id']).values("id", "sku","qty", "price", "total"):
+            stoctitem=StockInventory.objects.get(sku=item['sku'])
+            sale_items.append({"id": item['id'], "product_title":f"{stoctitem.product.title} {stoctitem.size.size if stoctitem.size else ''} {stoctitem.size.unit.unit_symbol if stoctitem.size else ''}",
                               "qty": item['qty'], "price": item['price'], "total": item['total']})
-        # sale_data.append(items)
+        data['sales_items']=sale_items
+        sales_data.append(data)
         # data['items'] = items
         # print(sale_data)
-    return Response(sale_data)
+    return Response(sales_data)
 
 
 @api_view(['PUT', 'POST'])

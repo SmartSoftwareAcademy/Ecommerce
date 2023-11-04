@@ -34,10 +34,7 @@ export default {
       title: "Invoice List",
       items: [
         {
-          text: "USER:" + JSON.parse(localStorage.user).username.charAt(0)
-            .toUpperCase() +
-            JSON.parse(localStorage.getItem("user"))
-              .username.slice(1),
+          text: "USER:" + JSON.parse(localStorage.user).name,
         },
         {
           text: "Invoices",
@@ -100,8 +97,8 @@ export default {
   },
   mounted() {
     // Set the initial number of items
-    this.totalRows = this.items.length;
     this.updatearray();
+    this.totalRows = this.orderData.length;
   },
   methods: {
     updatearray() {
@@ -119,7 +116,7 @@ export default {
         .get(`invoices`)
         .then((response) => {
           // JSON responses are automatically parsed.
-          this.orderData = response.data['results'];
+          this.orderData = response.data["results"];
           Swal.close();
         })
         .catch((e) => {
@@ -168,19 +165,7 @@ export default {
       const sec = d.getSeconds();
       const msec = d.getMilliseconds();
       const filename =
-        year +
-        "-" +
-        month +
-        "-" +
-        date +
-        "-" +
-        hour +
-        "-" +
-        min +
-        "-" +
-        sec +
-        "-" +
-        msec;
+        year + "-" + month + "-" + date + "-" + hour + "-" + min + "-" + sec + "-" + msec;
       //alert(filename);
       const data = this.orderData.map((row) => ({
         ID: row.id,
@@ -231,8 +216,7 @@ export default {
       this.myid = myid;
       this.invoiced_id = invoiced_id;
       Swal.fire({
-        title:
-          "Are you sure, you want to delete? " + invoiced_id,
+        title: "Are you sure, you want to delete? " + invoiced_id,
         text: "You won't be able to revert this!",
         icon: "warning",
         showCancelButton: true,
@@ -288,10 +272,24 @@ export default {
       <div class="col-md-8">
         <div class="float-end">
           <div class="form-inline mb-3">
-            <div class="input-daterange input-group" data-provide="datepicker" data-date-format="dd M, yyyy"
-              data-date-autoclose="true">
-              <input type="text" class="form-control text-left" placeholder="From" name="From" />
-              <input type="text" class="form-control text-left" placeholder="To" name="To" />
+            <div
+              class="input-daterange input-group"
+              data-provide="datepicker"
+              data-date-format="dd M, yyyy"
+              data-date-autoclose="true"
+            >
+              <input
+                type="text"
+                class="form-control text-left"
+                placeholder="From"
+                name="From"
+              />
+              <input
+                type="text"
+                class="form-control text-left"
+                placeholder="To"
+                name="To"
+              />
               <div class="input-group-append">
                 <button type="button" class="btn btn-primary">
                   <i class="mdi mdi-filter-variant"></i>
@@ -307,7 +305,12 @@ export default {
         <div id="tickets-table_length" class="dataTables_length">
           <label class="d-inline-flex align-items-center fw-normal">
             Show&nbsp;
-            <b-form-select v-model="perPage" size="sm" :options="pageOptions"></b-form-select>&nbsp;entries
+            <b-form-select
+              v-model="perPage"
+              size="sm"
+              :options="pageOptions"
+            ></b-form-select
+            >&nbsp;entries
           </label>
         </div>
       </div>
@@ -316,7 +319,11 @@ export default {
         <div id="tickets-table_filter" class="dataTables_filter text-md-end">
           <label class="d-inline-flex align-items-center fw-normal">
             Search:
-            <b-form-input v-model="filter" type="search" class="form-control form-control-sm ms-2"></b-form-input>
+            <b-form-input
+              v-model="filter"
+              type="search"
+              class="form-control form-control-sm ms-2"
+            ></b-form-input>
           </label>
         </div>
       </div>
@@ -324,18 +331,37 @@ export default {
     </div>
     <!-- Table -->
     <div class="table-responsive mb-0">
-      <b-table table-class="table table-centered datatable table-card-list" thead-tr-class="bg-transparent"
-        :items="orderData" :fields="fields" responsive="sm" :per-page="perPage" :current-page="currentPage"
-        :sort-by.sync="sortBy" :sort-desc.sync="sortDesc" :filter="filter" :filter-included-fields="filterOn"
-        @filtered="onFiltered">
+      <b-table
+        table-class="table table-centered datatable table-card-list"
+        thead-tr-class="bg-transparent"
+        :items="orderData"
+        :fields="fields"
+        responsive="sm"
+        :per-page="perPage"
+        :current-page="currentPage"
+        :sort-by.sync="sortBy"
+        :sort-desc.sync="sortDesc"
+        :filter="filter"
+        :filter-included-fields="filterOn"
+        @filtered="onFiltered"
+      >
         <template v-slot:cell(check)="data">
           <div class="custom-control custom-checkbox text-center">
-            <input type="checkbox" class="custom-control-input" :id="`contacusercheck${data.item.id}`" />
-            <label class="custom-control-label" :for="`contacusercheck${data.item.id}`"></label>
+            <input
+              type="checkbox"
+              class="custom-control-input"
+              :id="`contacusercheck${data.item.id}`"
+            />
+            <label
+              class="custom-control-label"
+              :for="`contacusercheck${data.item.id}`"
+            ></label>
           </div>
         </template>
         <template v-slot:cell:(invoice_id)="data">
-          <router-link :to="{ name: 'Invoice Detail', params: { invoice: data.item } }"></router-link>
+          <router-link
+            :to="{ name: 'Invoice Detail', params: { invoice: data.item } }"
+          ></router-link>
         </template>
         <template v-slot:cell(id)="data">
           <a href="javascript: void(0);" class="text-dark fw-bold">
@@ -350,15 +376,19 @@ export default {
         </template>
 
         <template v-slot:cell(status)="data">
-          <div class="badge rounded-pill bg-soft-success font-size-12"
-            :class="{ 'bg-soft-warning': data.item.status === 'Pending' }">
+          <div
+            class="badge rounded-pill bg-soft-success font-size-12"
+            :class="{ 'bg-soft-warning': data.item.status === 'Pending' }"
+          >
             {{ data.item.status }}
           </div>
         </template>
 
         <template v-slot:cell(billing_name)="data">
-          <a href="#" class="text-body">{{ data.item.customer.user.first_name }}
-            {{ data.item.customer.user.last_name }}</a>
+          <a href="#" class="text-body"
+            >{{ data.item.customer.user.first_name }}
+            {{ data.item.customer.user.last_name }}</a
+          >
         </template>
         <template v-slot:cell(download)>
           <div>
@@ -371,12 +401,22 @@ export default {
         <template v-slot:cell(action)>
           <ul class="list-inline mb-0">
             <li class="list-inline-item">
-              <a href="javascript:void(0);" class="px-2 text-primary" v-b-tooltip.hover title="Edit">
+              <a
+                href="javascript:void(0);"
+                class="px-2 text-primary"
+                v-b-tooltip.hover
+                title="Edit"
+              >
                 <i class="uil uil-pen font-size-18"></i>
               </a>
             </li>
             <li class="list-inline-item">
-              <a href="javascript:void(0);" class="px-2 text-danger" v-b-tooltip.hover title="Delete">
+              <a
+                href="javascript:void(0);"
+                class="px-2 text-danger"
+                v-b-tooltip.hover
+                title="Delete"
+              >
                 <i class="uil uil-trash-alt font-size-18"></i>
               </a>
             </li>
@@ -389,14 +429,25 @@ export default {
         <div class="dataTables_paginate paging_simple_numbers float-end">
           <ul class="pagination pagination-rounded">
             <!-- pagination -->
-            <b-pagination v-model="currentPage" :total-rows="rows" :per-page="perPage"></b-pagination>
+            <b-pagination
+              v-model="currentPage"
+              :total-rows="rows"
+              :per-page="perPage"
+            ></b-pagination>
           </ul>
         </div>
       </div>
       <!--modals-->
       <b-modal id="modal-Print" title="Print PDF" hide-footer size="bg" centered>
-        <reportdet :title="title" :orderData="orderData" :pl="pl" :headers="headers" :uniqueCars="uniqueCars"
-          :shome="showme" v-show="showme"></reportdet>
+        <reportdet
+          :title="title"
+          :orderData="orderData"
+          :pl="pl"
+          :headers="headers"
+          :uniqueCars="uniqueCars"
+          :shome="showme"
+          v-show="showme"
+        ></reportdet>
       </b-modal>
     </div>
   </Layout>

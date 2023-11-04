@@ -8,6 +8,17 @@ from vendor.models import Vendor
 User = get_user_model()
 # Create your models here.
 
+class Unit(models.Model):
+    unit_title = models.CharField(max_length=50)
+    unit_symbol = models.CharField(max_length=5)
+
+    def __str__(self):
+        return self.unit_symbol
+
+    class Meta:
+        db_table = "units"
+        managed = True
+        verbose_name_plural = "Units"
 
 class MainCategory(models.Model):
     categories = models.ManyToManyField(
@@ -57,12 +68,6 @@ class Subcategory(models.Model):
         managed = True
         verbose_name_plural = "Sub Categories"
 
-class Unit(models.Model):
-    name = models.CharField(max_length=50)
-
-    def __str__(self):
-        return self.name
-
 
 class ProductImages(models.Model):
     product=models.ForeignKey("Products",on_delete=models.SET_NULL,related_name='images',null=True,blank=True)
@@ -101,8 +106,6 @@ class Products(models.Model):
     vendor = models.ForeignKey(
         Vendor, on_delete=models.CASCADE, related_name="products", null=True, blank=True)
     model = models.CharField(max_length=255, blank=True, null=True)
-    sku = models.CharField(max_length=100)
-    serial = models.CharField(max_length=255, default='0671860013525')
     title = models.TextField(max_length=500, default="Hp x2 1033")
     description = models.TextField()
     price = models.FloatField(default=0,help_text='Enter general price or leave it as 0.0 and set unit price in variations')
@@ -113,15 +116,10 @@ class Products(models.Model):
     weight = models.CharField(max_length=255, blank=True, null=True)
     dimentions = models.CharField(
         max_length=50, default="1x2x3", blank=True, null=True)
-    availability = models.CharField(max_length=20,choices=(("In Stock","In Stock"),("Out of Stock","Out of Stock"),("Re-Order","Re-Order")),default="In Stock")
-    usage = models.CharField(max_length=20,choices=(("EX-UK","EX-UK"),("Refurbished","Refurbished"),("New","New")),default="New",blank=True,null=True,help_text='Leave blank if not applicable')
-    is_new_arrival = models.BooleanField(default=False)
-    is_flash_sale = models.BooleanField(default=False)
-    is_deal_of_the_day = models.BooleanField(default=False)
-    is_top_pick= models.BooleanField(default=False)
+
 
     def __str__(self):
-        return self.sku + " - " + self.title
+        return self.title
 
     class Meta:
         db_table = 'products'
@@ -134,17 +132,17 @@ class Products(models.Model):
 
 class ProductSize(models.Model):
     product = models.ForeignKey(Products, on_delete=models.CASCADE)
-    size = models.PositiveIntegerField(max_length=10)
+    size = models.CharField(max_length=10,default="0")
     unit=models.ForeignKey(Unit,on_delete=models.SET_NULL,related_name='sizes',null=True)
     unit_price=models.FloatField(max_length=100,default=0)
-    unit_dicount_price=models.FloatField(max_length=100,default=0,null=True,blank=True)
+    unit_discount_price=models.FloatField(max_length=100,default=0,null=True,blank=True)
 
     class Meta:
         verbose_name='Size Variation'
         verbose_name_plural='Size Variation'
 
     def __str__(self):
-        return str(self.size) + " " + str(self.unit.name)
+        return str(self.size) + " " + str(self.unit.unit_title)
 
 class ProductColor(models.Model):
     product = models.ForeignKey(Products, on_delete=models.CASCADE,related_name='colors',null=True,blank=True)
@@ -162,6 +160,8 @@ class Favourites(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     product = models.ForeignKey(
         Products, on_delete=models.CASCADE, related_name='favourites')
+    size=models.ForeignKey(ProductSize, on_delete=models.CASCADE, related_name='favourites',blank=True,null=True)
+    color=models.ForeignKey(ProductColor, on_delete=models.CASCADE, related_name='favourites',blank=True,null=True)
     is_favorite=models.BooleanField(default=False)
 
     def __str__(self):

@@ -5,7 +5,7 @@ from .views import *
 
 router = routers.DefaultRouter()
 router.register('stock', InventoryViewSet)
-
+router.register('pos_stock', PosInventoryViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),

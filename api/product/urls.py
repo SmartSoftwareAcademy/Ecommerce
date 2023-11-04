@@ -18,4 +18,6 @@ router.register('reviews', ReviewsViewSet)
 urlpatterns = [
     path('', include(router.urls)),
     path('add-product/<int:id>/', addProduct),
+    path('favorites/<int:pk>/', MarkAsFavorite.as_view(), name='mark-favorite'),
+    path('favorites/', MarkAsFavorite.as_view(), name='mark-favorite'),
 ]

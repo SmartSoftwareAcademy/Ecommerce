@@ -22,15 +22,12 @@ class ProductImagesInline(admin.TabularInline):
 
 class ProductsAdmin(admin.ModelAdmin):
     inlines = [ProductImagesInline,ProductColorInline,ProductSizeInline,]
-    list_display = ['title', 'availability', 'usage','is_new_arrival', 'is_flash_sale', 'is_deal_of_the_day', 'is_top_pick']
-    list_filter = ['availability','usage', 'is_new_arrival', 'is_flash_sale', 'is_deal_of_the_day', 'is_top_pick']
+    list_display = ['title','status', 'vendor', 'model',]
+    list_filter = ['title','status', 'vendor', 'model',]
 
     fieldsets = (
         ('Product Information', {
-            'fields': ('maincategory', 'vendor', 'model', 'sku', 'serial', 'title', 'description', 'price', 'discount_price', 'status', 'date_added', 'weight', 'dimentions')
+            'fields': ('maincategory', 'vendor', 'model', 'title', 'description', 'price', 'discount_price', 'status', 'date_added', 'weight', 'dimentions')
         }),
-        ('Classifications',{
-            'fields': ('usage','availability', 'is_new_arrival', 'is_flash_sale', 'is_deal_of_the_day', 'is_top_pick')
-        })
         )
 admin.site.register(Products,ProductsAdmin)

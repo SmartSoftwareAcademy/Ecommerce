@@ -284,7 +284,7 @@
 <script>
 //import { mapActions } from 'vuex';
 //import cart from '@/state/modules/cart';
-import axios from "axios";
+import axios from "@/Axiosconfig.js";
 import Swal from "sweetalert2";
 
 export default {
@@ -420,18 +420,28 @@ export default {
       console.log(item);
 
       var cartItem = {
+        user: JSON.parse(localStorage.user).id,
         product: item.product,
         size: item.size,
         color: item.color,
         quantity: this.quantity,
         item_subtotal: price, // cart subtotal
-        tax: 0.16, // tax
+        tax: 0.0, // tax
         item_total: price * this.quantity,
+        price: price,
       };
-      this.$store.dispatch("cart/addProductToCart", cartItem);
-      this.message = "Success!Item added to cart!";
-      this.alert_type = "success";
-      this.showAlert = true;
+      axios.post(window.$http + "cart/", cartItem).then((response) => {
+        if (response.status == 200) {
+          this.$store.dispatch("cart/addProductToCart", cartItem);
+          this.message = response.data.message.toString();
+          this.alert_type = "success";
+          this.showAlert = true;
+        } else {
+          this.message = response.data.message.toString();
+          this.alert_type = "error";
+          this.showAlert = true;
+        }
+      });
     },
     addFavorites(item) {
       if (!localStorage.getItem("user")) {

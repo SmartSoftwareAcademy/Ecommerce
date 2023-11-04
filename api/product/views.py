@@ -13,6 +13,7 @@ from rest_framework import permissions, authentication
 from rest_framework.decorators import action
 from django.db.models import Q
 from .serializers import *
+from rest_framework.pagination import LimitOffsetPagination
 # Create your views here.
 
 
@@ -25,6 +26,9 @@ class ProductViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = super().get_queryset()
         search_item = self.request.query_params.get('filter', None)
+        # Retrieve the limit and offset from the query string
+        limit = self.request.query_params.get('limit')
+        offset = self.request.query_params.get('offset')
         vendor = None
         user = self.request.user
         try:
@@ -45,6 +49,13 @@ class ProductViewSet(viewsets.ModelViewSet):
                 else:
                     # If no vendor is specified, apply the maincategory and categories filters
                     queryset = queryset.filter(maincategory_filter | categories_filter)
+
+        if limit is not None and offset is not None:
+            # Apply pagination
+            paginator = LimitOffsetPagination()
+            paginated_queryset = paginator.paginate_queryset(queryset, self.request, view=self)
+
+            return paginated_queryset
 
         return queryset
 
@@ -106,28 +117,28 @@ class ReviewsViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
-class FavouritesViewSet(viewsets.ModelViewSet):
-    queryset = Favourites.objects.all()
-    serializer_class = FavouritesSerializer
-    permission_classes = [permissions.AllowAny,]
+class MarkAsFavorite(APIView):
+    def get(self, request):
+        user = request.user  # Assuming you have authentication set up
+        favorite_products = Favourites.objects.filter(user=user, is_favorite=True)
+        serializer = FavouritesSerializer(favorite_products, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        # Apply filters based on query parameters
-        # sku = self.request.query_params.get('sku', None)
-        # if sku is not None:
-        #     queryset = queryset.filter(product__sku=sku)
-        return queryset
-
-    def list(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset())
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+    def post(self, request, pk=None):
+        try:
+            product = Products.objects.get(pk=pk)
+            size=request.data.get('size')
+            color=request.data.get('color')
+            user = request.user  # Assuming you have authentication set up
+            if product:
+                favorite, created = Favourites.objects.get_or_create(user=user, product=product)
+                favorite.is_favorite = True
+                favorite.size=size
+                favorite.color=color
+                favorite.save()
+            return Response({"message": "Product marked as a favorite"}, status=status.HTTP_200_OK)
+        except Products.DoesNotExist:
+            return Response({"error": "Product does not exist"}, status=status.HTTP_404_NOT_FOUND)
 
 
 class Home(APIView):
@@ -161,3 +172,23 @@ class Home(APIView):
             'total_sales': total_sales,
         }
         return Response(context)
+
+
+class ToggleFavorite(APIView):
+    def post(self, request, product_id):
+        # Check if the user is authenticated
+        if not request.user.is_authenticated:
+            return Response({"error": "User not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
+
+        # Check if the product with the given ID exists
+        try:
+            product = Products.objects.get(pk=product_id)
+        except Products.DoesNotExist:
+            return Response({"error": "Product not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        # Check if the product is already a favorite for the user
+        favorite, created = Favourites.objects.get_or_create(user=request.user, product=product)
+        favorite.is_favorite = not favorite.is_favorite
+        favorite.save()
+
+        return Response({"is_favorite": favorite.is_favorite}, status=status.HTTP_200_OK)

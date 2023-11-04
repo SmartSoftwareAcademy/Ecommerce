@@ -1,8 +1,7 @@
 from django.contrib.auth.models import Group
-from django.contrib.auth import get_user_model
+from authmanagement.models import MyUser
 from django.utils import timezone
 
-User=get_user_model()
 
 class SiteWideConfigs:
     def __init__(self, get_response):
@@ -12,8 +11,8 @@ class SiteWideConfigs:
         roles=['admin','vendor','staff','manager','customer']
         for role in roles:
             role,created=Group.objects.get_or_create(name=role)
-        if User.objects.filter(username='admin').first() == None:
-            admin=User.objects.create(
+        if MyUser.objects.filter(email='admin@bengohub.co.ke').first() == None:
+            admin=MyUser.objects.create(
                 username='admin',
                 email='admin@bengohub.co.ke',
                 password='@Admin123',
