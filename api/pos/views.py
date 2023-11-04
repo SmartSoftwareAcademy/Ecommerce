@@ -78,7 +78,7 @@ def save_pos(request):
             sale.save()
             inventory.stock_level -= int(qty[i])
             inventory.save()
-        salesItems(sale=sale, product=inventory.product,
+        salesItems(sale=sale, sku=sku,
                    qty=qty[i], price=price[i], total=total[i]).save()
         i += 1
     resp['title'] = 'success'
