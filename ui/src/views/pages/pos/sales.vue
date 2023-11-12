@@ -199,6 +199,7 @@ export default {
       await axios
         .post("completesales/" + id + "/" + code + "/")
         .then((res) => {
+          this.$emit("printReceipt");
           Swal.fire(res.data.title, res.data.msg, res.data.icon).then(() => {
             this.saleslist[index].sales_details.status = "completed";
             this.saleslist[index].sales_details.code = code;
@@ -362,7 +363,7 @@ export default {
             <button
               class="btn btn-light btn-sm w-xs"
               v-b-modal.modal-receipt
-              @click="viewReceipt(data.item)"
+              @click="viewReceipt(data.item), $emit('printReceipt')"
             >
               <i class="uil uil-file ms-2 text-primary"></i>
             </button>

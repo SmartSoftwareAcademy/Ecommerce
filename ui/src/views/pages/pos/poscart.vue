@@ -464,17 +464,16 @@ export default {
                     this.clearValues();
                   });
               });
-          } else {
-            Swal.fire({
-              position: "center",
-              icon: res.data.icon,
-              title: res.data.title,
-              html: res.data.msg,
-              showConfirmButton: false,
-              timer: 1500,
-            });
-            this.$emit("printReceipt");
           }
+          this.$emit("printReceipt");
+          Swal.fire({
+            position: "center",
+            icon: res.data.icon,
+            title: res.data.title,
+            html: res.data.msg,
+            showConfirmButton: false,
+            timer: 1500,
+          });
           this.clearValues();
         })
         .cath((e) => {
@@ -501,7 +500,7 @@ export default {
         if (Number(this.amountPaid) >= Number(this.total)) {
           this.transactionCompleted = true;
           this.trstatus = status;
-          this.$emit("printReceipt");
+          //this.$emit("printReceipt");
         } else {
           alert(
             "Amount paid:" +
@@ -535,7 +534,9 @@ export default {
     clearValues() {
       this.transactionCompleted = false;
       this.cart = [];
+      this.amountPaid = 0;
       this.change = 0;
+      this.paymentMethod = "cash";
     },
   },
 };
