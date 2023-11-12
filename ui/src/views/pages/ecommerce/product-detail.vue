@@ -90,7 +90,7 @@
               <div class="col-sm-6" v-if="$route.params.stockitem.size">
                 <p class="title">
                   UNIT PACKAGING: {{ $route.params.stockitem.size.size }}
-                  {{ this.$route.params.stockitem.size.unit.name }}
+                  {{ this.$route.params.stockitem.size.unit.unit_symbol }}
                 </p>
               </div>
               <div class="row bg-light p-0 m-0">
@@ -284,7 +284,7 @@
 <script>
 //import { mapActions } from 'vuex';
 //import cart from '@/state/modules/cart';
-import axios from "@/Axiosconfig.js";
+import axios from "@/Axiosconfig";
 import Swal from "sweetalert2";
 
 export default {
@@ -358,11 +358,11 @@ export default {
         },
       });
       axios
-        .get(window.$http + `products/${this.$route.params.stockitem.product.id}/`)
+        .get(`products/${this.$route.params.stockitem.product.id}/`)
         .then((response) => {
           this.relatedProducts = response.data.related_products;
           axios
-            .get(window.$http + `reviews?sku=${this.$route.params.stockitem.product.sku}`)
+            .get(`reviews?sku=${this.$route.params.stockitem.sku}`)
             .then((response) => {
               if (response.data["results"].length > 0) {
                 this.reviews = response.data["results"];
@@ -388,9 +388,11 @@ export default {
         });
     },
     getFirstTwoWords(str) {
-      const regex = /^\w+\b\s+\w+\b\s+\w+\b/; // regular expression to match first two words
-      const result = str.match(regex);
-      return result ? result[0] : ""; // return the matched string or empty string if no match
+      // Split the sentence into an array of words
+      const words = str.split(" ");
+      // Take the first two words
+      const firstTwoWords = words.slice(0, 3).join(" ");
+      return firstTwoWords;
     },
     addToCart(item) {
       if (!localStorage.getItem("user")) {
@@ -423,6 +425,7 @@ export default {
         user: JSON.parse(localStorage.user).id,
         product: item.product,
         size: item.size,
+        stock: item.id,
         color: item.color,
         quantity: this.quantity,
         item_subtotal: price, // cart subtotal
@@ -430,18 +433,19 @@ export default {
         item_total: price * this.quantity,
         price: price,
       };
-      axios.post(window.$http + "cart/", cartItem).then((response) => {
-        if (response.status == 200) {
+      axios
+        .post(`cart/`, cartItem)
+        .then((response) => {
           this.$store.dispatch("cart/addProductToCart", cartItem);
           this.message = response.data.message.toString();
-          this.alert_type = "success";
+          this.alert_type = response.data.icon;
           this.showAlert = true;
-        } else {
-          this.message = response.data.message.toString();
+        })
+        .catch((error) => {
+          this.message = error.toString();
           this.alert_type = "error";
           this.showAlert = true;
-        }
-      });
+        });
     },
     addFavorites(item) {
       if (!localStorage.getItem("user")) {

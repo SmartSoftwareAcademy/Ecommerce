@@ -1,6 +1,14 @@
 <template>
   <div class="container mb-16 pb-16">
     <PageHeader :title="title" :items="items" />
+    <v-alert
+      :value="showAlert"
+      :type="alert_type"
+      @click:close="showAlert = false"
+      dismissible
+    >
+      {{ message }}
+    </v-alert>
     <div class="row" v-if="cartItems.items.length > 0">
       <div class="col-xl-8">
         <div
@@ -39,7 +47,7 @@
                     <span
                       class="fw-medium badge badge-pill bg-warning"
                       v-if="item.size !== null"
-                      >{{ item.size.size }} {{ item.size.unit.name }}</span
+                      >{{ item.size.size }} {{ item.size.unit.unit_symbol }}</span
                     >
                   </p>
                 </div>
@@ -72,14 +80,26 @@
                 <div class="col-md-4">
                   <div class="mt-3">
                     <p class="text-muted mb-2">Price</p>
-                    <h5 class="font-size-16" v-if="item.product.discount_price == 0">
-                      KShs.{{ new Intl.NumberFormat().format(item.product.price) }}
-                    </h5>
-                    <h5 class="font-size-16" v-else>
-                      KShs.{{
-                        new Intl.NumberFormat().format(item.product.discount_price)
-                      }}
-                    </h5>
+                    <span v-if="!item.size">
+                      <h5 class="font-size-16" v-if="item.product.discount_price > 0">
+                        KShs.{{
+                          new Intl.NumberFormat().format(item.product.discount_price)
+                        }}
+                      </h5>
+                      <h5 class="font-size-16" v-else>
+                        KShs.{{ new Intl.NumberFormat().format(item.product.price) }}
+                      </h5>
+                    </span>
+                    <span v-else>
+                      <h5 class="font-size-16" v-if="item.size.unit_discount_price > 0">
+                        KShs.{{
+                          new Intl.NumberFormat().format(item.size.unit_discount_price)
+                        }}
+                      </h5>
+                      <h5 class="font-size-16" v-else>
+                        KShs.{{ new Intl.NumberFormat().format(item.size.unit_price) }}
+                      </h5>
+                    </span>
                   </div>
                 </div>
                 <div class="col-md-4">
@@ -216,7 +236,7 @@
 </template>
 <script>
 import PageHeader from "@/components/page-header";
-// import axios from "axios";
+import axios from "@/Axiosconfig";
 // import Swal from "sweetalert2";
 import appConfig from "@/app.config";
 export default {
@@ -245,6 +265,9 @@ export default {
         },
       ],
       quantity: 1,
+      message: "Operation successful!",
+      alert_type: "error",
+      showAlert: false,
     };
   },
   computed: {
@@ -263,26 +286,76 @@ export default {
     },
   },
   mounted() {
-    this.quantity = this.$store.state.cart.item.quantity;
+    console.log(this.cartItems);
   },
   methods: {
     decrementQuantity(item) {
       if (item.quantity > 1) {
         const newQuantity = item.quantity - 1;
         this.quantity = newQuantity;
-        this.$store.dispatch("cart/updateCart", { item, quantity: newQuantity });
+        let new_item = item;
+        new_item.quantity = 0;
+        axios
+          .post(window.$http + "cart/", new_item)
+          .then((response) => {
+            this.$store.dispatch("cart/updateCart", { item, quantity: newQuantity });
+            this.message = response.data.message.toString();
+            this.alert_type = response.data.icon;
+            this.showAlert = true;
+          })
+          .catch((error) => {
+            this.message = error.toString();
+            this.alert_type = "error";
+            this.showAlert = true;
+          });
       }
     },
     incrementQuantity(item) {
       const newQuantity = item.quantity + 1;
       this.quantity = newQuantity;
       this.$store.dispatch("cart/updateCart", { item, quantity: newQuantity });
+      axios
+        .post(window.$http + "cart/", item)
+        .then((response) => {
+          this.message = response.data.message.toString();
+          this.alert_type = response.data.icon;
+          this.showAlert = true;
+        })
+        .catch((error) => {
+          this.message = error.toString();
+          this.alert_type = "error";
+          this.showAlert = true;
+        });
     },
     removeItem(index, item) {
-      this.$store.dispatch("cart/removeFromCart", { index, item });
+      axios
+        .delete(window.$http + `cart/delete/${item.stock}/${0}/`)
+        .then((response) => {
+          this.$store.dispatch("cart/removeFromCart", { index, item });
+          this.message = response.data.message.toString();
+          this.alert_type = response.data.icon;
+          this.showAlert = true;
+        })
+        .catch((error) => {
+          this.message = error.toString();
+          this.alert_type = "error";
+          this.showAlert = true;
+        });
     },
     clearCart() {
-      this.$store.dispatch("cart/clearCart");
+      axios
+        .delete(window.$http + `cart/clear/${0}/${JSON.parse(localStorage.user).id}/`)
+        .then((response) => {
+          this.$store.dispatch("cart/clearCart");
+          this.message = response.data.message.toString();
+          this.alert_type = response.data.icon;
+          this.showAlert = true;
+        })
+        .catch((error) => {
+          this.message = error.toString();
+          this.alert_type = "error";
+          this.showAlert = true;
+        });
     },
     addFavorites(product) {
       if (!localStorage.getItem("user")) {

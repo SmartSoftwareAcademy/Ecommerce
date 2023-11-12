@@ -6,7 +6,7 @@ from django import forms
 admin.site.register(Category)
 admin.site.register(Subcategory)
 admin.site.register(ProductImages)
-admin.site.register([Review, MainCategory, Favourites,ProductSize,ProductColor,Unit])
+admin.site.register([MainCategory, Favourites,ProductSize,ProductColor,Unit])
 
 class ProductColorInline(admin.TabularInline):
     model=ProductColor

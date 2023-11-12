@@ -118,8 +118,18 @@ export default {
           <div class="col-lg-12">
             <div class="text-center">
               <router-link to="/" class="mb-5 d-block auth-logo">
-                <img src="@/assets/images/logo-dark.png" alt height="22" class="logo logo-dark" />
-                <img src="@/assets/images/logo-light.png" alt height="22" class="logo logo-light" />
+                <img
+                  src="@/assets/images/logo-dark.png"
+                  alt
+                  height="22"
+                  class="logo logo-dark"
+                />
+                <img
+                  src="@/assets/images/logo-light.png"
+                  alt
+                  height="22"
+                  class="logo logo-light"
+                />
               </router-link>
             </div>
           </div>
@@ -138,41 +148,92 @@ export default {
                   </div>
 
                   <b-form @submit.prevent="tryToRegisterIn">
-                    <b-form-group id="email-group" label="Username" class="mb-3" label-for="username">
-                      <b-form-input id="username" v-model="user.username" type="text" placeholder="Enter username" :class="{
-                        'is-invalid': submitted && $v.user.username.$error,
-                      }"></b-form-input>
-                      <div v-if="submitted && !$v.user.username.required" class="invalid-feedback">
+                    <b-form-group
+                      id="email-group"
+                      label="Username"
+                      class="mb-3"
+                      label-for="username"
+                    >
+                      <b-form-input
+                        id="username"
+                        v-model="user.username"
+                        type="text"
+                        placeholder="Enter username"
+                        :class="{
+                          'is-invalid': submitted && $v.user.username.$error,
+                        }"
+                      ></b-form-input>
+                      <div
+                        v-if="submitted && !$v.user.username.required"
+                        class="invalid-feedback"
+                      >
                         Username is required.
                       </div>
                     </b-form-group>
 
-                    <b-form-group id="fullname-group" label="Email" label-for="email" class="mb-3">
-                      <b-form-input id="email" v-model="user.email" type="email" placeholder="Enter email" :class="{
-                        'is-invalid': submitted && $v.user.email.$error,
-                      }"></b-form-input>
-                      <div v-if="submitted && $v.user.email.$error" class="invalid-feedback">
+                    <b-form-group
+                      id="fullname-group"
+                      label="Email"
+                      label-for="email"
+                      class="mb-3"
+                    >
+                      <b-form-input
+                        id="email"
+                        v-model="user.email"
+                        type="email"
+                        placeholder="Enter email"
+                        :class="{
+                          'is-invalid': submitted && $v.user.email.$error,
+                        }"
+                      ></b-form-input>
+                      <div
+                        v-if="submitted && $v.user.email.$error"
+                        class="invalid-feedback"
+                      >
                         <span v-if="!$v.user.email.required">Email is required.</span>
                         <span v-if="!$v.user.email.email">Please enter valid email.</span>
                       </div>
                     </b-form-group>
 
-                    <b-form-group id="password-group" label="Password" class="mb-3" label-for="password">
-                      <b-form-input id="password" v-model="user.password" type="password" placeholder="Enter password"
+                    <b-form-group
+                      id="password-group"
+                      label="Password"
+                      class="mb-3"
+                      label-for="password"
+                    >
+                      <b-form-input
+                        id="password"
+                        v-model="user.password"
+                        type="password"
+                        placeholder="Enter password"
                         :class="{
                           'is-invalid': submitted && $v.user.password.$error,
-                        }"></b-form-input>
-                      <div v-if="submitted && !$v.user.password.required" class="invalid-feedback">
+                        }"
+                      ></b-form-input>
+                      <div
+                        v-if="submitted && !$v.user.password.required"
+                        class="invalid-feedback"
+                      >
                         Password is required.
                       </div>
                     </b-form-group>
                     <div class="form-check">
-                      <input type="checkbox" class="form-check-input" id="auth-terms-condition-check" />
-                      <label class="form-check-label" for="auth-terms-condition-check">I accept
-                        <a href="javascript: void(0);" class="text-dark">Terms and Conditions</a></label>
+                      <input
+                        type="checkbox"
+                        class="form-check-input"
+                        id="auth-terms-condition-check"
+                      />
+                      <label class="form-check-label" for="auth-terms-condition-check"
+                        >I accept
+                        <a href="javascript: void(0);" class="text-dark"
+                          >Terms and Conditions</a
+                        ></label
+                      >
                     </div>
                     <div class="mt-3 text-end">
-                      <b-button type="submit" variant="primary" class="w-sm">Register</b-button>
+                      <b-button type="submit" variant="primary" class="w-sm"
+                        >Register</b-button
+                      >
                     </div>
 
                     <div class="mt-4 text-center">
@@ -182,17 +243,26 @@ export default {
 
                       <ul class="list-inline">
                         <li class="list-inline-item">
-                          <a href="javascript:void()" class="social-list-item bg-primary text-white border-primary">
+                          <a
+                            href="javascript:void()"
+                            class="social-list-item bg-primary text-white border-primary"
+                          >
                             <i class="mdi mdi-facebook"></i>
                           </a>
                         </li>
                         <li class="list-inline-item">
-                          <a href="javascript:void()" class="social-list-item bg-info text-white border-info">
+                          <a
+                            href="javascript:void()"
+                            class="social-list-item bg-info text-white border-info"
+                          >
                             <i class="mdi mdi-twitter"></i>
                           </a>
                         </li>
                         <li class="list-inline-item">
-                          <a href="javascript:void()" class="social-list-item bg-danger text-white border-danger">
+                          <a
+                            href="javascript:void()"
+                            class="social-list-item bg-danger text-white border-danger"
+                          >
                             <i class="mdi mdi-google"></i>
                           </a>
                         </li>
@@ -201,7 +271,9 @@ export default {
                     <div class="mt-4 text-center">
                       <p class="text-muted mb-0">
                         Already have an account ?
-                        <router-link to="/login" class="fw-medium text-primary">Login</router-link>
+                        <router-link to="/login" class="fw-medium text-primary"
+                          >Login</router-link
+                        >
                       </p>
                     </div>
                   </b-form>
@@ -212,8 +284,8 @@ export default {
             </div>
             <div class="mt-5 text-center">
               <p>
-                © {{ new Date().getFullYear() }} Minible. Crafted with
-                <i class="mdi mdi-heart text-danger"></i> by Themesbrand
+                © {{ new Date().getFullYear() }} Codevertext. Crafted with
+                <i class="mdi mdi-heart text-danger"></i> by Codevertext Africa
               </p>
             </div>
           </div>

@@ -1,6 +1,8 @@
 // store/modules/cart.js
 export const state = {
     items: [],
+    stock: 0,
+    price:0,
     subtotal: 0,
     shipping: 0,
     tax: 0,
@@ -15,11 +17,15 @@ export const mutations = {
         if (existingItem) {
             //state.tax += ((item.item_subtotal * existingItem.quantity) * item.tax)
             existingItem.quantity += item.quantity;
+            state.price = item.price,
+            state.stock=item.stock,
             state.subtotal += existingItem.item_subtotal;
             state.total += (existingItem.item_subtotal * existingItem.quantity) + state.tax;
         } else {
             state.items.push(item);
             //state.tax += item.item_total * item.tax;
+            state.price = item.price,
+            state.stock = item.stock,
             state.subtotal += item.item_subtotal;
             state.total += item.item_total + state.tax;
             state.cart_items_count = state.items.length;
@@ -28,6 +34,8 @@ export const mutations = {
     },
     updateCartItem(state, { item, quantity }) {
         item.quantity = quantity;
+        state.price = item.price,
+        state.stock = item.stock,
         state.subtotal = state.items.reduce((total, item) => {
             return total + (item.product.price * item.quantity);
         }, 0);

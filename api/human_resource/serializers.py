@@ -5,7 +5,6 @@ from rest_framework import status
 from rest_framework.response import Response
 
 from django.contrib.auth import get_user_model
-from authmanagement.serializers import UserSerializer
 
 
 class EmployeeSerializer(serializers.ModelSerializer):
@@ -33,9 +32,14 @@ class BusinessAddressSerializer(serializers.ModelSerializer):
         model = BusinessAddress
         fields = '__all__'
 
+class SupplierUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=User
+        fields=['id']
+
 class SupplierSerializer(serializers.ModelSerializer):
     address = AddressBookSerializer(required=False, many=True, read_only=True)
-    user = UserSerializer
+    user = SupplierUserSerializer()
 
     class Meta:
         model = Supplier

@@ -1,8 +1,7 @@
 from django.db import models
 from product.models import Products
 from human_resource.models import Customer, PickupStations
-# Create your models here.
-
+from stockinventory.models import StockInventory
 
 class Order(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
@@ -13,7 +12,7 @@ class Order(models.Model):
     payment_status = models.CharField(max_length=50, default='pending')
     confirm_status = models.CharField(max_length=50, default='pending')
     dispatch_status = models.CharField(max_length=50, default='pending')
-    address = models.ForeignKey(PickupStations, on_delete=models.CASCADE,blank=True,null=True)
+    delivery_address = models.ForeignKey(PickupStations, on_delete=models.CASCADE,related_name='orders')
     delivery_from_date = models.DateTimeField(blank=True, null=True)
     delivery_to_date = models.DateTimeField(blank=True, null=True)
     delivered_status = models.CharField(max_length=100, default='pending')
@@ -54,8 +53,7 @@ class Invoice(models.Model):
 class OrderItem(models.Model):
     order = models.ForeignKey(
         Order, related_name='orderitems', on_delete=models.CASCADE)
-    product = models.ForeignKey(
-        Products, related_name='orderitems', on_delete=models.CASCADE)
+    stock = models.ForeignKey(StockInventory,on_delete=models.CASCADE,related_name='orderitems')
     price = models.DecimalField(max_digits=8, decimal_places=2)
     quantity = models.IntegerField(default=0)
     total = models.IntegerField(default=0)

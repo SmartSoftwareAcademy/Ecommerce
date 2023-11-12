@@ -215,7 +215,7 @@ export default {
           });
         });
     },
-    printReceipt(saleitem) {
+    viewReceipt(saleitem) {
       this.total = saleitem.grand_total;
       this.receiptNo = saleitem.code;
       this.paymentMethod = saleitem.paymethod;
@@ -228,7 +228,7 @@ export default {
         });
       });
       this.salesitems = items;
-      console.log(items);
+      this.$emit("printReceipt");
     },
   },
   middleware: "authentication",
@@ -362,7 +362,7 @@ export default {
             <button
               class="btn btn-light btn-sm w-xs"
               v-b-modal.modal-receipt
-              @click="printReceipt(data.item)"
+              @click="viewReceipt(data.item)"
             >
               <i class="uil uil-file ms-2 text-primary"></i>
             </button>
@@ -417,6 +417,7 @@ export default {
         :total="total"
         :paymentMethod="paymentMethod"
         :receiptNo="paycode"
+        @printReceipt="viewReceipt"
       />
     </b-modal>
   </Layout>

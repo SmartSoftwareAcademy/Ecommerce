@@ -13,6 +13,8 @@ from rest_framework import permissions, authentication
 from rest_framework.decorators import action
 from django.db.models import Q
 from .serializers import *
+from stockinventory.serializers import ReviewsSerializer
+from stockinventory.models import Review
 from rest_framework.pagination import LimitOffsetPagination
 # Create your views here.
 
@@ -21,7 +23,8 @@ class ProductViewSet(viewsets.ModelViewSet):
     queryset = Products.objects.filter(status=1).select_related(
         'vendor').prefetch_related('images')
     serializer_class = ProductsSerializer
-    permission_classes = [permissions.AllowAny,]
+    authentication_classes = []
+    permission_classes = ()
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -93,17 +96,33 @@ class ProductViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
+class ProductDetail(APIView):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly,]
+    def get_object(self, pk):
+        try:
+            return Products.objects.get(pk=pk)
+        except Products.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk):
+        cart = self.get_object(pk)
+        serializer = ProductsSerializer(cart)
+        return Response(serializer.data)
+
+
+
 class ReviewsViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()
     serializer_class = ReviewsSerializer
-    permission_classes = [permissions.AllowAny,]
+    authentication_classes = []
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly,]
 
     def get_queryset(self):
         queryset = super().get_queryset()
         # Apply filters based on query parameters
         sku = self.request.query_params.get('sku', None)
         if sku is not None:
-            queryset = queryset.filter(product__sku=sku)
+            queryset = queryset.filter(stock__sku=sku)
         return queryset
 
     def list(self, request, *args, **kwargs):
@@ -118,6 +137,8 @@ class ReviewsViewSet(viewsets.ModelViewSet):
 
 
 class MarkAsFavorite(APIView):
+    permission_classes = (permissions.IsAuthenticated)
+    authentication_classes = []
     def get(self, request):
         user = request.user  # Assuming you have authentication set up
         favorite_products = Favourites.objects.filter(user=user, is_favorite=True)
@@ -142,7 +163,7 @@ class MarkAsFavorite(APIView):
 
 
 class Home(APIView):
-    permission_classes = ([permissions.AllowAny,])
+    permission_classes = ([permissions.IsAuthenticatedOrReadOnly,])
     authentication_classes = ()
 
     def get(self, request, *args, **kwargs):

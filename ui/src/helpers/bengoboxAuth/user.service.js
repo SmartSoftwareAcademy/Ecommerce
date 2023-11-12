@@ -30,6 +30,40 @@ function login(email, password) {
                 user.user.token.trim(),
                 "mnopqr",
             ).toString();
+            //fetch cart items
+            axios.defaults.headers.common['Authorization'] = `Token ${user.user.token}`;
+            axios.get(window.$http + `cart/?user_id=${user.user.id}`)
+                .then(res => {
+                    axios.get()
+                    var items = res.data;
+                    console.log(items);
+                    items.forEach(item => {
+                        axios.get(window.$http + `stock/${item.stock}`)
+                            .then(response => {
+                                var stock = response.data;
+                                console.log(stock)
+                                var cartItem = {
+                                    user: user.user.id,
+                                    product: stock.product,
+                                    size: stock.size,
+                                    stock: stock.id,
+                                    color: stock.color,
+                                    quantity: item.quantity,
+                                    item_subtotal: item.item_subtotal, // cart subtotal
+                                    tax: item.tax, // tax
+                                    item_total: item.item_total,
+                                    price: item.price,
+                                };
+                                console.log(cartItem);
+                                store.dispatch("cart/addProductToCart", cartItem);
+                            })
+                            .catch(e => {
+                                console.log(e);
+                        })
+                    });
+                }).catch(error => {
+                    console.log(error);
+            })
             if (user.user.token) {
                 let responseJson = {
                     id: user.user.id,

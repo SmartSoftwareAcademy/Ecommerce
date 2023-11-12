@@ -2,7 +2,7 @@ from django.db import models
 from django.utils import timezone
 from product.models import *
 from human_resource.models import *
-
+from stockinventory.models import StockInventory
 
 class Sales(models.Model):
     attendant = models.ForeignKey(
@@ -14,7 +14,7 @@ class Sales(models.Model):
     tax = models.FloatField(default=0)
     tendered_amount = models.FloatField(default=0)
     amount_change = models.FloatField(default=0)
-    date_added = models.DateTimeField(default=timezone.now)
+    date_added = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
     status = models.CharField(
         max_length=20, default="pending", blank=True, null=True)
@@ -36,7 +36,7 @@ class Sales(models.Model):
 class salesItems(models.Model):
     sale = models.ForeignKey(
         Sales, on_delete=models.CASCADE, related_name='salesitems')
-    sku=models.CharField(max_length=100,default="103")
+    stock = models.ForeignKey(StockInventory,on_delete=models.CASCADE,related_name='salesitems')
     price = models.FloatField(default=0)
     qty = models.FloatField(default=0)
     total = models.FloatField(default=0)
@@ -44,7 +44,7 @@ class salesItems(models.Model):
     date_updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.sale.code+"-"+self.sku
+        return self.sale.code+"-"+self.stock.product.title
 
     class Meta:
         db_table = 'salesitems'

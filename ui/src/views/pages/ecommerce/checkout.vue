@@ -370,7 +370,7 @@ export default {
                               name="pay-method"
                               id="pay-methodoption3"
                               v-model="paymentMethod"
-                              value="cash"
+                              value="mpesa_on_delivery"
                               class="card-radio-input"
                               checked
                             />

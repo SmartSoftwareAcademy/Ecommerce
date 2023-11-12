@@ -6,6 +6,10 @@ class StockInventoryAdmin(admin.ModelAdmin):
         'product', 'stock_level', 'reorder_level', 'availability',
         'is_new_arrival', 'is_favorite', 'is_flash_sale', 'is_deal_of_the_day', 'is_top_pick'
     )
+    list_editable = ['stock_level', 'reorder_level', 'availability',
+                     'is_new_arrival', 'is_favorite', 'is_flash_sale', 'is_deal_of_the_day', 'is_top_pick']
+    list_display_links = ['product']  # Choose a field for editing links
+
     list_filter = ('availability', 'is_new_arrival', 'is_favorite', 'is_flash_sale', 'is_deal_of_the_day', 'is_top_pick')
     search_fields = ('product__name', 'product__sku', 'product__serial')
 
@@ -14,7 +18,7 @@ class StockInventoryAdmin(admin.ModelAdmin):
             'fields': ['product', 'stock_level', 'reorder_level', 'size', 'color'],
         }),
         ('Additional Information', {
-            'fields': ['usage', 'sku', 'serial', 'supplier'],
+            'fields': ['usage', 'sku', 'serial', 'supplier', 'slider_image'],
         }),
         ('Availability and Promotions', {
             'fields': ['availability', 'is_new_arrival', 'is_favorite', 'is_flash_sale', 'is_deal_of_the_day', 'is_top_pick'],
@@ -22,3 +26,4 @@ class StockInventoryAdmin(admin.ModelAdmin):
     ]
 
 admin.site.register(StockInventory, StockInventoryAdmin)
+admin.site.register([Review,FrontStore])

@@ -168,7 +168,8 @@ def addProduct(request, id=0):
 class MainCategoryViewSet(viewsets.ModelViewSet):
     queryset = MainCategory.objects.all()
     serializer_class = MainCategoriesSerializer
-    permission_classes =()
+    authentication_classes = []
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly,]
     pagination_class = LimitOffsetPagination  # Enable Limit and Offset Pagination
 
 
@@ -176,25 +177,28 @@ class MainCategoryViewSet(viewsets.ModelViewSet):
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategoriesSerializer
-    permission_classes =()
+    authentication_classes = []
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly,]
     pagination_class = LimitOffsetPagination  # Enable Limit and Offset Pagination
 
 
 class SubCategoryViewSet(viewsets.ModelViewSet):
     queryset = Subcategory.objects.all()
     serializer_class = SubCategoriesSerializer
-    permission_classes = ()
+    authentication_classes = []
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly,]
     pagination_class = LimitOffsetPagination  # Enable Limit and Offset Pagination
 
 
 class ProductColorViewSet(viewsets.ModelViewSet):
     queryset = ProductColor.objects.all()
     serializer_class = productColorSerializer
-    permission_classes =()
+    permission_classes = [permissions.AllowAny,]
     pagination_class = LimitOffsetPagination  # Enable Limit and Offset Pagination
 
 class ProductSizeViewSet(viewsets.ModelViewSet):
     queryset = ProductSize.objects.all()
     serializer_class = productSizeSerializer
-    permission_classes = ()
+    authentication_classes = []
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly,]
     pagination_class = LimitOffsetPagination  # Enable Limit and Offset Pagination

@@ -28,6 +28,8 @@ from .serializers import *
 import random
 import time
 from stockinventory.models import StockInventory
+from cart.models import Cart
+from human_resource.models import PickupStations
 # Create your views here.
 
 
@@ -46,20 +48,20 @@ def save_order(request):
         userid = request.data['userid']
         status = request.data['status']
         address_id = request.data['address_id']
+        address=PickupStations.objects.get(id=address_id)
         customer = Customer.objects.get(user=userid)
         # add sales
         sale = Sales(code=str(orderId), sub_total=sub_total, tax_amount=tax_amount,
                      grand_total=total, tendered_amount=total, amount_change=0, paymethod=paymenthod, status=status, sales_type="online")
         # add order
-        order = Order(customer=customer, order_id=orderId,
+        order = Order(customer=customer, order_id=orderId,delivery_address=address,
                       order_amount=total, confirm_status=status, dispatch_status='pending')
         # add invoice
         invoice = Invoice(customer=customer, invoice_id=orderId,
                           amount=total, status='pending')
         for item in orderitems:
-            productid = Products.objects.get(id=int(item['product_id']))
             quantity = int(item['quantity'])
-            stock = StockInventory.objects.get(product=productid)
+            stock = StockInventory.objects.get(id=item['stock_id'])
             sale.tax = item['tax']
             if int(stock.stock_level) < int(quantity):
                 resp['title'] = 'Failed!'
@@ -71,11 +73,12 @@ def save_order(request):
             invoice.save()
             stock.stock_level -= int(quantity)
             stock.save()
-            address= PickupStations.objects.get(id=int(address_id))
-            salesItems(sale=sale, product=productid,
+            #address= PickupStations.objects.get(id=int(address_id))
+            salesItems(sale=sale, stock=stock,
                        qty=quantity, price=int(item['item_subtotal']), total=int(item['item_total'])).save()
-            OrderItem(order=order, product=productid,
+            OrderItem(order=order, stock=stock,
                       quantity=quantity, price=int(item['item_subtotal']), total=int(item['item_total'])).save()
+            Cart.objects.filter(user__id=userid).delete()
         resp['title'] = 'success'
         resp['icon'] = 'success'
         resp['msg'] = "Your order has been placed!\nThank you for shopping with Bengomall!"

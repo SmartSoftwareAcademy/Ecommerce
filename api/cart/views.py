@@ -4,33 +4,36 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework import permissions, authentication
 from django.http import Http404
 from .models import Cart
 from .serializers import CartSerializer
 from product.models import ProductSize, ProductColor
+from django.contrib.auth import get_user_model
+
 
 class CartList(APIView):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly,]
+
     def get(self, request):
-        carts = Cart.objects.all()
-        serializer = CartSerializer(carts, many=True)
+        user_id=request.query_params.get('user_id', None)
+        cartitems = Cart.objects.all()
+        if user_id:
+            cartitems=Cart.objects.filter(user__id=user_id)
+        serializer = CartSerializer(cartitems, many=True)
         return Response(serializer.data)
 
     def post(self, request):
-        request.data['product']=request.data['product']['id']
         serializer = CartSerializer(data=request.data)
-        print(serializer.validated_data)
+        print(request.data['stock'])
         if serializer.is_valid():
-            product = serializer.validated_data['product']
-            size = serializer.validated_data.get('size')
+            stock = serializer.validated_data['stock']
             price = serializer.validated_data.get('price')
-            color = serializer.validated_data.get('color')
 
             # Check if the same product, size, and color already exist in the cart
             existing_cart_entry = Cart.objects.filter(
-                customer=serializer.validated_data['user'],
-                product=product.id,
-                size=size.id if size else None,
-                color=color.id if color else None
+                user=serializer.validated_data['user'],
+                stock=stock,
             ).first()
 
             if existing_cart_entry:
@@ -39,19 +42,22 @@ class CartList(APIView):
                 existing_cart_entry.item_subtotal = existing_cart_entry.quantity * price
                 existing_cart_entry.item_total = existing_cart_entry.item_subtotal + existing_cart_entry.tax
                 existing_cart_entry.save()
+                icon="success"
                 message="Item quantity updated successfully!"
-                return Response({"message":message}, status=status.HTTP_200_OK)
+                return Response({"icon":icon,"message":message}, status=status.HTTP_200_OK)
             else:
                 # Create a new cart entry
                 serializer.save()
+                icon="success"
                 message="Item added to cart successfully!"
-                return Response({"message":message}, status=status.HTTP_201_CREATED)
-        return Response({"message":serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"icon":icon,"message":message}, status=status.HTTP_201_CREATED)
+        return Response({"icon":"error","message":str(serializer.errors)}, status=status.HTTP_400_BAD_REQUEST)
 
 class CartDetail(APIView):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly,]
     def get_object(self, pk):
         try:
-            return Cart.objects.get(pk=pk)
+            return Cart.objects.get(stock__id=pk)
         except Cart.DoesNotExist:
             raise Http404
 
@@ -68,7 +74,12 @@ class CartDetail(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, pk):
-        cart = self.get_object(pk)
-        cart.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    def delete(self, request,user_id=None,pk=None):
+        if user_id !=0:
+            message="Cart cleared!"
+            Cart.objects.filter(user__id=user_id).delete()
+        if pk !=0:
+            cart = self.get_object(pk)
+            cart.delete()
+            message="Item removed from cart successfully!"
+        return Response({"icon":"success","message":message},status=status.HTTP_200_OK)

@@ -14,6 +14,7 @@ from rest_framework.decorators import action
 from django.db.models import Q
 from .serializers import *
 from rest_framework.pagination import LimitOffsetPagination
+from stockinventory.models import StockInventory
 
 
 class OrderViewSet(viewsets.ModelViewSet):
@@ -93,8 +94,8 @@ class InvoicesViewSet(viewsets.ModelViewSet):
         vendor = Vendor.objects.filter(user=user).first()
         employee = Employee.objects.filter(user=user).first()
         if vendor != None:
-            vendor_products = vendor.products.all()
-            order_items = OrderItem.objects.filter(product__in=vendor_products)
+            vendor_products = StockInventory.objects.filter(product__vendor=vendor).values('sku')
+            order_items = OrderItem.objects.filter(stock__sku__in=vendor_products)
             # Get the invoices associated with the order items
             queryset = Invoice.objects.filter(
                 order__orderitems__in=order_items)
@@ -106,7 +107,7 @@ class InvoicesViewSet(viewsets.ModelViewSet):
             vendor_products = Products.objects.filter(
                 vendor__employees=employee)
             # Get the order items associated with the vendor products
-            order_items = OrderItem.objects.filter(product__in=vendor_products)
+            order_items = OrderItem.objects.filter(stock__product__in=vendor_products)
             # Get the invoices associated with the order items
             queryset = Invoice.objects.filter(
                 order__orderitems__in=order_items)

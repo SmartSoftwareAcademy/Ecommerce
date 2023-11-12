@@ -82,24 +82,6 @@ class ProductImages(models.Model):
         verbose_name_plural = "Images"
 
 
-class Review(models.Model):
-    product = models.ForeignKey(
-        "Products", on_delete=models.CASCADE, related_name='reviews')
-    user = models.ForeignKey(User, on_delete=models.SET_NULL,related_name='images',null=True,blank=True)
-    text = models.TextField()
-    rating = models.PositiveIntegerField(
-        default=0, choices=((5, 5), (4, 4), (3, 3), (2, 2), (1, 1)))
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return str(self.rating)
-
-    class Meta:
-        db_table = "reviews"
-        managed = True
-        verbose_name_plural = "Reviews"
-
-
 class Products(models.Model):
     maincategory = models.ForeignKey(
         MainCategory, on_delete=models.CASCADE, null=True, blank=True)

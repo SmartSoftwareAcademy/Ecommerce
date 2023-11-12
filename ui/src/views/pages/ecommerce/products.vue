@@ -177,7 +177,7 @@
                   </div>
                   <div v-if="!item.size">KShs.{{ item.product.price }}</div>
                   <div v-if="item.size">
-                    {{ item.size.size }}{{ item.size.unit.name }} KShs.{{
+                    {{ item.size.size }}{{ item.size.unit.unit_symbol }} KShs.{{
                       item.size.unit_price
                     }}
                   </div>
@@ -196,7 +196,15 @@
               </v-card>
             </v-hover>
           </div>
-          <v-pagination v-model="page" :length="pages"></v-pagination>
+          <v-pagination
+            v-if="totalProducts > 1"
+            v-model="page"
+            :total-visible="8"
+            :prev-text="'Previous'"
+            :next-text="'Next'"
+            :length="Math.ceil(totalProducts / pageSize)"
+            @input="handlePageChange(page)"
+          ></v-pagination>
         </div>
       </div>
     </div>
@@ -221,6 +229,9 @@ export default {
     return {
       page: 1,
       pageSize: 8,
+      limit: 8,
+      offset: 0,
+      totalProducts: 0,
       breadcrums: [
         {
           text: "Home",
@@ -320,8 +331,11 @@ export default {
         },
       });
       axios
-        .get(window.$http + `stock?filter=` + filter)
+        .get(
+          window.$http + `stock?limit${this.limit}&offset=${this.offset}&filter=` + filter
+        )
         .then((response) => {
+          this.totalProducts = response.data["count"];
           var cat = this.$route.params.category;
           if (cat != null) {
             this.products = response.data["results"].filter(
@@ -367,6 +381,12 @@ export default {
             Swal.close(e);
           });
         });
+    },
+    handlePageChange(newPage) {
+      this.page = newPage;
+      this.limit = this.pageSize;
+      this.offset = (this.page - 1) * this.pageSize;
+      this.applyFilter("");
     },
     addFavorites(item) {
       if (!localStorage.getItem("user")) {

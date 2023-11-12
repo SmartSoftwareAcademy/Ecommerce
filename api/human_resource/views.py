@@ -21,14 +21,14 @@ from rest_framework.decorators import action
 from rest_framework.authtoken.models import Token
 import json
 from django.http import JsonResponse
-from django.core import serializers
 from .serializers import *
 from product.models import *
 from order.models import *
 from pos.models import *
 from product.serializers import *
-from django.shortcuts import get_object_or_404
-
+from authmanagement.serializers import UserSerializer
+from stockinventory.models import StockInventory
+from django.utils import timezone
 
 class SupplierViewSet(APIView):
     queryset = Supplier.objects.all().prefetch_related(
@@ -281,14 +281,14 @@ def top_buyers(request):
     employee = Employee.objects.filter(user=request.user).first()
     if request.user.is_superuser:
         top_customers = Order.objects.annotate(
-            total_spent=Sum('order_amount')).values('customer__user__pic', 'payment_status', 'customer__addresses__region', 'customer__user__first_name', 'customer__user__last_name', 'total_spent').filter(total_spent__gte=50).order_by('-total_spent')[:5]
+            total_spent=Sum('order_amount')).values('customer__user__pic', 'payment_status', 'customer__addresses__region', 'customer__user__first_name', 'customer__user__last_name', 'total_spent').filter(total_spent__gte=50).order_by('-total_spent').distinct()[:5]
     elif vendor != None:
         top_customers = Order.objects.filter(orderitems__product__vendor=vendor).annotate(
-            total_spent=Sum('order_amount')).values('customer__user__pic', 'payment_status', 'customer__addresses__region', 'customer__user__first_name', 'customer__user__last_name', 'total_spent').filter(total_spent__gte=50).order_by('-total_spent')[:5]
+            total_spent=Sum('order_amount')).values('customer__user__pic', 'payment_status', 'customer__addresses__region', 'customer__user__first_name', 'customer__user__last_name', 'total_spent').filter(total_spent__gte=50).order_by('-total_spent').distinct()[:5]
     elif employee != None:
         employee = request.user.employee
         top_customers = Order.objects.filter(orderitems__product__vendor__employees=employee).annotate(
-            total_spent=Sum('order_amount')).values('customer__user__pic',  'payment_status', 'customer__addresses__region', 'customer__user__first_name', 'customer__user__last_name', 'total_spent').filter(total_spent__gte=50).order_by('-total_spent')[:5]
+            total_spent=Sum('order_amount')).values('customer__user__pic',  'payment_status', 'customer__addresses__region', 'customer__user__first_name', 'customer__user__last_name', 'total_spent').filter(total_spent__gte=50).order_by('-total_spent').distinct()[:5]
     else:
         top_customers = ""
     return Response(list(top_customers))
@@ -300,15 +300,15 @@ def top_products(request):
     vendor = Vendor.objects.filter(user=request.user).first()
     employee = Employee.objects.filter(user=request.user).first()
     if request.user.is_superuser:
-        top_products = Products.objects.annotate(total_sales=Sum('salesitems__qty')).filter(total_sales__gte=1).values(
-            "sku", "title", "total_sales").order_by('-total_sales')[:5]
+        top_products = StockInventory.objects.annotate(total_sales=Sum('salesitems__qty')).filter(total_sales__gte=1).values(
+            "sku", "product__title", "total_sales").order_by('-total_sales')[:5]
     elif vendor != None:
-        top_products = Products.objects.filter(vendor=vendor).annotate(total_sales=Sum('salesitems__qty')).filter(total_sales__gte=1).values(
-            "sku", "title", "total_sales").order_by('-total_sales')[:5]
+        top_products = StockInventory.objects.filter(vendor=vendor).annotate(total_sales=Sum('salesitems__qty')).filter(total_sales__gte=1).values(
+            "sku", "product__title", "total_sales").order_by('-total_sales')[:5]
     elif employee != None:
         employee = request.user.employee
-        top_products = Products.objects.filter(vendor__employees=employee).annotate(total_sales=Sum('salesitems__qty')).filter(total_sales__gte=1).values(
-            "sku", "title", "total_sales").order_by('-total_sales')[:5]
+        top_products = StockInventory.objects.filter(vendor__employees=employee).annotate(total_sales=Sum('salesitems__qty')).filter(total_sales__gte=1).values(
+            "sku", "product__title", "total_sales").order_by('-total_sales')[:5]
     else:
         top_products = ""
     return Response(list(top_products))
@@ -319,36 +319,29 @@ class SaleAnalyticsViewSet(viewsets.ViewSet):
     serializer_class = ProductsSerializer
 
     def list(self, request):
+        sales_queryset=Sales.objects.filter(status='completed')
         # get vendor or vendor user
         vendor = Vendor.objects.filter(user=request.user).first()
         employee = Employee.objects.filter(user=request.user).first()
-        # Get the selected filter
-
+        # Get the selected filters
         filter = request.query_params.get('filter', 'Monthly')
         now = datetime.now()
         date = request.query_params.get('date', now.strftime('%Y-%m-%d'))
         # Determine the time interval for the selected filter
         if filter == 'Weekly':
             interval = 'day'
-            start_date = datetime.strptime(
-                date, '%Y-%m-%d').date() - timedelta(days=7)
+            start_date = datetime.strptime(date, '%Y-%m-%d').date() - timedelta(days=7)
         elif filter == 'Monthly':
             interval = 'week'
-            start_date = datetime.strptime(
-                date, '%Y-%m-%d').date().replace(day=1) - timedelta(days=1)
+            start_date = datetime.strptime(date, '%Y-%m-%d').date().replace(day=1) - timedelta(days=1)
         elif filter == 'Yearly':
             interval = 'month'
-            start_date = datetime.strptime(
-                date, '%Y-%m-%d').date().replace(month=1, day=1) - timedelta(days=1)
-
+            start_date = datetime.strptime(date, '%Y-%m-%d').date().replace(month=1, day=1) - timedelta(days=1)
          # Query the database to get the total sales for the selected period
-        total_sales_current_period = Sales.objects.filter(
-            date_added__gte=start_date, date_added__lte=date).aggregate(total__sum=Sum('grand_total'))['total__sum'] or 0
-
+        total_sales_current_period = sales_queryset.filter(date_added__gte=start_date, date_added__lte=date).aggregate(total__sum=Sum('grand_total'))['total__sum'] or 0
         # Query the database to get the total sales for the previous period
-        total_sales_previous_period = Sales.objects.filter(date_added__gte=start_date - timedelta(
-            days=1),  date_added__lte=datetime.strptime(
-                date, '%Y-%m-%d').date() - timedelta(days=1)).aggregate(total__sum=Sum('grand_total'))['total__sum'] or 0
+        total_sales_previous_period = sales_queryset.filter(date_added__gte=start_date - timedelta(days=1), date_added__lte=datetime.strptime(
+            date, '%Y-%m-%d').date() - timedelta(days=1)).aggregate(total__sum=Sum('grand_total'))['total__sum'] or 0
         # print(total_sales_current_period)
         # print(total_sales_previous_period)
 
@@ -361,13 +354,13 @@ class SaleAnalyticsViewSet(viewsets.ViewSet):
                 (sales_diff / total_sales_previous_period) * 100, 2)
 
         # Query the database for the top 3 selling categories based on the selected filter
-        top_categories = salesItems.objects.annotate(date=Trunc('date_added', interval)).values('product__categories__name', 'date').annotate(
-            total=Sum('total')).values('product__categories__name', 'total').order_by('-total')
+        top_categories = salesItems.objects.annotate(date=Trunc('date_added', interval)).values('stock__product__maincategory__categories__name', 'date').annotate(
+            total=Sum('total')).values('stock__product__maincategory__categories__name', 'total').order_by('-total')
         if vendor != None:
-            top_categories = top_categories.filter(product__vendor=vendor)[:3]
+            top_categories = top_categories.filter(stock__product__vendor=vendor)[:3]
         elif employee != None:
             top_categories = top_categories.filter(
-                product__vendor__employees=employee)[:3]
+                stock__product__vendor__employees=employee)[:3]
         else:
             top_categories = top_categories[:3]
         # Format the data into the desired format
@@ -384,16 +377,16 @@ class SaleAnalyticsViewSet(viewsets.ViewSet):
         conversion_ratio=0.00
         if customer_coount > 0:
            conversion_ratio = sales_count/customer_coount
-        total_sales_amount = Sales.objects.aggregate(
+        total_sales_amount = sales_queryset.aggregate(
             total=Sum('grand_total'))['total']
         for c in customers:
             customer_series.append(c['customer_coount'])
         for od in orders:
             order_series.append(od['order_count'])
         for category in top_categories:
-            name = category['product__categories__name']
+            name = category['stock__product__maincategory__categories__name']
             sales_data = salesItems.objects.annotate(date=Trunc('date_added', interval)).values(
-                'date').annotate(total=Sum('total')).filter(product__categories__name=name).order_by('date')
+                'date').annotate(total=Sum('total')).filter(stock__product__maincategory__categories__name=name).order_by('date')
             # Create a list of total sales for each interval
             sales_list = []
             for sales in sales_data:

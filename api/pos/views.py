@@ -68,7 +68,7 @@ def save_pos(request):
         total = [total]
     for sku in skus:
         print(sku)
-        inventory = StockInventory.objects.filter(sku=sku).first()
+        inventory = StockInventory.objects.get(sku=sku)
         if int(inventory.stock_level) < int(qty[i]):
             resp['title'] = 'Failed!'
             resp['icon'] = 'warning'
@@ -78,7 +78,7 @@ def save_pos(request):
             sale.save()
             inventory.stock_level -= int(qty[i])
             inventory.save()
-        salesItems(sale=sale, sku=sku,
+        salesItems(sale=sale, stock=inventory,
                    qty=qty[i], price=price[i], total=total[i]).save()
         i += 1
     resp['title'] = 'success'
@@ -111,9 +111,9 @@ def salesList(request):
         data["paymethod"] = sale['paymethod']
         data["grand_total"] = sale["grand_total"]
         # items = []
-        for item in salesItems.objects.filter(sale=sale['id']).values("id", "sku","qty", "price", "total"):
-            stoctitem=StockInventory.objects.get(sku=item['sku'])
-            sale_items.append({"id": item['id'], "product_title":f"{stoctitem.product.title} {stoctitem.size.size if stoctitem.size else ''} {stoctitem.size.unit.unit_symbol if stoctitem.size else ''}",
+        for item in salesItems.objects.filter(sale=sale['id']).values("id", "stock__sku","stock__product__title","qty", "price", "total"):
+            stock=StockInventory.objects.get(sku=item['stock__sku'])
+            sale_items.append({"id": item['id'], "product_title":f"{item['stock__product__title']} {stock.size.size if stock.size else ''} {stock.size.unit.unit_symbol if stock.size else ''}",
                               "qty": item['qty'], "price": item['price'], "total": item['total']})
         data['sales_items']=sale_items
         sales_data.append(data)

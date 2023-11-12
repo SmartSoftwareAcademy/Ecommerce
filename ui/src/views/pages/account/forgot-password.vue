@@ -97,13 +97,10 @@ export default {
                 <div class="card-body p-4">
                   <div class="text-center mt-2">
                     <h5 class="text-primary">Reset Password</h5>
-                    <p class="text-muted">Reset Password with Minible.</p>
+                    <p class="text-muted">Reset Password with Codevertex.</p>
                   </div>
                   <div class="p-2 mt-4">
-                    <div
-                      class="alert alert-success text-center mb-4"
-                      role="alert"
-                    >
+                    <div class="alert alert-success text-center mb-4" role="alert">
                       Enter your Email and instructions will be sent to you!
                     </div>
                     <form @submit.prevent="tryToReset">
@@ -119,16 +116,9 @@ export default {
                             'is-invalid': submitted && $v.email.$error,
                           }"
                         />
-                        <div
-                          v-if="submitted && $v.email.$error"
-                          class="invalid-feedback"
-                        >
-                          <span v-if="!$v.email.required"
-                            >Email is required.</span
-                          >
-                          <span v-if="!$v.email.email"
-                            >Please enter valid email.</span
-                          >
+                        <div v-if="submitted && $v.email.$error" class="invalid-feedback">
+                          <span v-if="!$v.email.required">Email is required.</span>
+                          <span v-if="!$v.email.email">Please enter valid email.</span>
                         </div>
                       </div>
                       <div class="row mb-0">
@@ -141,9 +131,7 @@ export default {
                       <div class="mt-4 text-center">
                         <p class="mb-0">
                           Remember It ?
-                          <router-link
-                            to="/login"
-                            class="fw-medium text-primary"
+                          <router-link to="/login" class="fw-medium text-primary"
                             >Signin</router-link
                           >
                         </p>
@@ -157,8 +145,8 @@ export default {
 
               <div class="mt-5 text-center">
                 <p>
-                  © {{ new Date().getFullYear() }} Minible. Crafted with
-                  <i class="mdi mdi-heart text-danger"></i> by Themesbrand
+                  © {{ new Date().getFullYear() }} Codevertex. Crafted with
+                  <i class="mdi mdi-heart text-danger"></i> by Codevertext Africa
                 </p>
               </div>
             </div>

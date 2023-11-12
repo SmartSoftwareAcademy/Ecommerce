@@ -89,6 +89,8 @@ export default {
   methods: {
     placeOrder() {
       var formData = new FormData();
+      var swal_title = "Please wait...!";
+      var swal_message = "Placing your order...";
       //add cart items
       formData.append("total", this.cart.total);
       formData.append("subtotal", this.cart.subtotal);
@@ -103,7 +105,7 @@ export default {
       var orderitems = [];
       this.cart.items.forEach((item) => {
         orderitems.push({
-          product_id: item.product.id,
+          stock_id: item.stock,
           quantity: item.quantity,
           item_subtotal: item.item_subtotal,
           item_total: item.item_total,
@@ -114,18 +116,22 @@ export default {
       });
       formData.append("orderitems", JSON.stringify(orderitems));
       //validate phone number
-      if (
-        /^(2547|2541)\d{8}$/.test(this.formattedPhoneNumber) &&
-        this.formattedPhoneNumber.length === 12
-      ) {
-        //valid pass
-      } else {
-        Swal.fire("Phone validation error!", "Invalid phone number!", "warning"); // invalid phone number
-        return;
+      if (this.paymentMethod === "mpesa") {
+        if (
+          /^(2547|2541)\d{8}$/.test(this.formattedPhoneNumber) &&
+          this.formattedPhoneNumber.length === 12
+        ) {
+          //valid pass
+        } else {
+          Swal.fire("Phone validation error!", "Invalid phone number!", "warning"); // invalid phone number
+          return;
+        }
+        swal_message = "Payment processing...";
+        swal_title = "Please Wait...!\nThis may take upto 1 min!";
       }
       Swal.fire({
-        title: "Please Wait...!\nThis may take upto 1 min!",
-        html: "Payment processing...", // add html attribute if you want or remove
+        title: swal_title,
+        html: swal_message, // add html attribute if you want or remove
         timer: 60000, // set timer to 45 seconds
         allowOutsideClick: false,
         showConfirmButton: false,
@@ -135,41 +141,51 @@ export default {
       });
       axios
         .post("oerderadd/", formData)
-        .then(() => {
+        .then((response) => {
           //send stk push
-          axios
-            .post("stkpush/", {
-              orderId: this.orderNo,
-              phone: this.formattedPhoneNumber,
-              total: this.cart.total,
-              reference: "5464747",
-              tr_description: "Bengomall",
-            })
-            .then((res) => {
-              console.log(res.data);
-              var pwd = res.data["password"];
-              var checkoutID = res.data["checkoutID"];
-              var timestamp = res.data["timestamp"];
-              axios
-                .post("payment/confirm/", {
-                  pwd: pwd,
-                  timestamp: timestamp,
-                  chekoutID: checkoutID,
-                  orderId: this.orderNo,
-                })
-                .then((res) => {
-                  Swal.close();
-                  Swal.fire({
-                    position: "center",
-                    icon: "success",
-                    title: "Success!",
-                    html: res.data.toString(),
-                    showConfirmButton: false,
-                    timer: 3000,
+          if (this.paymentMethod === "mpesa") {
+            axios
+              .post("stkpush/", {
+                orderId: this.orderNo,
+                phone: this.formattedPhoneNumber,
+                total: this.cart.total,
+                reference: "5464747",
+                tr_description: "Bengomall",
+              })
+              .then((res) => {
+                console.log(res.data);
+                var pwd = res.data["password"];
+                var checkoutID = res.data["checkoutID"];
+                var timestamp = res.data["timestamp"];
+                axios
+                  .post("payment/confirm/", {
+                    pwd: pwd,
+                    timestamp: timestamp,
+                    chekoutID: checkoutID,
+                    orderId: this.orderNo,
+                  })
+                  .then((res) => {
+                    Swal.close();
+                    Swal.fire({
+                      position: "center",
+                      icon: "success",
+                      title: "Success!",
+                      html: res.data.toString(),
+                      showConfirmButton: false,
+                      timer: 3000,
+                    });
                   });
-                });
+              });
+            this.clearValues();
+          } else {
+            Swal.fire({
+              position: "center",
+              icon: response.data.icon,
+              title: response.data.message,
+              showConfirmButton: true,
             });
-          this.clearValues();
+            this.clearValues();
+          }
         })
         .cath((e) => {
           Swal.fire({
@@ -331,13 +347,22 @@ export default {
               </div>
             </div>
           </div>
-          <div class="card">
+          <div class="card" v-if="paymentMethod === 'mpesa'">
             <div class="card-body m-auto">
               <button
                 class="btn btn-primary font-size-16 p-2"
                 v-b-modal.modal-confirmdetails
               >
                 PAY NOW KES {{ new Intl.NumberFormat().format(cart.total) }}
+              </button>
+            </div>
+          </div>
+          <div class="card" v-else>
+            <div class="card-body m-auto">
+              <button class="btn btn-primary font-size-16 p-2" @click="placeOrder()">
+                PLACE ORDER -> Total to be paid Ksh.{{
+                  new Intl.NumberFormat().format(cart.total)
+                }}
               </button>
             </div>
           </div>

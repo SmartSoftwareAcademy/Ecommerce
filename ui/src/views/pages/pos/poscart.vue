@@ -1,6 +1,6 @@
 <template>
   <div class="conatiner">
-    <v-card>
+    <v-card class="border border-solid border-2 rounded-1 border-warning">
       <v-card-title>Point Of Sale</v-card-title>
       <div class="row m-2 p-2">
         <div class="col-lg-4">
@@ -12,85 +12,122 @@
               placeholder="Search product by title,sku,serial,id,category.."
               aria-label="Search"
               v-model="searchText"
+              @input="applyFilter()"
             />
           </div>
         </div>
         <div class="col-lg-2">
           <div class="mb-3">
             <button
-              class="btn btn-outline-success my-2 my-sm-0 d-inline-block"
-              type="submit"
+              class="btn btn-outline-warning my-2 my-sm-0 d-inline-block"
+              type="button"
+              @click="applyFilter()"
             >
-              Search
+              <i class="fa fa-sync"></i>Refresh
             </button>
           </div>
         </div>
+        <div class="col-sm-2 float-end">
+          <span class="p-2 rounded-1 bg-danger d-inline-block"></span>
+          <span class="d-inline-block text-danger p-2">Stock alert!!</span>
+        </div>
       </div>
       <div class="row m-2 overflow-scroll border border-2 border-light rounded">
-        <div class="col-lg-1" v-for="item in products" :key="item.id">
+        <div class="col-sm-2 p-2" v-for="item in filteredProducts" :key="item.id">
           <a @click="addToCart(item)" class="bg-light" href="#">
             <figure>
-              <img :src="item.product.images[0].image" :height="30" alt="Product Image" />
+              <img
+                :src="item.product.images[0].image"
+                :width="200"
+                :height="150"
+                alt="Product Image"
+              />
               <figcaption>
-                <span class="badge badge-pill bg-secondary">sku:{{ item.sku }}</span>
-                <br />
-                <span class="badge badge-pill bg-primary" v-if="item.size !== null"
-                  >{{ item.size.size }}&nbsp;{{ item.size.unit.unit_symbol }}</span
-                >
+                <span
+                  class="badge badge-pill bg-secondary text-wrap"
+                  :class="{
+                    'bg-danger': Number(item.stock_level) < Number(item.reorder_level),
+                  }"
+                  >{{ getFirstTwoWords(item.product.title) }} sku:{{ item.sku }}
+                  <span class="badge badge-pill bg-warning" v-if="item.size !== null"
+                    >{{ item.size.size }}&nbsp;{{ item.size.unit.unit_symbol }}</span
+                  >&nbsp;
+                  <h5 class="badge badge-pill bg-warning">QTY:{{ item.stock_level }}</h5>
+                </span>
               </figcaption>
             </figure>
           </a>
         </div>
+        <div class="row mb-1">
+          <v-pagination
+            v-if="totalProducts > 1"
+            v-model="currentPage"
+            :total-visible="8"
+            :prev-text="'Previous'"
+            :next-text="'Next'"
+            :length="Math.ceil(totalProducts / perPage)"
+            @input="handlePageChange(currentPage)"
+            class="bg-warning text-dark rounded-1"
+          ></v-pagination>
+        </div>
       </div>
-    </v-card>
-    <v-card>
-      <v-card-title>Tray</v-card-title>
-      <v-card-text>
-        <v-data-table :headers="headers" :items="cart" item-key="id">
-          <template v-slot:[`item.image`]="{ item }"
-            ><img :src="item.product.images[0].image" :height="30"
-          /></template>
-          <template v-slot:[`item.title`]="{ item }">{{ item.product.title }}</template>
-          <template v-slot:[`item.price`]="{ item }">{{ item.price }}</template>
-          <template v-slot:[`item.quantity`]="{ item }">{{ item.quantity }}</template>
-          <template v-slot:[`item.actions`]="{ item }">
-            <v-btn @click="removeFromCart(item.index)" icon
-              ><v-icon>mdi-delete</v-icon></v-btn
-            >
-          </template>
-        </v-data-table>
-      </v-card-text>
-    </v-card>
-    <v-card>
-      <v-card-text>
-        <v-divider></v-divider>
-        <div>
-          <h3>Total: KES {{ total.toFixed(2) }}</h3>
-        </div>
-        <div v-if="paymentMethod === 'cash'">
-          <h3 class="d-inline">Tendered Amount:</h3>
-          <v-text-field v-model.number="amountPaid" class="my-2 d-inline"></v-text-field>
-          <div>
-            <h2>Change: KES {{ change.toFixed(2) }}</h2>
+      <v-card>
+        <v-card-title>Tray</v-card-title>
+        <v-card-text>
+          <v-data-table :headers="headers" :items="cart" item-key="id">
+            <template v-slot:[`item.image`]="{ item }"
+              ><img :src="item.product.images[0].image" :height="30"
+            /></template>
+            <template v-slot:[`item.title`]="{ item }">{{ item.product.title }}</template>
+            <template v-slot:[`item.price`]="{ item }">{{ item.price }}</template>
+            <template v-slot:[`item.quantity`]="{ item }">
+              <v-text-field v-model="item.quantity" type="number" min="1" class="w-25" />
+            </template>
+            <template v-slot:[`item.actions`]="{ item }">
+              <v-btn @click="removeFromCart(item.index)" icon
+                ><v-icon>mdi-delete</v-icon></v-btn
+              >
+            </template>
+          </v-data-table>
+        </v-card-text>
+      </v-card>
+      <v-card>
+        <v-card-text>
+          <div class="float-end bg-light rounded-1 p-2">
+            <h3>
+              Total: KES <strong>{{ total.toFixed(2) }}</strong>
+            </h3>
+            <h4 v-if="amountPaid > 0">
+              Change: KES <strong>{{ change.toFixed(2) }}</strong>
+            </h4>
           </div>
-        </div>
-        <v-radio-group v-model="paymentMethod">
-          <v-radio value="cash" label="Cash">Cash</v-radio>
-          <v-radio value="mpesa" label="M-Pesa">M-Pesa</v-radio>
-        </v-radio-group>
-        <v-btn
-          class="btn btn-primary"
-          v-if="paymentMethod === 'cash'"
-          @click="confirmPayment('completed')"
-          >Complete Transaction</v-btn
-        >
-        <v-btn
-          v-b-modal.modal-mpesa
-          class="btn btn-primary"
-          v-if="paymentMethod === 'mpesa'"
-          >Confirm Payment</v-btn
-        >
-      </v-card-text>
+          <div v-if="paymentMethod === 'cash'">
+            <h3 class="d-inline">Tendered Amount:</h3>
+            <v-text-field
+              v-model.number="amountPaid"
+              :placeholder="amountPaid"
+              class="d-inline-block form-input m-2"
+            ></v-text-field>
+            <v-radio-group v-model="paymentMethod">
+              <v-radio value="cash" label="Cash">Cash</v-radio>
+              <v-radio value="mpesa" label="M-Pesa">M-Pesa</v-radio>
+            </v-radio-group>
+          </div>
+          <v-btn
+            class="btn btn-warning"
+            outlined
+            v-if="paymentMethod === 'cash'"
+            @click="confirmPayment('completed')"
+            >Complete Transaction</v-btn
+          >
+          <v-btn
+            v-b-modal.modal-mpesa
+            class="btn btn-primary"
+            v-if="paymentMethod === 'mpesa'"
+            >Confirm Payment</v-btn
+          >
+        </v-card-text>
+      </v-card>
     </v-card>
     <!--modal mpesa payment-->
     <b-modal title="Confirm Payment Details" size="lg" id="modal-confirmdetails">
@@ -215,9 +252,13 @@ export default {
         { text: "Quantity", value: "quantity", sortable: true },
       ],
       currentPage: 1,
-      perPage: 5,
+      perPage: 12,
+      limit: 12,
+      offset: 0,
       filter: "",
       products: [],
+      filteredProducts: [],
+      totalProducts: 0,
       searchText: "",
       quantity: 1,
       cart: [],
@@ -267,6 +308,13 @@ export default {
   },
 
   methods: {
+    getFirstTwoWords(str) {
+      // Split the sentence into an array of words
+      const words = str.split(" ");
+      // Take the first two words
+      const firstTwoWords = words.slice(0, 3).join(" ");
+      return firstTwoWords;
+    },
     formatProductLabel(product) {
       return product.product.title;
     },
@@ -279,25 +327,23 @@ export default {
       return result;
     },
     updatearrays() {
-      Swal.fire({
-        title: "Please Wait !",
-        html: "Loading data...", // add html attribute if you want or remove
-        allowOutsideClick: false,
-        showConfirmButton: false,
-        willOpen: () => {
-          Swal.showLoading();
-        },
-      });
+      // Swal.fire({
+      //   title: "Please Wait !",
+      //   html: "Loading data...", // add html attribute if you want or remove
+      //   allowOutsideClick: false,
+      //   showConfirmButton: false,
+      //   willOpen: () => {
+      //     Swal.showLoading();
+      //   },
+      // });
       axios
-        .get(
-          `stock/?filter=${this.filter}&limit=${this.perPage}&offset=${
-            (this.currentPage - 1) * this.perPage
-          }`
-        )
+        .get(`pos_stock/?filter=${this.filter}&limit=${this.limit}&offset=${this.offset}`)
         .then((response) => {
           // JSON responses are automatically parsed.
           this.products = response.data["results"];
-          Swal.close();
+          this.totalProducts = response.data["count"];
+          this.filteredProducts = this.products;
+          // Swal.close();
         })
         .catch((e) => {
           Swal.fire({
@@ -309,6 +355,26 @@ export default {
             Swal.close(e);
           });
         });
+    },
+    applyFilter() {
+      var searchTextLower = this.searchText.toLowerCase();
+      this.filter = searchTextLower;
+      this.updatearrays();
+      this.filteredProducts = this.products;
+      //.filter((item) => {
+      //   return (
+      //     item.serial.toLowerCase().includes(searchTextLower) ||
+      //     item.product.title.includes(searchTextLower) ||
+      //     item.sku.toLowerCase().includes(searchTextLower) ||
+      //     item.product.maincategory.name.toLowerCase().includes(searchTextLower)
+      //   );
+      // });
+    },
+    handlePageChange(newPage) {
+      this.currentPage = newPage;
+      this.limit = this.perPage;
+      this.offset = (this.currentPage - 1) * this.perPage;
+      this.updatearrays();
     },
     addToCart(item) {
       const product = item.product;
@@ -395,18 +461,21 @@ export default {
                     if (!res.data.toString().includes("cancel")) {
                       this.$emit("printReceipt");
                     }
+                    this.clearValues();
                   });
               });
+          } else {
+            Swal.fire({
+              position: "center",
+              icon: res.data.icon,
+              title: res.data.title,
+              html: res.data.msg,
+              showConfirmButton: false,
+              timer: 1500,
+            });
+            this.$emit("printReceipt");
           }
-          Swal.fire({
-            position: "center",
-            icon: res.data.icon,
-            title: res.data.title,
-            html: res.data.msg,
-            showConfirmButton: false,
-            timer: 1500,
-          });
-          this.$emit("printReceipt");
+          this.clearValues();
         })
         .cath((e) => {
           Swal.fire({
@@ -417,7 +486,6 @@ export default {
             timer: 3000,
           });
         });
-      this.clearValues();
     },
     confirmPayment(status) {
       var formdata = new FormData();

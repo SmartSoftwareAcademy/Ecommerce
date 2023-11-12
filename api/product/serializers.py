@@ -2,12 +2,11 @@ from rest_framework import serializers
 from .models import (
     Vendor,Products,ProductImages,MainCategory,
     Category,Subcategory,ProductColor,ProductSize
-    ,Review,Favourites)
+    ,Favourites)
 from rest_framework import status
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 from vendor.serializers import VendoeSerializer
-from authmanagement.serializers import UserSerializer
 User = get_user_model()
 # Serializers define the API representation.
 
@@ -34,15 +33,6 @@ class ProductsSerializer(serializers.ModelSerializer):
         model = Products
         fields = '__all__'
         depth=3
-
-
-class ReviewsSerializer(serializers.ModelSerializer):
-    user = UserSerializer
-
-    class Meta:
-        model = Review
-        fields = ('text', 'rating', 'user')
-        depth = 1
 
 
 class SubCategoriesSerializer(serializers.ModelSerializer):

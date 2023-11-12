@@ -18,11 +18,18 @@ from django.db.models import F, ExpressionWrapper, DecimalField
 from rest_framework.pagination import LimitOffsetPagination
 # Create your views here.
 
+class FrontStoreViewSet(viewsets.ModelViewSet):
+    queryset = FrontStore.objects.all().order_by('-flash_sale_end_date')
+    serializer_class = FrontStoreSerializer
+    authentication_classes = []
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    pagination_class = LimitOffsetPagination  # Use the custom pagination class
 
 class InventoryViewSet(viewsets.ModelViewSet):
     queryset = StockInventory.objects.all()
     serializer_class = StockSerializer
-    permission_classes =()
+    authentication_classes = []
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     pagination_class = LimitOffsetPagination  # Use the custom pagination class
 
     def get_queryset(self):
@@ -57,9 +64,10 @@ class InventoryViewSet(viewsets.ModelViewSet):
         return queryset
 
 class PosInventoryViewSet(viewsets.ModelViewSet):
-    queryset = StockInventory.objects.all()
+    queryset = StockInventory.objects.filter(stock_level__gt=0)
     serializer_class = StockSerializer
-    permission_classes =()
+    authentication_classes = []
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     pagination_class = LimitOffsetPagination  # Use the custom pagination class
 
     def get_queryset(self):

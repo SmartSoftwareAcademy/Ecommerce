@@ -29,16 +29,17 @@ export default {
     },
   },
   created() {
-    window.addEventListener("beforeunload", this.removeUser);
+    window.addEventListener("beforeunload", this.removeUser());
   },
   mounted() {
     // document.getElementsByTagName("html")[0].setAttribute("dir", "rtl");
-    window.addEventListener("beforeunload", this.logout);
+    window.addEventListener("beforeunload", this.removeUser());
   },
   methods: {
     clearNotification: notificationMethods.clear,
     removeUser() {
       store.dispatch("authfack/logout");
+      this.$route.push("/login");
     },
   },
 };
