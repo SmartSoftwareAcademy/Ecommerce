@@ -14,20 +14,19 @@ import 'vuetify/dist/vuetify.css'
 import 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import App from './App.vue'
-//import Print from 'v-print';
+var CryptoJS = require("crypto-js");
+
+//API ENDPOINT CONFIG
 var href = window.location.href;
 var arr = href.split("/");
 var arr2 = arr[2].split(":");
 
 window.$localurl = arr2[0] + "";
-window.$weighstate = 0;
-window.$vehiclesinyard = "";
 var ref = arr[0] + "//" + arr2[0] + ":8000";
-window.ref = ref;
 window.$http = ref + "/api/";
-var CryptoJS = require("crypto-js");
 
 var tokenString = "";
+
 try {
   if (localStorage.user.trim() != "") {
     tokenString = CryptoJS.AES.decrypt(
@@ -40,10 +39,10 @@ try {
 } catch (e) {
   tokenString = "";
 }
+window.$tokenString = tokenString;
 window.$headers = {
-  "Content-Type": ["application/json"],
-  Authorization: 'Token ' + tokenString,
-}
+  Authorization: `Token ${window.$tokenString}`,
+};
 import VueMask from 'v-mask'
 Vue.config.productionTip = false
 

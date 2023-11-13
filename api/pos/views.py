@@ -28,7 +28,52 @@ from .serializers import *
 import random
 import time
 from stockinventory.models import StockInventory
-# Create your views here.
+from rest_framework.decorators import action
+from django.db.models import Sum
+from datetime import date
+
+class TransactionViewSet(viewsets.ModelViewSet):
+    queryset = Transaction.objects.all()
+    serializer_class = TransactionSerializer
+
+    def perform_create(self, serializer):
+        serializer.save()
+
+    def perform_update(self, serializer):
+        serializer.save()
+
+    def perform_destroy(self, instance):
+        instance.delete()
+
+    def list(self, request, *args, **kwargs):
+        queryset=super().get_queryset()
+        # Get transactions by type (deposit/withdrawal)
+        transaction_type = request.query_params.get('type', None)
+        if transaction_type:
+           queryset = queryset.filter(transactionType=transaction_type)
+        # Get transactions by date
+        fromdate = request.query_params.get('fromdate', None)
+        todate = request.query_params.get('todate', None)
+        if fromdate and todate:
+           queryset = queryset.filter(date__range=[fromdate,todate])
+        # Perform analytics for general deposit and withdrawal totals
+        total_deposit =queryset.filter(transactionType='deposit').aggregate(total=Sum('amount'))['total']
+        total_withdrawal = queryset.filter(transactionType='withdrawal').aggregate(total=Sum('amount'))['total']
+        # Get the daily summary for deposits and withdrawals separately
+        daily_summary_deposit = queryset.filter(date=date.today(), transactionType='deposit').aggregate(total=Sum('amount'))['total']
+        daily_summary_withdrawal = queryset.filter(date=date.today(), transactionType='withdrawal').aggregate(total=Sum('amount'))['total']
+        serializer = TransactionSerializer(queryset, many=True)
+
+        return Response({
+            'total_deposit': total_deposit or 0,
+            'total_withdrawal': total_withdrawal or 0,
+            'daily_summary': {
+                "deposits":daily_summary_deposit or 0,
+                "withdrawals":daily_summary_withdrawal or 0,
+                },
+            'transactions':serializer.data,
+        })
+
 
 
 @api_view(['POST'])
@@ -95,8 +140,20 @@ def save_pos(request):
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated,])
 def salesList(request):
-    sales = Sales.objects.values(
+    queryset=Sales.objects.values(
         "id", "code", "date_updated", "status", "paymethod", "grand_total")
+    # Get transactions by type (deposit/withdrawal)
+    status = request.query_params.get('status', None)
+    offset = int(request.query_params.get('offset', 0))
+    limit = int(request.query_params.get('limit', None))
+    if status:
+        queryset = queryset.filter(status=status)
+    # Get transactions by date
+    fromdate = request.query_params.get('fromdate', None)
+    todate = request.query_params.get('todate', None)
+    if fromdate and todate:
+        queryset = queryset.filter(created_at__range=[fromdate,todate])
+    sales = queryset
     sales_data=[]
     for sale in sales:
         data = {}
@@ -119,7 +176,7 @@ def salesList(request):
         sales_data.append(data)
         # data['items'] = items
         # print(sale_data)
-    return Response(sales_data)
+    return Response(sales_data[offset:limit])
 
 
 @api_view(['PUT', 'POST'])

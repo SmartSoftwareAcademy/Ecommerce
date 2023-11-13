@@ -204,7 +204,7 @@ export default [{
   path: '/ecommerce/product/MainCategories',
   name: 'MainCategories',
   meta: {
-    authRequired: false
+    authRequired: true
   },
   component: () => import('../views/pages/ecommerce/product/MainCategories')
 },
@@ -212,7 +212,7 @@ export default [{
   path: '/ecommerce/product/Categories',
   name: 'Categories',
   meta: {
-    authRequired: false
+    authRequired: true
   },
   component: () => import('../views/pages/ecommerce/product/Categories')
 },
@@ -220,7 +220,7 @@ export default [{
   path: '/ecommerce/product/SubCategories',
   name: 'SubCategories',
   meta: {
-    authRequired: false
+    authRequired: true
   },
   component: () => import('../views/pages/ecommerce/product/SubCategories')
 },
@@ -228,7 +228,7 @@ export default [{
   path: '/ecommerce/manage_products',
   name: 'Manage Products',
   meta: {
-    authRequired: false
+    authRequired: true
   },
   component: () => import('../views/pages/ecommerce/manage_products')
 },
@@ -236,10 +236,18 @@ export default [{
   path: '/documents/orders',
   name: 'Orders',
   meta: {
-    authRequired: false
+    authRequired: true
   },
   component: () => import('../views/pages/documents/orders')
-},
+  },
+  {
+    path: '/ecommerce/mpesa/transactions',
+    name: 'Transactions',
+    meta: {
+      authRequired: true
+    },
+    component: () => import('../views/pages/ecommerce/mpesa/transactions')
+  },
 {
   path: '/humanresource/Customers',
   name: 'Customers',
@@ -260,7 +268,7 @@ export default [{
   path: '/pos/index',
   name: 'POS',
   meta: {
-    authRequired: false
+    authRequired: true
   },
   component: () => import('../views/pages/pos/index')
 },
@@ -268,7 +276,7 @@ export default [{
   path: '/pos/sales',
   name: 'PosSales',
   meta: {
-    authRequired: false
+    authRequired: true
   },
   component: () => import('../views/pages/pos/sales')
 },

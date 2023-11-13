@@ -52,6 +52,9 @@ export default {
       filterOn: [],
       sortBy: "id",
       sortDesc: false,
+      status: "",
+      fromadate: "",
+      todate: "",
       fields: [
         {
           key: "check",
@@ -135,7 +138,10 @@ export default {
       this.pl = pl;
       const data = this.orderData.map((row) => ({
         ID: row.id,
-        Name: row.name,
+        "Invoice Id": row.invoice_id,
+        Date: row.created_at,
+        "Amount(KES)": row.amount,
+        Status: row.status,
       }));
 
       //get headers
@@ -169,7 +175,10 @@ export default {
       //alert(filename);
       const data = this.orderData.map((row) => ({
         ID: row.id,
-        Cargo_Name: row.name,
+        "Invoice Id": row.invoice_id,
+        Date: row.created_at,
+        "Amount(KES)": row.amount,
+        Status: row.status,
       }));
       //alert("");
       const csvRows = [];
@@ -261,15 +270,38 @@ export default {
   <Layout>
     <PageHeader :title="title" :items="items" />
 
-    <div class="row">
-      <div class="col-md-4">
-        <div>
-          <button type="button" class="btn btn-success mb-3">
-            <i class="mdi mdi-plus me-1"></i> Add Invoice
-          </button>
+    <div class="row justify-content-between">
+      <div class="col-sm-6">
+        <div class="row justify-content-between">
+          <div class="col-sm-2">
+            <button
+              type="button"
+              class="btn btn-warning mb-3"
+              v-b-modal.modal-Transaction
+            >
+              <i class="mdi mdi-plus me-1"></i> Raise Invoice
+            </button>
+          </div>
+          <div class="col-sm-2">
+            <button
+              class="btn btn-secondary waves-effect waves-light uil-export"
+              @click="getrpt()"
+            >
+              Export to CSV
+            </button>
+          </div>
+          <div class="col-sm-2">
+            <button
+              @click="printpdf('p')"
+              v-b-modal.modal-Print
+              class="btn btn-secondary waves-effect waves-light uil-file"
+            >
+              Print PDF
+            </button>
+          </div>
         </div>
       </div>
-      <div class="col-md-8">
+      <div class="col-sm-6">
         <div class="float-end">
           <div class="form-inline mb-3">
             <div
@@ -278,20 +310,29 @@ export default {
               data-date-format="dd M, yyyy"
               data-date-autoclose="true"
             >
+              <div class="form-group">
+                <label for="transactionType">Status</label>
+                <select v-model="status" class="form-control">
+                  <option value="pending">Pending</option>
+                  <option value="paid">Paid</option>
+                </select>
+              </div>
               <input
-                type="text"
+                type="date"
                 class="form-control text-left"
-                placeholder="From"
+                placeholder="11/13/2023"
                 name="From"
+                v-model="fromdate"
               />
               <input
-                type="text"
+                type="date"
                 class="form-control text-left"
-                placeholder="To"
+                placeholder="11/13/2023"
                 name="To"
+                v-model="todate"
               />
               <div class="input-group-append">
-                <button type="button" class="btn btn-primary">
+                <button type="button" class="btn btn-primary" @click="updatearray()">
                   <i class="mdi mdi-filter-variant"></i>
                 </button>
               </div>

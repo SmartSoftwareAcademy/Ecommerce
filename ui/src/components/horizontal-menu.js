@@ -125,7 +125,13 @@ export const menuItems = [
                 id: 9,
                 label: "menuitems.ecommerce.list.orders",
                 link: "/ecommerce/orders",
-                parentId: 6
+                parentId: 18
+            },
+            {
+                id: 10,
+                label: "Transactions",
+                link: "/ecommerce/mpesa/transactions",
+                parentId: 18
             },
         ]
     },

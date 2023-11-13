@@ -28,14 +28,13 @@ class OrderViewSet(viewsets.ModelViewSet):
         user = self.request.user
         vendor = Vendor.objects.filter(user=user).first()
         employee = Employee.objects.filter(user=user).first()
-        print(vendor)
         if vendor != None:
             queryset = queryset.filter(
-                orderitems__product__vendor=vendor)
+                orderitems__stock__product__vendor=vendor)
         elif employee != None:
             employee = self.request.user.employee
             queryset = queryset.filter(
-                orderitems__product__vendor__employees=employee)
+                orderitems__stock__product__vendor__employees=employee)
         return queryset
 
     def list(self, request, *args, **kwargs):

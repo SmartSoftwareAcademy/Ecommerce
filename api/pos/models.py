@@ -51,3 +51,20 @@ class salesItems(models.Model):
         managed = True
         verbose_name = 'Sales Items'
         verbose_name_plural = 'Sales Items'
+
+class Transaction(models.Model):
+    clientName = models.CharField(max_length=255)
+    clientId = models.CharField(max_length=255)
+    transactionType = models.CharField(max_length=20,choices=(("deposit","deposit"),("withdrawal","withdrawal")),default="withdrawal")
+    transactionRef = models.CharField(max_length=255)
+    date = models.DateField()
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self):
+        return self.transactionRef
+
+    class Meta:
+        db_table = 'mpesa_transactions'
+        managed = True
+        verbose_name = 'Mpesa Transactions'
+        verbose_name_plural = 'Mpesa Transactions'

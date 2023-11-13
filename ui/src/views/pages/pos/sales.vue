@@ -5,6 +5,7 @@ import appConfig from "@/app.config";
 import axios from "@/Axiosconfig.js";
 import Swal from "sweetalert2";
 import Receipt from "./printReceipt.vue";
+import reportdet from "@/components/report/header";
 
 export default {
   page: {
@@ -16,7 +17,7 @@ export default {
       },
     ],
   },
-  components: { Layout, PageHeader, Receipt },
+  components: { Layout, PageHeader, Receipt, reportdet },
   data() {
     return {
       title: "Sales List",
@@ -29,11 +30,15 @@ export default {
           active: true,
         },
       ],
+      headers: null,
+      uniqueCars: null,
+      showme: true,
+      pl: "",
       saleslist: [],
       totalRows: 1,
       currentPage: 1,
-      perPage: 10,
-      pageOptions: [10, 25, 50, 100],
+      perPage: 12,
+      pageOptions: [1, 5, 10, 25, 50, 100, 500, 1000, 1500, 2000],
       filter: null,
       filterOn: [],
       sortBy: "age",
@@ -41,6 +46,11 @@ export default {
       total: 0,
       salesitems: [],
       paymentMethod: "",
+      status: "",
+      fromdate: "",
+      todate: "",
+      limit: 12,
+      offset: 0,
       receiptHeaders: [
         { text: "Title", value: "title", sortable: true },
         { text: "Price", value: "price", sortable: true },
@@ -70,10 +80,6 @@ export default {
         {
           key: "grand_total",
           label: "Total",
-          sortable: true,
-        },
-        {
-          key: "status",
           sortable: true,
         },
         {
@@ -124,7 +130,9 @@ export default {
         },
       });
       axios
-        .get(`salesList`)
+        .get(
+          `salesList/?limit=${this.limit}&offset=${this.offset}&status=${this.status}&fromdate=${this.fromdate}&todate=${this.todate}`
+        )
         .then((response) => {
           // JSON responses are automatically parsed.
           this.saleslist = response.data;
@@ -140,6 +148,93 @@ export default {
             Swal.close(e);
           });
         });
+    },
+    handlePageChange(newPage) {
+      this.currentPage = newPage;
+      this.limit = this.perPage;
+      this.offset = (this.currentPage - 1) * this.perPage;
+      this.updatearrays();
+    },
+    printpdf(pl) {
+      //console.log(this.tokenString);
+      this.pl = pl;
+      const data = this.saleslist.map((row) => ({
+        ID: row.id,
+        "Sale ID": row.code,
+        "Transaction Date": row.date,
+        QTY: row.sales_items.length,
+        "Total(KES)": row.grand_total,
+        "Payment Method": row.paymethod,
+        status: row.status,
+      }));
+
+      //get headers
+      const headers = Object.keys(data[0]);
+      const cars = [];
+      Object.entries(data).forEach((val) => {
+        const [key, value] = val;
+        console.log(key, value);
+        cars.push(Object.values(data[key]));
+      });
+
+      const uniqueCars = Array.from(new Set(cars));
+      this.headers = headers;
+      this.uniqueCars = uniqueCars;
+      //alert(headers);
+    },
+
+    getrpt() {
+      //alert(new Date());
+      const d = new Date();
+      const year = d.getFullYear();
+      const month = d.getMonth();
+      const date = d.getDate();
+
+      const hour = d.getHours();
+      const min = d.getMinutes();
+      const sec = d.getSeconds();
+      const msec = d.getMilliseconds();
+      const filename =
+        year + "-" + month + "-" + date + "-" + hour + "-" + min + "-" + sec + "-" + msec;
+      //alert(filename);
+      const data = this.saleslist.map((row) => ({
+        ID: row.id,
+        "Sale ID": row.code,
+        "Transaction Date": row.date,
+        QTY: row.sales_items.length,
+        "Total(KES)": row.grand_total,
+        "Payment Method": row.paymethod,
+        status: row.status,
+      }));
+      //alert("");
+      const csvRows = [];
+      //get headers
+      const headers = Object.keys(data[0]);
+
+      csvRows.push(headers.join(","));
+      //alert(csvRows);
+      //loop over the headers
+      for (const row of data) {
+        const values = headers.map((header) => {
+          const escaped = ("" + row[header]).replace(/"/g, '\\"');
+          // alert(escaped);
+          return '"' + escaped + '"'; //'" + escaped + "';
+        });
+        csvRows.push(values.join(","));
+      }
+      //alert(csvData);
+      const csvData = csvRows.join("\n");
+      //alert(csvData);
+
+      const blob = new Blob([csvData], { type: "textcsv" });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.setAttribute("hidden", "");
+      a.setAttribute("href", url);
+      a.setAttribute("download", this.title + filename + ".csv");
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
     },
     deleterec(index, id, code) {
       Swal.fire({
@@ -240,15 +335,38 @@ export default {
   <Layout>
     <PageHeader :title="title" :items="items" />
 
-    <div class="row">
-      <div class="col-md-4">
-        <div>
-          <button type="button" class="btn btn-success mb-3">
-            <i class="mdi mdi-plus me-1"></i> Add Sale
-          </button>
+    <div class="row justify-content-between">
+      <div class="col-sm-6">
+        <div class="row justify-content-between">
+          <div class="col-sm-2">
+            <button
+              type="button"
+              class="btn btn-warning mb-3"
+              v-b-modal.modal-Transaction
+            >
+              <i class="mdi mdi-plus me-1"></i> Raise Invoice
+            </button>
+          </div>
+          <div class="col-sm-2">
+            <button
+              class="btn btn-secondary waves-effect waves-light uil-export"
+              @click="getrpt()"
+            >
+              Export to CSV
+            </button>
+          </div>
+          <div class="col-sm-2">
+            <button
+              @click="printpdf('p')"
+              v-b-modal.modal-Print
+              class="btn btn-secondary waves-effect waves-light uil-file"
+            >
+              Print PDF
+            </button>
+          </div>
         </div>
       </div>
-      <div class="col-md-8">
+      <div class="col-sm-6">
         <div class="float-end">
           <div class="form-inline mb-3">
             <div
@@ -257,20 +375,29 @@ export default {
               data-date-format="dd M, yyyy"
               data-date-autoclose="true"
             >
+              <div class="form-group">
+                <label for="transactionType">Status</label>
+                <select v-model="status" class="form-control">
+                  <option value="pending">Pending</option>
+                  <option value="completed">Completed</option>
+                </select>
+              </div>
               <input
-                type="text"
+                type="date"
                 class="form-control text-left"
-                placeholder="From"
+                placeholder="11/13/2023"
                 name="From"
+                v-model="fromdate"
               />
               <input
-                type="text"
+                type="date"
                 class="form-control text-left"
-                placeholder="To"
+                placeholder="11/13/2023"
                 name="To"
+                v-model="todate"
               />
               <div class="input-group-append">
-                <button type="button" class="btn btn-primary">
+                <button type="button" class="btn btn-primary" @click="updatearrays()">
                   <i class="mdi mdi-filter-variant"></i>
                 </button>
               </div>
@@ -288,6 +415,7 @@ export default {
               v-model="perPage"
               size="sm"
               :options="pageOptions"
+              @input="handlePageChange(currentPage)"
             ></b-form-select
             >&nbsp;entries
           </label>
@@ -420,6 +548,17 @@ export default {
         :receiptNo="paycode"
         @printReceipt="viewReceipt"
       />
+    </b-modal>
+    <b-modal id="modal-Print" title="Print PDF" hide-footer size="bg" centered>
+      <reportdet
+        :title="title"
+        :orderData="orderData"
+        :pl="pl"
+        :headers="headers"
+        :uniqueCars="uniqueCars"
+        :shome="showme"
+        v-show="showme"
+      ></reportdet>
     </b-modal>
   </Layout>
 </template>

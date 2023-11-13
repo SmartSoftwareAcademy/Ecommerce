@@ -7,9 +7,9 @@ import Swal from "sweetalert2";
 import axios from "@/Axiosconfig";
 
 export default {
-  name: "categories",
+  name: "products",
   page: {
-    title: "Categories",
+    title: "Products",
     meta: [
       {
         name: "description",
@@ -31,13 +31,13 @@ export default {
       showme: true,
       pl: "",
       editmode: false,
-      title: "Categories",
+      title: "Products",
       items: [
         {
           text: "USER:" + JSON.parse(localStorage.user).username,
         },
         {
-          text: "Categories",
+          text: "Products",
           active: true,
         },
       ],
@@ -157,10 +157,17 @@ export default {
       //console.log(this.tokenString);
       this.pl = pl;
       const data = this.orderData.map((row) => ({
-        ID: row.id,
-        Name: row.name,
+        Serial: row.serial,
+        SKU: row.sku,
+        "Product Name":
+          row.product.title +
+          " " +
+          (row.size ? row.size.size || "" : "") +
+          " " +
+          (row.size ? row.size.unit.unit_symbol || "" : ""),
+        "Price(KES)": row.product.price || (row.size ? row.size.unit_price : ""),
+        "Stock Level": row.stock_level,
       }));
-
       //get headers
       const headers = Object.keys(data[0]);
       const cars = [];
@@ -191,9 +198,18 @@ export default {
         year + "-" + month + "-" + date + "-" + hour + "-" + min + "-" + sec + "-" + msec;
       //alert(filename);
       const data = this.orderData.map((row) => ({
-        ID: row.id,
-        Cargo_Name: row.name,
+        Serial: row.serial,
+        SKU: row.sku,
+        "Product Name":
+          row.product.title +
+          " " +
+          (row.size ? row.size.size || "" : "") +
+          " " +
+          (row.size ? row.size.unit.unit_symbol || "" : ""),
+        Price: row.product.price || (row.size ? row.size.unit_price : ""),
+        "Stock Level": row.stock_level,
       }));
+
       //alert("");
       const csvRows = [];
       //get headers
@@ -286,7 +302,7 @@ export default {
       this.name = "";
       this.subcats = [];
       this.editmode = false;
-      this.modaltitle = "Add Category";
+      this.modaltitle = "Add Product";
     },
   },
 };
