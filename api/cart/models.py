@@ -10,7 +10,7 @@ class Cart(models.Model):
     stock=models.ForeignKey(StockInventory,on_delete=models.CASCADE,related_name='cart')
     quantity = models.PositiveIntegerField(default=0)
     tax=models.FloatField(default=0)
-    price=models.FloatField(default=0)
+    retail_price=models.FloatField(default=0)
     item_subtotal=models.FloatField(default=0)
     item_total=models.FloatField(default=0)
 

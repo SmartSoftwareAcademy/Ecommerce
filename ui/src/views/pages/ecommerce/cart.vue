@@ -79,7 +79,7 @@
               <div class="row">
                 <div class="col-md-4">
                   <div class="mt-3">
-                    <p class="text-muted mb-2">Price</p>
+                    <p class="text-muted mb-2">retail_price</p>
                     <span v-if="!item.size">
                       <h5 class="font-size-16" v-if="item.product.discount_price > 0">
                         KShs.{{
@@ -87,7 +87,7 @@
                         }}
                       </h5>
                       <h5 class="font-size-16" v-else>
-                        KShs.{{ new Intl.NumberFormat().format(item.product.price) }}
+                        KShs.{{ new Intl.NumberFormat().format(item.product.retail_price) }}
                       </h5>
                     </span>
                     <span v-else>
@@ -97,7 +97,7 @@
                         }}
                       </h5>
                       <h5 class="font-size-16" v-else>
-                        KShs.{{ new Intl.NumberFormat().format(item.size.unit_price) }}
+                        KShs.{{ new Intl.NumberFormat().format(item.size.retail_price) }}
                       </h5>
                     </span>
                   </div>
@@ -362,15 +362,15 @@ export default {
         this.$router.push({ name: "login" });
         return;
       }
-      var price = product.price;
+      var retail_price = product.retail_price;
       if (product.discount_price > 0) {
-        price = product.discount_price;
-        product.price = price;
+        retail_price = product.discount_price;
+        product.retail_price = retail_price;
       }
       var favItem = {
         product: product,
-        item_subtotal: price, // cart subtotal
-        item_total: price * this.quantity,
+        item_subtotal: retail_price, // cart subtotal
+        item_total: retail_price * this.quantity,
       };
       this.$store.dispatch("favorites/addProductTofavorites", favItem);
       this.message = "Success!Item added to Favorites!";

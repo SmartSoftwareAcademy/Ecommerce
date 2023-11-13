@@ -175,10 +175,10 @@
                       >{{ item.product.title }}</router-link
                     >
                   </div>
-                  <div v-if="!item.size">KShs.{{ item.product.price }}</div>
+                  <div v-if="!item.size">KShs.{{ item.product.retail_price }}</div>
                   <div v-if="item.size">
                     {{ item.size.size }}{{ item.size.unit.unit_symbol }} KShs.{{
-                      item.size.unit_price
+                      item.size.retail_price
                     }}
                   </div>
                 </v-card-text>
@@ -262,8 +262,8 @@ export default {
         "Default",
         "Popularity",
         "Relevance",
-        "Price: Low to High",
-        "Price: High to Low",
+        "retail_price: Low to High",
+        "retail_price: High to Low",
       ],
       item: 5,
       quantity: 1,
@@ -294,12 +294,12 @@ export default {
       return this.products
         .filter((item) => {
           if (!item.size) {
-            const price = parseFloat(item.product.price);
-            return price >= this.range[0] && price <= this.range[1];
+            const retail_price = parseFloat(item.product.retail_price);
+            return retail_price >= this.range[0] && retail_price <= this.range[1];
           }
           if (item.size) {
-            const price = parseFloat(item.size.unit_price);
-            return price >= this.range[0] && price <= this.range[1];
+            const retail_price = parseFloat(item.size.retail_price);
+            return retail_price >= this.range[0] && retail_price <= this.range[1];
           }
         })
         .slice(this.startIndex, this.endIndex);
@@ -393,27 +393,27 @@ export default {
         this.$router.push({ name: "login" });
         return;
       }
-      var price = 0;
+      var retail_price = 0;
       if (item.size) {
         if (item.unit_discount_price > 0) {
-          price = item.unit_discount_price;
-          item.product.price = price;
-          item.size.unit_price = price;
+          retail_price = item.unit_discount_price;
+          item.product.retail_price = retail_price;
+          item.size.retail_price = retail_price;
         } else {
-          price = item.size.unit_price;
+          retail_price = item.size.retail_price;
         }
       } else {
         if (item.product.discount_price > 0) {
-          price = item.product.discount_price;
-          item.product.price = price;
+          retail_price = item.product.discount_price;
+          item.product.retail_price = retail_price;
         } else {
-          price = item.product.price;
+          retail_price = item.product.retail_price;
         }
       }
       var favItem = {
         product: item.product,
-        item_subtotal: price, // cart subtotal
-        item_total: price * this.quantity,
+        item_subtotal: retail_price, // cart subtotal
+        item_total: retail_price * this.quantity,
       };
       this.$store.dispatch("favorites/addProductTofavorites", favItem);
       this.message = "Success!Item added to Favorites!";

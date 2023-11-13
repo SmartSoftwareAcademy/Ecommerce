@@ -28,7 +28,7 @@ class CartList(APIView):
         print(request.data['stock'])
         if serializer.is_valid():
             stock = serializer.validated_data['stock']
-            price = serializer.validated_data.get('price')
+            retail_price = serializer.validated_data.get('retail_price')
 
             # Check if the same product, size, and color already exist in the cart
             existing_cart_entry = Cart.objects.filter(
@@ -39,7 +39,7 @@ class CartList(APIView):
             if existing_cart_entry:
                 # Update the existing cart entry with the new quantity
                 existing_cart_entry.quantity += serializer.validated_data['quantity']
-                existing_cart_entry.item_subtotal = existing_cart_entry.quantity * price
+                existing_cart_entry.item_subtotal = existing_cart_entry.quantity * retail_price
                 existing_cart_entry.item_total = existing_cart_entry.item_subtotal + existing_cart_entry.tax
                 existing_cart_entry.save()
                 icon="success"

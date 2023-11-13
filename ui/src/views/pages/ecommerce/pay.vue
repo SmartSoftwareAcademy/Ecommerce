@@ -244,7 +244,7 @@ export default {
                   <tr v-show="showdetails">
                     <th class="border-top-0" style="width: 110px" scope="col">Product</th>
                     <th class="border-top-0" scope="col">Product Desc</th>
-                    <th class="border-top-0" scope="col">Price(KShs)</th>
+                    <th class="border-top-0" scope="col">retail_price(KShs)</th>
                   </tr>
                 </thead>
                 <tbody>

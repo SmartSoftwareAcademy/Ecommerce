@@ -79,7 +79,9 @@
               ><img :src="item.product.images[0].image" :height="30"
             /></template>
             <template v-slot:[`item.title`]="{ item }">{{ item.product.title }}</template>
-            <template v-slot:[`item.price`]="{ item }">{{ item.price }}</template>
+            <template v-slot:[`item.retail_price`]="{ item }">{{
+              item.retail_price
+            }}</template>
             <template v-slot:[`item.quantity`]="{ item }">
               <v-text-field v-model="item.quantity" type="number" min="1" class="w-25" />
             </template>
@@ -242,13 +244,13 @@ export default {
       headers: [
         { text: "Image", value: "image", sortable: true },
         { text: "Title", value: "title", sortable: true },
-        { text: "Price", value: "price", sortable: true },
+        { text: "Price", value: "retail_price", sortable: true },
         { text: "Quantity", value: "quantity", sortable: true },
         { text: "Actions", value: "actions", sortable: true },
       ],
       receiptHeaders: [
         { text: "Title", value: "title", sortable: true },
-        { text: "Price", value: "price", sortable: true },
+        { text: "Price", value: "retail_price", sortable: true },
         { text: "Quantity", value: "quantity", sortable: true },
       ],
       currentPage: 1,
@@ -278,7 +280,7 @@ export default {
   },
   computed: {
     total() {
-      return this.cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
+      return this.cart.reduce((acc, item) => acc + item.retail_price * item.quantity, 0);
     },
     change() {
       return this.amountPaid - this.total;
@@ -379,15 +381,15 @@ export default {
     addToCart(item) {
       const product = item.product;
       const quantity = this.quantity;
-      var price = product.price;
+      var retail_price = product.retail_price;
       if (item.size !== null) {
-        price = item.size.unit_price;
+        retail_price = item.size.retail_price;
       }
       this.cart.push({
         sku: item.sku,
         product,
         quantity,
-        price,
+        retail_price,
       });
     },
     removeFromCart(index) {
@@ -490,11 +492,11 @@ export default {
       var formdata = new FormData();
       this.paycode = this.generateTrCode(10);
       this.cart.forEach((item) => {
-        let price = item.price;
+        let retail_price = item.retail_price;
         formdata.append("sku", item.sku);
-        formdata.append("price", price);
+        formdata.append("retail_price", retail_price);
         formdata.append("qty", item.quantity);
-        formdata.append("total", (item.quantity * item.price).toFixed(2));
+        formdata.append("total", (item.quantity * item.retail_price).toFixed(2));
       });
       if (this.paymentMethod == "cash") {
         if (Number(this.amountPaid) >= Number(this.total)) {

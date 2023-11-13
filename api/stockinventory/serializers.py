@@ -16,7 +16,7 @@ class FrontStoreSerializer(serializers.ModelSerializer):
 class productSizeSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductSize
-        fields = ('id','size','unit','unit_price','unit_discount_price')
+        fields = ('id','size','unit','retail_price','unit_discount_price')
         depth=1
 
 class productColorSerializer(serializers.ModelSerializer):

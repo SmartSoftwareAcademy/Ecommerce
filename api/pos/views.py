@@ -92,7 +92,7 @@ def save_pos(request):
     amount_change = request.data['change_amount']
     status = request.data['status']
     qty = request.data['qty']
-    price = request.data['price']
+    retail_price = request.data['retail_price']
     paymenthod = request.data['paymethod']
     paycode = request.data['paycode']
     print(skus)
@@ -107,8 +107,8 @@ def save_pos(request):
         skus = [skus]
     if 'str' in str(type(qty)):
         qty = [qty]
-    if 'str' in str(type(price)):
-        price = [price]
+    if 'str' in str(type(retail_price)):
+        retail_price = [retail_price]
     if 'str' in str(type(total)):
         total = [total]
     for sku in skus:
@@ -124,7 +124,7 @@ def save_pos(request):
             inventory.stock_level -= int(qty[i])
             inventory.save()
         salesItems(sale=sale, stock=inventory,
-                   qty=qty[i], price=price[i], total=total[i]).save()
+                   qty=qty[i], retail_price=retail_price[i], total=total[i]).save()
         i += 1
     resp['title'] = 'success'
     resp['icon'] = 'success'
@@ -140,12 +140,12 @@ def save_pos(request):
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated,])
 def salesList(request):
+    offset = int(request.query_params.get('offset', 0))
+    limit = int(request.query_params.get('limit', None))
     queryset=Sales.objects.values(
         "id", "code", "date_updated", "status", "paymethod", "grand_total")
     # Get transactions by type (deposit/withdrawal)
     status = request.query_params.get('status', None)
-    offset = int(request.query_params.get('offset', 0))
-    limit = int(request.query_params.get('limit', None))
     if status:
         queryset = queryset.filter(status=status)
     # Get transactions by date
@@ -168,10 +168,10 @@ def salesList(request):
         data["paymethod"] = sale['paymethod']
         data["grand_total"] = sale["grand_total"]
         # items = []
-        for item in salesItems.objects.filter(sale=sale['id']).values("id", "stock__sku","stock__product__title","qty", "price", "total"):
+        for item in salesItems.objects.filter(sale=sale['id']).values("id", "stock__sku","stock__product__title","qty", "retail_price", "total"):
             stock=StockInventory.objects.get(sku=item['stock__sku'])
             sale_items.append({"id": item['id'], "product_title":f"{item['stock__product__title']} {stock.size.size if stock.size else ''} {stock.size.unit.unit_symbol if stock.size else ''}",
-                              "qty": item['qty'], "price": item['price'], "total": item['total']})
+                              "qty": item['qty'], "retail_price": item['retail_price'], "total": item['total']})
         data['sales_items']=sale_items
         sales_data.append(data)
         # data['items'] = items

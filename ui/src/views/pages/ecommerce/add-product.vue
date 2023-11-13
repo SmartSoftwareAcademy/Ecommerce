@@ -73,7 +73,7 @@ export default {
       model: "Other",
       sku: "123",
       serial: "123566",
-      price: 0.0,
+      retail_price: 0.0,
       discount_price: 0.0,
       product_title: "Lenovo Thinkpad",
       product_description: "Enter product description",
@@ -93,7 +93,7 @@ export default {
         {
           size: "250",
           unit: "ml",
-          unit_price: 0.0,
+          retail_price: 0.0,
           unit_discount_price: 0.0,
           stock_level: 6,
           reorder_level: 5,
@@ -152,7 +152,7 @@ export default {
           return {
             size: e.size,
             unit: e.unit.unit_symbol,
-            unit_price: e.unit_price,
+            retail_price: e.retail_price,
             unit_discount_price: e.unit_discount_price,
             sku: this.stock.sku,
             serial: this.stock.serial,
@@ -160,7 +160,7 @@ export default {
         });
       }
       this.model = this.product.model;
-      this.price = this.product.price;
+      this.retail_price = this.product.retail_price;
       this.discount_price = this.product.discount_price;
       this.stock_level = this.stock.stock_level;
       this.reorder_level = this.stock.reorder_level;
@@ -242,7 +242,7 @@ export default {
         model: this.model,
         title: this.product_title,
         description: this.product_description,
-        price: this.price,
+        retail_price: this.retail_price,
         discount_price: this.discount_price,
         status: this.status,
         stock_level: this.stock_level,
@@ -304,7 +304,7 @@ export default {
       this.sizes.push({
         size: "250",
         unit: "ml",
-        unit_price: 0.0,
+        retail_price: 0.0,
         unit_discount_price: 0.0,
         stock_level: 6,
         reorder_level: 5,
@@ -486,20 +486,20 @@ input.
                     </div>
                     <div class="col-lg-3" v-if="!size_variations">
                       <div class="mb-3">
-                        <label for="price">Price*:</label>
+                        <label for="retail_price">retail_price*:</label>
                         <input
-                          id="price"
-                          name="price"
+                          id="retail_price"
+                          name="retail_price"
                           type="number"
                           class="form-control"
-                          v-model="price"
+                          v-model="retail_price"
                           required
                         />
                       </div>
                     </div>
                     <div class="col-lg-3" v-if="!size_variations">
                       <div class="mb-3">
-                        <label for="discount">Discount Price</label>
+                        <label for="discount">Discount  Price</label>
                         <input
                           id="discount"
                           name="discount"
@@ -763,9 +763,9 @@ input.
                     </div>
                     <div class="col-sm-2 d-inline-block p-2">
                       <div class="mb-3">
-                        <label for="color">Unit Price:</label>
+                        <label for="color">Unit retail_price:</label>
                         <input
-                          v-model="variation.unit_price"
+                          v-model="variation.retail_price"
                           class="form-control"
                           placeholder="Enter unit e.g g,kg,pieces,ml,l"
                         />
@@ -773,9 +773,9 @@ input.
                     </div>
                     <div class="col-sm-2 d-inline-block p-2">
                       <div class="mb-1">
-                        <label for="color">Unit Discount Price:</label>
+                        <label for="color">Unit Discount  Price:</label>
                         <input
-                          v-model="variation.unit_dicount_price"
+                          v-model="variation.unit_dicount_retail_price"
                           class="form-control"
                           placeholder="Enter unit e.g g,kg,pieces,ml,l"
                         />

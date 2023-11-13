@@ -112,7 +112,7 @@ export const menuItems = [
     },
     {
         id: 18,
-        label: "Documents",
+        label: "Records",
         icon: "uil-invoice",
         subItems: [
             {

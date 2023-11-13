@@ -10,7 +10,7 @@
               <thead>
                 <tr>
                   <th class="text-center">ITEM</th>
-                  <th class="text-center">PRICE</th>
+                  <th class="text-center">retail_price</th>
                   <th class="text-center">QUANTITY</th>
                   <th class="text-center">TOTAL</th>
                   <th class="text-center"></th>

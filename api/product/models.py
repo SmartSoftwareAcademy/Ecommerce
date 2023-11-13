@@ -90,7 +90,8 @@ class Products(models.Model):
     model = models.CharField(max_length=255, blank=True, null=True)
     title = models.TextField(max_length=500, default="Hp x2 1033")
     description = models.TextField()
-    price = models.FloatField(default=0,help_text='Enter general price or leave it as 0.0 and set unit price in variations')
+    unit_price = models.FloatField(default=0,help_text='Enter general price or leave it as 0.0 and set unit price in variations')
+    retail_price = models.FloatField(default=0,help_text='Enter general price or leave it as 0.0 and set unit price in variations')
     discount_price = models.FloatField(default=0, null=True, blank=True,help_text='Enter general discount price or leave it as 0.0 and set unit price in variations')
     status = models.IntegerField(default=1)
     date_added = models.DateTimeField(default=timezone.now)
@@ -117,6 +118,7 @@ class ProductSize(models.Model):
     size = models.CharField(max_length=10,default="0")
     unit=models.ForeignKey(Unit,on_delete=models.SET_NULL,related_name='sizes',null=True)
     unit_price=models.FloatField(max_length=100,default=0)
+    retail_price=models.FloatField(max_length=100,default=0)
     unit_discount_price=models.FloatField(max_length=100,default=0,null=True,blank=True)
 
     class Meta:

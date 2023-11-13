@@ -65,7 +65,7 @@
               <div class="row">
                 <div class="col-md-4">
                   <div class="mt-3">
-                    <h5 class="text-muted mb-2">Price</h5>
+                    <h5 class="text-muted mb-2">retail_price</h5>
                   </div>
                 </div>
                 <div class="col-md-4 float-end">
@@ -153,19 +153,19 @@ export default {
         return;
       }
       console.log(product);
-      var price = product.price;
+      var retail_price = product.retail_price;
       if (product.discount_price > 0) {
-        price = product.discount_price;
-        product.price = price;
+        retail_price = product.discount_price;
+        product.retail_price = retail_price;
       }
       var cartItem = {
         product: product,
         size: this.size,
         color: this.color,
         quantity: this.quantity,
-        item_subtotal: price, // cart subtotal
+        item_subtotal: retail_price, // cart subtotal
         tax: 0.16, // tax
-        item_total: price * this.quantity,
+        item_total: retail_price * this.quantity,
       };
       this.$store.dispatch("cart/addProductToCart", cartItem);
       this.message = "Success!Item added to cart!";

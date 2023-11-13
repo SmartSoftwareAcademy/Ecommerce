@@ -28,7 +28,7 @@ def addProduct(request, id=0):
         model = request.POST.get('model')
         title = request.POST.get('title')
         description = request.POST.get('description')
-        price = request.POST.get('price')
+        retail_price = request.POST.get('retail_price')
         discount_price = request.POST.get('discount_price')
         status = request.POST.get('status')
         weight = request.POST.get('weight')
@@ -53,7 +53,7 @@ def addProduct(request, id=0):
                 model=model,
                 title=title,
                 description=description,
-                price=price,
+                retail_price=retail_price,
                 discount_price=discount_price,
                 status=status,
                 weight=weight,
@@ -84,8 +84,8 @@ def addProduct(request, id=0):
                     print(s)
                     item_unit,created=Unit.objects.get_or_create(unit_title=s['unit'],unit_symbol=s['unit'])
                     sz, created = ProductSize.objects.get_or_create(product=product,size=s['size'],
-                                                                    unit_price=s['unit_price'],
-                                                                    unit_discount_price=s['unit_dicount_price'])
+                                                                    retail_price=s['retail_price'],
+                                                                    unit_discount_price=s['unit_dicount_retail_price'])
                     sz.unit=item_unit
                     sz.save()
                     stock,created=StockInventory.objects.get_or_create(product=product,availability=availability,
@@ -116,7 +116,7 @@ def addProduct(request, id=0):
             product_instance.dimentions = dimentions
             product_instance.model = model
             product_instance.status = 1
-            product_instance.price = price
+            product_instance.retail_price = retail_price
             product_instance.discount_price = discount_price
             product_instance.vendor = vendor
             product_instance.maincategory = maincategory
@@ -146,7 +146,7 @@ def addProduct(request, id=0):
                         sz= ProductSize.objects.filter(product=product_instance)
                         for size in sz:
                             size.size=s['size']
-                            size.unit_price=s['unit_price']
+                            size.retail_price=s['retail_price']
                             size.unit_discount_price=s['unit_discount_price']
                             size.save()
                             stock.size=size

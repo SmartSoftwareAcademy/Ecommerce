@@ -36,13 +36,13 @@
                   }}<del style="" class="subtitle-1 font-weight-thin text-danger"
                     >&nbsp;KShs.{{
                       new Intl.NumberFormat().format(
-                        $route.params.stockitem.product.price
+                        $route.params.stockitem.product.retail_price
                       )
                     }}</del
                   >
                 </p>
                 <p class="headline font-weight-light pt-3 text-warning" v-else>
-                  KShs.{{ $route.params.stockitem.product.price }}
+                  KShs.{{ $route.params.stockitem.product.retail_price }}
                 </p>
               </div>
               <div v-else>
@@ -54,13 +54,13 @@
                   }}<del style="" class="subtitle-1 font-weight-thin text-danger"
                     >&nbsp;KShs.{{
                       new Intl.NumberFormat().format(
-                        $route.params.stockitem.size.unit_price
+                        $route.params.stockitem.size.retail_price
                       )
                     }}</del
                   >
                 </p>
                 <p class="headline font-weight-light pt-3 text-warning" v-else>
-                  KShs.{{ $route.params.stockitem.size.unit_price }}
+                  KShs.{{ $route.params.stockitem.size.retail_price }}
                 </p>
               </div>
               <v-spacer></v-spacer>
@@ -192,15 +192,15 @@
                       <div v-if="$route.params.stockitem.size">
                         <p
                           class="badge badge-pill bg-info"
-                          v-if="$route.params.stockitem.size.unit_dicount_price > 0"
+                          v-if="$route.params.stockitem.size.unit_dicount_retail_price > 0"
                         >
                           {{
                             (
-                              ((parseFloat($route.params.stockitem.size.unit_price) -
+                              ((parseFloat($route.params.stockitem.size.retail_price) -
                                 parseFloat(
-                                  $route.params.stockitem.size.unit_dicount_price
+                                  $route.params.stockitem.size.unit_dicount_retail_price
                                 )) /
-                                parseFloat($route.params.stockitem.size.unit_price)) *
+                                parseFloat($route.params.stockitem.size.retail_price)) *
                               100
                             ).toFixed(2)
                           }}
@@ -217,7 +217,7 @@
                           Upto
                           {{
                             (
-                              ((product.price - product.discount_price) / product.price) *
+                              ((product.retail_price - product.discount_price) / product.retail_price) *
                               100
                             ).toFixed(2)
                           }}% Extra Discount
@@ -400,23 +400,23 @@ export default {
         return;
       }
       console.log(item);
-      var price = 0;
+      var retail_price = 0;
       if (item.size != null) {
         console.log("Has size...");
-        if (item.size.unit_dicount_price > 0) {
-          price = item.size.unit_dicount_price;
-          item.product.price = price;
-          item.size.unit_price = price;
+        if (item.size.unit_dicount_retail_price > 0) {
+          retail_price = item.size.unit_dicount_retail_price;
+          item.product.retail_price = retail_price;
+          item.size.retail_price = retail_price;
         } else {
-          price = item.size.unit_price;
-          item.product.price = price;
+          retail_price = item.size.retail_price;
+          item.product.retail_price = retail_price;
         }
       } else {
         if (item.product.discount_price > 0) {
-          price = item.product.discount_price;
-          item.product.price = price;
+          retail_price = item.product.discount_price;
+          item.product.retail_price = retail_price;
         } else {
-          price = item.product.price;
+          retail_price = item.product.retail_price;
         }
       }
       console.log(item);
@@ -428,10 +428,10 @@ export default {
         stock: item.id,
         color: item.color,
         quantity: this.quantity,
-        item_subtotal: price, // cart subtotal
+        item_subtotal: retail_price, // cart subtotal
         tax: 0.0, // tax
-        item_total: price * this.quantity,
-        price: price,
+        item_total: retail_price * this.quantity,
+        retail_price: retail_price,
       };
       axios
         .post(`cart/`, cartItem)
@@ -452,27 +452,27 @@ export default {
         this.$router.push({ name: "login" });
         return;
       }
-      var price = 0;
+      var retail_price = 0;
       if (item.size) {
         if (item.unit_discount_price > 0) {
-          price = item.unit_discount_price;
-          item.product.price = price;
-          item.size.unit_price = price;
+          retail_price = item.unit_discount_price;
+          item.product.retail_price = retail_price;
+          item.size.retail_price = retail_price;
         } else {
-          price = item.size.unit_price;
+          retail_price = item.size.retail_price;
         }
       } else {
         if (item.product.discount_price > 0) {
-          price = item.product.discount_price;
-          item.product.price = price;
+          retail_price = item.product.discount_price;
+          item.product.retail_price = retail_price;
         } else {
-          price = item.product.price;
+          retail_price = item.product.retail_price;
         }
       }
       var favItem = {
         product: item.product,
-        item_subtotal: price, // cart subtotal
-        item_total: price * this.quantity,
+        item_subtotal: retail_price, // cart subtotal
+        item_total: retail_price * this.quantity,
       };
       this.$store.dispatch("favorites/addProductTofavorites", favItem);
       this.message = "Success!Item added to Favorites!";

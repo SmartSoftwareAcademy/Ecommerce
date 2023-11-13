@@ -27,7 +27,7 @@ class ProductsAdmin(admin.ModelAdmin):
 
     fieldsets = (
         ('Product Information', {
-            'fields': ('maincategory', 'vendor', 'model', 'title', 'description', 'price', 'discount_price', 'status', 'date_added', 'weight', 'dimentions')
+            'fields': ('maincategory', 'vendor', 'model', 'title', 'description', 'retail_price', 'discount_price', 'status', 'date_added', 'weight', 'dimentions')
         }),
         )
 admin.site.register(Products,ProductsAdmin)

@@ -99,7 +99,7 @@ export default {
                     <tr>
                       <th style="width: 70px">No.</th>
                       <th>Item</th>
-                      <th>Price</th>
+                      <th>retail_price</th>
                       <th>Quantity</th>
                       <th class="text-end" style="width: 120px">Total</th>
                     </tr>

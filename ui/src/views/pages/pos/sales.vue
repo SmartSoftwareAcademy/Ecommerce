@@ -37,7 +37,7 @@ export default {
       saleslist: [],
       totalRows: 1,
       currentPage: 1,
-      perPage: 12,
+      perPage: 25,
       pageOptions: [1, 5, 10, 25, 50, 100, 500, 1000, 1500, 2000],
       filter: null,
       filterOn: [],
@@ -53,7 +53,7 @@ export default {
       offset: 0,
       receiptHeaders: [
         { text: "Title", value: "title", sortable: true },
-        { text: "Price", value: "price", sortable: true },
+        { text: "retail_price", value: "retail_price", sortable: true },
         { text: "Quantity", value: "quantity", sortable: true },
       ],
       paycode: "",
@@ -319,7 +319,7 @@ export default {
       saleitem.sales_items.forEach((i) => {
         items.push({
           product_title: i.product_title,
-          price: i.price,
+          retail_price: i.retail_price,
           quantity: i.qty,
         });
       });

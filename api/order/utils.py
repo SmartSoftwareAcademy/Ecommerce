@@ -75,9 +75,9 @@ def save_order(request):
             stock.save()
             #address= PickupStations.objects.get(id=int(address_id))
             salesItems(sale=sale, stock=stock,
-                       qty=quantity, price=int(item['item_subtotal']), total=int(item['item_total'])).save()
+                       qty=quantity, retail_price=int(item['item_subtotal']), total=int(item['item_total'])).save()
             OrderItem(order=order, stock=stock,
-                      quantity=quantity, price=int(item['item_subtotal']), total=int(item['item_total'])).save()
+                      quantity=quantity, retail_price=int(item['item_subtotal']), total=int(item['item_total'])).save()
             Cart.objects.filter(user__id=userid).delete()
         resp['title'] = 'success'
         resp['icon'] = 'success'
@@ -104,9 +104,9 @@ def oderlist(request):
         data["status"] = order['status']
         data["order_amount"] = order["order_amount"]
         # items = []
-        for item in OrderItem.objects.filter(order_id=order['id']).values("id", "product__sku", "product__title", "qty", "price", "total"):
+        for item in OrderItem.objects.filter(order_id=order['id']).values("id", "product__sku", "product__title", "qty", "retail_price", "total"):
             order_data.append({"sales_details": data, "id": item['id'], "sku": item['product__sku'], "product_title": item['product__title'],
-                              "qty": item['qty'], "price": item['price'], "total": item['total']})
+                              "qty": item['qty'], "retail_price": item['retail_price'], "total": item['total']})
     return Response(order_data)
 
 

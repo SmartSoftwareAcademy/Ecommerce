@@ -37,7 +37,7 @@ class salesItems(models.Model):
     sale = models.ForeignKey(
         Sales, on_delete=models.CASCADE, related_name='salesitems')
     stock = models.ForeignKey(StockInventory,on_delete=models.CASCADE,related_name='salesitems')
-    price = models.FloatField(default=0)
+    retail_price = models.FloatField(default=0)
     qty = models.FloatField(default=0)
     total = models.FloatField(default=0)
     date_added = models.DateTimeField(default=timezone.now)

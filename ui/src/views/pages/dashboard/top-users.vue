@@ -9,7 +9,7 @@ export default {
                 name: "Glenn Holden",
                 location: "Nevada",
                 status: "Cancel",
-                price: "$250.00",
+                retail_price: "$250.00",
             },
             ],
             baseurl: "",

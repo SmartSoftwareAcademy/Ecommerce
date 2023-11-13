@@ -2,7 +2,7 @@
 export const state = {
     items: [],
     stock: 0,
-    price:0,
+    retail_price:0,
     subtotal: 0,
     shipping: 0,
     tax: 0,
@@ -17,14 +17,14 @@ export const mutations = {
         if (existingItem) {
             //state.tax += ((item.item_subtotal * existingItem.quantity) * item.tax)
             existingItem.quantity += item.quantity;
-            state.price = item.price,
+            state.retail_price = item.retail_price,
             state.stock=item.stock,
             state.subtotal += existingItem.item_subtotal;
             state.total += (existingItem.item_subtotal * existingItem.quantity) + state.tax;
         } else {
             state.items.push(item);
             //state.tax += item.item_total * item.tax;
-            state.price = item.price,
+            state.retail_price = item.retail_price,
             state.stock = item.stock,
             state.subtotal += item.item_subtotal;
             state.total += item.item_total + state.tax;
@@ -34,10 +34,10 @@ export const mutations = {
     },
     updateCartItem(state, { item, quantity }) {
         item.quantity = quantity;
-        state.price = item.price,
+        state.retail_price = item.retail_price,
         state.stock = item.stock,
         state.subtotal = state.items.reduce((total, item) => {
-            return total + (item.product.price * item.quantity);
+            return total + (item.product.retail_price * item.quantity);
         }, 0);
         state.shipping = 0; // replace with your own shipping calculation
         //state.tax = state.subtotal * item.tax; // replace with your own tax calculation
@@ -61,7 +61,7 @@ export const mutations = {
             state.items = state.items.splice(index, 1);
             state.items = state.items.filter(i => i.product.id !== item.product.id);
             state.cart_items_count = state.items.length;
-            state.subtotal = state.items.reduce((total, item) => total + (item.product.price * item.quantity), 0)
+            state.subtotal = state.items.reduce((total, item) => total + (item.product.retail_price * item.quantity), 0)
             state.shipping = 0; // calculate shipping based on your own logic
             //state.tax = state.subtotal * item.tax; // calculate tax based on your own logic
             state.total = state.subtotal + state.shipping;

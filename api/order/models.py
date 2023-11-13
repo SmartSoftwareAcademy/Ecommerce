@@ -54,7 +54,7 @@ class OrderItem(models.Model):
     order = models.ForeignKey(
         Order, related_name='orderitems', on_delete=models.CASCADE)
     stock = models.ForeignKey(StockInventory,on_delete=models.CASCADE,related_name='orderitems')
-    price = models.DecimalField(max_digits=8, decimal_places=2)
+    retail_price = models.DecimalField(max_digits=8, decimal_places=2)
     quantity = models.IntegerField(default=0)
     total = models.IntegerField(default=0)
 
@@ -66,7 +66,7 @@ class OrderItem(models.Model):
         managed = True
         verbose_name_plural = "Order Items"
 
-    def get_total_price(self):
-        return self.price * self.quantity
+    def get_total_retail_price(self):
+        return self.retail_price * self.quantity
 
 

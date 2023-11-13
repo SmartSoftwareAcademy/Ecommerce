@@ -52,7 +52,7 @@ function login(email, password) {
                                     item_subtotal: item.item_subtotal, // cart subtotal
                                     tax: item.tax, // tax
                                     item_total: item.item_total,
-                                    price: item.price,
+                                    retail_price: item.retail_price,
                                 };
                                 console.log(cartItem);
                                 store.dispatch("cart/addProductToCart", cartItem);

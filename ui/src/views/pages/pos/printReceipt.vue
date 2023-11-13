@@ -16,7 +16,7 @@
           <template v-slot:[`item.title`]="{ item }" class="text-wrap overflow-auto">{{
             item.product_title
           }}</template>
-          <template v-slot:[`item.price`]="{ item }">{{ item.price }}</template>
+          <template v-slot:[`item.retail_price`]="{ item }">{{ item.retail_price }}</template>
           <template v-slot:[`item.quantity`]="{ item }">{{ item.quantity }}</template>
         </v-data-table>
         <p>------------------------------------</p>

@@ -75,14 +75,14 @@ export default {
           label: "Product Title", // Add a label for the product title column
         },
         {
-          key: "product.price", // Update the key to access the product price
+          key: "product.retail_price", // Update the key to access the product retail_price
           sortable: true,
-          label: "Price", // Add a label for the price column
+          label: "retail_price", // Add a label for the retail_price column
         },
         {
-          key: "product.discount_price", // Update the key to access the discount price
+          key: "product.discount_price", // Update the key to access the Discount  Price
           sortable: true,
-          label: "Discount Price", // Add a label for the discount price column
+          label: "Discount  Price", // Add a label for the Discount  Price column
         },
         {
           key: "stock_level",
@@ -119,7 +119,7 @@ export default {
   },
   methods: {
     hasSizeVariations(item) {
-      return item.size !== null && item.size.unit_price !== null;
+      return item.size !== null && item.size.retail_price !== null;
     },
     updatearray() {
       Swal.fire({
@@ -165,7 +165,7 @@ export default {
           (row.size ? row.size.size || "" : "") +
           " " +
           (row.size ? row.size.unit.unit_symbol || "" : ""),
-        "Price(KES)": row.product.price || (row.size ? row.size.unit_price : ""),
+        "retail_price(KES)": row.product.retail_price || (row.size ? row.size.retail_price : ""),
         "Stock Level": row.stock_level,
       }));
       //get headers
@@ -206,7 +206,7 @@ export default {
           (row.size ? row.size.size || "" : "") +
           " " +
           (row.size ? row.size.unit.unit_symbol || "" : ""),
-        Price: row.product.price || (row.size ? row.size.unit_price : ""),
+        retail_price: row.product.retail_price || (row.size ? row.size.retail_price : ""),
         "Stock Level": row.stock_level,
       }));
 
