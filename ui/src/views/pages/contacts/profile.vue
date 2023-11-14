@@ -1,10 +1,8 @@
 <script>
 import PageHeader from "@/components/page-header";
 import appConfig from "@/app.config";
+import axios from "@/Axiosconfig";
 
-/**
- * Profile component
- */
 export default {
   components: { PageHeader },
   page: {
@@ -38,17 +36,41 @@ export default {
       ],
       addresses: [],
       search: "",
+      myorders: [],
+      currentPage: 1,
+      perPage: 3,
+      limit: 3,
+      offset: 0,
+      totalProducts: 0,
     };
   },
   created() {},
   mounted() {
     this.profile = this.$route.params.user || JSON.parse(localStorage.user);
     this.addresses = JSON.parse(localStorage.addresses).address;
+    this.myOrders();
   },
   methods: {
     edit(item) {
       // Implement your edit item functionality here
       console.log(`Editing item ${item.name}`);
+    },
+    myOrders() {
+      axios
+        .get(`orders/?limit=${this.limit}&offset=${this.offset}`)
+        .then((response) => {
+          this.myorders = response.data["results"];
+          this.totalProducts = response.data["count"];
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    handlePageChange(newPage) {
+      this.currentPage = newPage;
+      this.limit = this.perPage;
+      this.offset = (this.currentPage - 1) * this.perPage;
+      this.myOrders();
     },
   },
 };
@@ -57,7 +79,6 @@ export default {
 <template>
   <div class="container p-4">
     <PageHeader :title="title" :items="items" />
-
     <div class="row mb-4">
       <div class="col-xl-4">
         <div class="card h-100">
@@ -181,35 +202,53 @@ export default {
                 <span class="d-none d-sm-block">ORDERS</span>
               </template>
               <div>
-                <h5 class="font-size-16 mb-4">Experience</h5>
-
+                <h5 class="font-size-16 mb-4">Order History</h5>
                 <ul class="activity-feed mb-0 ps-2">
-                  <li class="feed-item">
-                    <div class="feed-item-list">
-                      <p class="text-muted mb-1">2019 - 2020</p>
-                      <h5 class="font-size-16">UI/UX Designer</h5>
-                      <p>Abc Company</p>
-                      <p class="text-muted">
-                        To achieve this, it would be necessary to have uniform grammar,
-                        pronunciation and more common words. If several languages
-                        coalesce, the grammar of the resulting language is more simple and
-                        regular than that of the individual
-                      </p>
-                    </div>
-                  </li>
-                  <li class="feed-item">
-                    <div class="feed-item-list">
-                      <p class="text-muted mb-1">2017 - 2019</p>
-                      <h5 class="font-size-16">Graphic Designer</h5>
-                      <p>xyz Company</p>
-                      <p class="text-muted">
-                        It will be as simple as occidental in fact, it will be Occidental.
-                        To an English person, it will seem like simplified English, as a
-                        skeptical Cambridge friend of mine told me what Occidental
-                      </p>
+                  <li class="feed-item" v-for="order in myorders" :key="order.id">
+                    <div class="feed-item-list row">
+                      <div class="col-sm-6">
+                        <p class="text-muted">Order Details</p>
+                        <p class="text-muted mb-1">
+                          {{ new Date(order.created_at).toDateString() }}
+                        </p>
+                        <h5 class="font-size-16">
+                          Order ID: <strong>{{ order.order_id }}</strong>
+                        </h5>
+                        <p>
+                          Order Amount: KES <strong>{{ order.order_amount }}</strong>
+                        </p>
+                      </div>
+                      <div class="col-sm-6">
+                        <p class="text-muted">Order Items</p>
+                        <ul class="activity-feed">
+                          <li
+                            class="feed-item"
+                            v-for="item in order.orderitems"
+                            :key="item.id"
+                          >
+                            {{ item.stock.product.title }}&nbsp;<span
+                              v-if="item.stock.size"
+                              >{{ item.stock.size.size }}&nbsp;{{
+                                item.stock.size.unit.unit_symbol
+                              }}</span
+                            >
+                          </li>
+                        </ul>
+                      </div>
                     </div>
                   </li>
                 </ul>
+              </div>
+              <div class="row mb-2">
+                <v-pagination
+                  v-if="totalProducts > 1"
+                  v-model="currentPage"
+                  :total-visible="3"
+                  :prev-text="'Previous'"
+                  :next-text="'Next'"
+                  :length="Math.ceil(totalProducts / perPage)"
+                  @input="handlePageChange(currentPage)"
+                ></v-pagination>
               </div>
             </b-tab>
             <b-tab>

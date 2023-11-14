@@ -175,16 +175,22 @@ export default {
                       timer: 3000,
                     });
                   });
+              })
+              .then(() => {
+                this.$router.push("/");
+                this.clearValues();
               });
-            this.clearValues();
           } else {
             Swal.fire({
               position: "center",
               icon: response.data.icon,
-              title: response.data.message,
+              title: response.data.title,
+              html: response.data.msg,
               showConfirmButton: true,
+            }).then(() => {
+              this.$router.push("/");
+              this.clearValues();
             });
-            this.clearValues();
           }
         })
         .cath((e) => {

@@ -15,6 +15,7 @@ from django.db.models import Q
 from .serializers import *
 from rest_framework.pagination import LimitOffsetPagination
 from stockinventory.models import StockInventory
+from human_resource.models import Customer
 
 
 class OrderViewSet(viewsets.ModelViewSet):
@@ -28,6 +29,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         user = self.request.user
         vendor = Vendor.objects.filter(user=user).first()
         employee = Employee.objects.filter(user=user).first()
+        customer=Customer.objects.filter(user=user).first()
         if vendor != None:
             queryset = queryset.filter(
                 orderitems__stock__product__vendor=vendor)
@@ -35,6 +37,10 @@ class OrderViewSet(viewsets.ModelViewSet):
             employee = self.request.user.employee
             queryset = queryset.filter(
                 orderitems__stock__product__vendor__employees=employee)
+        elif customer !=None:
+            queryset=queryset.filter(customer=customer)
+        else:
+            queryset=[]
         return queryset
 
     def list(self, request, *args, **kwargs):
@@ -62,11 +68,13 @@ class OrderItemViewSet(viewsets.ModelViewSet):
         vendor = Vendor.objects.filter(user=user).first()
         employee = Employee.objects.filter(user=user).first()
         if vendor != None:
-            queryset = queryset.filter(vendor=vendor)
+            queryset = queryset.filter(stock__product__vendor=vendor)
         elif employee != None:
             employee = self.request.user.employee
             vendor = employee.vendor_set.first()
-            queryset = queryset.filter(product__vendor__employees=employee)
+            queryset = queryset.filter(stock__product__vendor__employees=employee)
+        else:
+            queryset=[]
         return queryset
 
     def list(self, request, *args, **kwargs):

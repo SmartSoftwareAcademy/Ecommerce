@@ -70,6 +70,7 @@ def save_order(request):
                 return Response(resp)
             sale.save()
             order.save()
+            invoice.order=order
             invoice.save()
             stock.stock_level -= int(quantity)
             stock.save()

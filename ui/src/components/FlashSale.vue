@@ -4,11 +4,11 @@
       <div class="col-md-6 col-sm-6 col-xs-12">
         <v-card>
           <v-img
-            :aspect-ratio="9 / 6"
+            :aspect-ratio="6 / 6"
             :src="topItem.product.images[0].image"
             class="white--text align-center"
             gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
-            height="300px"
+            height="350px"
           >
             <h1 class="text-center font-size text-white">Top Picks</h1>
             <div class="text-center">
@@ -29,11 +29,11 @@
       <div class="col-md-6 col-sm-6 col-xs-12">
         <v-card>
           <v-img
-            :aspect-ratio="9 / 6"
+            :aspect-ratio="6 / 6"
             :src="newItem.product.images[0].image"
             class="white--text align-center"
             gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
-            height="300px"
+            height="350px"
           >
             <h1 class="text-center font-size text-white">New Arrivals</h1>
             <div class="text-center">
@@ -105,7 +105,7 @@ export default {
     flashData: Array,
     newArrivals: Array,
     topPicks: Array,
-    flash_sale_date: String,
+    flash_sale_date: Date,
   },
   data() {
     return {

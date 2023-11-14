@@ -20,8 +20,13 @@
           class="mt-2 pt-2"
         >
           <template v-slot:activator="{ on }">
-            <v-btn value="" @click.stop="toggleProfile = !toggleProfile" v-on="on">
-              <v-icon class="text-warning">mdi-account-circle</v-icon>
+            <v-btn
+              value=""
+              @click.stop="toggleProfile = !toggleProfile"
+              v-on="on"
+              outlined
+            >
+              <v-icon class="text-warning">mdi-lock-open</v-icon> Acount
             </v-btn>
           </template>
           <v-list class="mt-2">
@@ -30,18 +35,18 @@
               :key="i"
               @click="toggleProfile = false"
             >
-              <router-link :to="{ name: item.link }">{{ item.title }}</router-link>
+              <v-btn :to="{ name: item.link }">{{ item.title }}</v-btn>
             </v-list-item>
           </v-list>
+          <div class="text-center bg-warning rounded p-1 border-2" v-if="adminstaff">
+            <v-btn icon to="/dashboard">Admin </v-btn>
+          </div>
         </v-menu>
       </div>
-      <div class="text-center" v-else>
-        <v-btn icon to="/login">
-          <v-icon>mdi-account-circle</v-icon>
+      <div class="text-wrap" v-else>
+        <v-btn icon to="/login" outlined class="bg-light">
+          <v-icon class="text-warning">mdi-lock</v-icon>
         </v-btn>
-      </div>
-      <div class="text-center bg-warning rounded p-1 border-2" v-if="adminstaff">
-        <v-btn icon to="/dashboard">Admin </v-btn>
       </div>
       <v-btn icon>
         <v-badge content="2" value="2" color="red" overlap>
@@ -77,9 +82,9 @@
         </v-btn>
         <v-menu v-model="menuOpen" :close-on-content-click="false" offset-y>
           <template v-slot:activator="{ on }">
-            <v-btn value="CATEGORIES" @click.stop="menuOpen = !menuOpen" v-on="on">
+            <v-btn value="PRODUCTS" @click.stop="menuOpen = !menuOpen" v-on="on">
               <v-icon class="text-warning">mdi-widgets</v-icon>
-              CATEGORIES
+              PRODUCTS
             </v-btn>
           </template>
           <v-list>
@@ -128,17 +133,9 @@ export default {
       menuOpen: false,
       toggleProfile: false,
       //cart_items_count: 0,
-      items: [
-        { title: "T-Shirts" },
-        { title: "Jackets" },
-        { title: "Shirts" },
-        { title: "Jeans" },
-        { title: "Shoes" },
-      ],
+      items: [{ title: "All Products" }],
       menu_items: [
-        { title: "Account", link: "Profile" },
-        { title: "Orders", link: "Orders" },
-        { title: "Inbox", link: "Chat" },
+        { title: "Profile", link: "Profile" },
         { title: "LogOut", link: "logout" },
       ],
       activeBtn: 1,
@@ -162,7 +159,7 @@ export default {
     }
     if (localStorage.isadmin) {
       this.adminstaff = true;
-      this.$router.push({ name: "dashboard" });
+      //this.$router.push({ name: "dashboard" });
     }
   },
   methods: {
