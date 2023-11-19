@@ -12,10 +12,10 @@ class Vendor(models.Model):
     name = models.CharField(max_length=255, default="TDBSoft")
     address = models.ManyToManyField(BusinessAddress)
     delivery_addresses = models.ManyToManyField(
-        DeliveryRegions, blank=True, null=True)
-    employees = models.ManyToManyField(Employee, blank=True, null=True)
-    suppliers = models.ManyToManyField(Supplier, blank=True, null=True)
-    customers = models.ManyToManyField(Customer, blank=True, null=True)
+        DeliveryRegions, blank=True, null=True, related_name='vendors')
+    employees = models.ManyToManyField(Employee, blank=True, null=True,related_name='vendors')
+    suppliers = models.ManyToManyField(Supplier, blank=True, null=True,related_name='vendors')
+    customers = models.ManyToManyField(Customer, blank=True, null=True,related_name='vendors')
 
     def __str__(self):
         return self.user.username

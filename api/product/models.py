@@ -10,7 +10,7 @@ User = get_user_model()
 
 class Unit(models.Model):
     unit_title = models.CharField(max_length=50)
-    unit_symbol = models.CharField(max_length=5)
+    unit_symbol = models.CharField(max_length=50)
 
     def __str__(self):
         return self.unit_symbol
@@ -23,7 +23,7 @@ class Unit(models.Model):
 class MainCategory(models.Model):
     categories = models.ManyToManyField(
         "Category", null=True, blank=True)
-    name = models.TextField()
+    name = models.CharField(max_length=255)
     display_image = models.ImageField(
         upload_to='maincategory/display', null=True, blank=True)
     status = models.IntegerField(default=1)
@@ -40,7 +40,7 @@ class MainCategory(models.Model):
 class Category(models.Model):
     Subcategories = models.ManyToManyField(
         "Subcategory", null=True, blank=True)
-    name = models.TextField()
+    name = models.CharField(max_length=255)
     display_image = models.ImageField(
         upload_to='category/display', null=True, blank=True)
     status = models.IntegerField(default=1)
@@ -55,7 +55,7 @@ class Category(models.Model):
 
 
 class Subcategory(models.Model):
-    name = models.CharField(max_length=200)
+    name = models.CharField(max_length=255)
     display_image = models.ImageField(
         upload_to='category/subcategory/display', null=True, blank=True)
     status = models.IntegerField(default=1)

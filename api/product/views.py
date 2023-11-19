@@ -16,8 +16,9 @@ from .serializers import *
 from stockinventory.serializers import ReviewsSerializer
 from stockinventory.models import Review
 from rest_framework.pagination import LimitOffsetPagination
-# Create your views here.
+from .functions import ExcelProductsImport
 
+exceldata_import=ExcelProductsImport()
 
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Products.objects.filter(status=1).select_related(
@@ -109,8 +110,6 @@ class ProductDetail(APIView):
         serializer = ProductsSerializer(cart)
         return Response(serializer.data)
 
-
-
 class ReviewsViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()
     serializer_class = ReviewsSerializer
@@ -134,7 +133,6 @@ class ReviewsViewSet(viewsets.ModelViewSet):
 
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
-
 
 class MarkAsFavorite(APIView):
     permission_classes = (permissions.IsAuthenticated)
@@ -160,7 +158,6 @@ class MarkAsFavorite(APIView):
             return Response({"message": "Product marked as a favorite"}, status=status.HTTP_200_OK)
         except Products.DoesNotExist:
             return Response({"error": "Product does not exist"}, status=status.HTTP_404_NOT_FOUND)
-
 
 class Home(APIView):
     permission_classes = ([permissions.IsAuthenticatedOrReadOnly,])
@@ -194,7 +191,6 @@ class Home(APIView):
         }
         return Response(context)
 
-
 class ToggleFavorite(APIView):
     def post(self, request, product_id):
         # Check if the user is authenticated
@@ -213,3 +209,14 @@ class ToggleFavorite(APIView):
         favorite.save()
 
         return Response({"is_favorite": favorite.is_favorite}, status=status.HTTP_200_OK)
+
+class LoadExcelProducts(APIView):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly,]
+
+    def get(self, request,*args,**kwargs):
+        vendor=Vendor.objects.filter(user=request.user).first()
+        supplier = None
+        if vendor:
+            supplier =vendor.suppliers.first()
+        exceldata_import.import_products_and_images(vendor,supplier)
+        return Response("Products loaded successfully!")

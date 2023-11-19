@@ -15,6 +15,16 @@ export const menuItems = [
         link: "/"
     },
     {
+        id: 2,
+        label: "Dashboard",
+        icon: "uil-bag",
+        badge: {
+            variant: "primary",
+            text: "Overview"
+        },
+        link: "/Dashboard"
+    },
+    {
         id: 3,
         label: "menuitems.apps.text",
         isTitle: true

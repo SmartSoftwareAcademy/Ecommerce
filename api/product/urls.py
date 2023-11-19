@@ -18,6 +18,7 @@ router.register('reviews', ReviewsViewSet)
 urlpatterns = [
     path('', include(router.urls)),
     path('add-product/<int:id>/', addProduct),
+    path('import-products/', LoadExcelProducts.as_view()),
     path('product/<int:pk>/', ProductDetail.as_view()),
     path('favorites/<int:pk>/', MarkAsFavorite.as_view(), name='mark-favorite'),
     path('favorites/', MarkAsFavorite.as_view(), name='mark-favorite'),

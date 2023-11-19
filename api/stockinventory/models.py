@@ -11,7 +11,7 @@ class StockInventory(models.Model):
     product = models.ForeignKey(Products, on_delete=models.CASCADE,related_name="stock")
     stock_level = models.PositiveIntegerField(default=1)
     reorder_level = models.PositiveIntegerField(default=5)
-    size = models.ForeignKey(ProductSize, on_delete=models.CASCADE, blank=True, null=True)
+    size = models.ForeignKey(ProductSize,verbose_name=('Packaging'), on_delete=models.CASCADE, blank=True, null=True)
     color = models.ForeignKey(ProductColor, on_delete=models.CASCADE, blank=True, null=True)
     usage = models.CharField(max_length=20,choices=(("EX-UK","EX-UK"),("Refurbished","Refurbished"),("Used Like New","Used Like New"),("Secod Hand","Second Hand"),("New","New")),default="New",blank=True,null=True,help_text='Leave blank if not applicable')
     sku=models.CharField(max_length=100,default='1',unique=True)
