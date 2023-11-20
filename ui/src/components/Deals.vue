@@ -7,7 +7,7 @@
           <v-divider></v-divider>
           <div class="row">
             <div
-              class="col-12 col-md-3 col-sm-6 col-xs-6 text-center"
+              class="col-12 col-md-4 col-sm-6 col-xs-6 text-center"
               v-for="item in dealsData"
               :key="item.id"
             >

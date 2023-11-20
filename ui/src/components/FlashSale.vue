@@ -105,7 +105,7 @@ export default {
     flashData: Array,
     newArrivals: Array,
     topPicks: Array,
-    flash_sale_date: Date,
+    flash_sale_date: String,
   },
   data() {
     return {

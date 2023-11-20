@@ -10,8 +10,8 @@ class StockInventoryAdmin(admin.ModelAdmin):
                      'is_new_arrival', 'is_favorite', 'is_flash_sale', 'is_deal_of_the_day', 'is_top_pick']
     list_display_links = ['product']  # Choose a field for editing links
 
-    list_filter = ('availability', 'is_new_arrival', 'is_favorite', 'is_flash_sale', 'is_deal_of_the_day', 'is_top_pick')
-    search_fields = ('product__title', 'product__retail_price',)
+    list_filter = ('product__title', 'product__retail_price','size__size','size__unit__unit_symbol','availability', 'is_new_arrival', 'is_favorite', 'is_flash_sale', 'is_deal_of_the_day', 'is_top_pick')
+    search_fields = ('product__title', 'product__retail_price','size__size','size__unit__unit_symbol')
 
     fieldsets = [
         ('Product Information', {

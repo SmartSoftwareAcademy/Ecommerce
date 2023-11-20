@@ -2,6 +2,7 @@
   <div>
     <v-carousel v-for="item in slider" :key="item.id">
       <v-carousel-item
+        :aspect-ratio="6 / 6"
         :src="slide.slider_image"
         v-for="slide in item.slider_products"
         :key="slide.id"

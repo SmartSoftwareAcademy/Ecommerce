@@ -22,8 +22,13 @@ class ProductImagesInline(admin.TabularInline):
 
 class ProductsAdmin(admin.ModelAdmin):
     inlines = [ProductImagesInline,ProductColorInline,ProductSizeInline,]
-    list_display = ['title','status', 'vendor', 'model',]
-    list_filter = ['title','status', 'vendor', 'model',]
+    list_display = ['title','maincategory','status', 'vendor','model',]
+    list_filter = ['title', 'maincategory',
+                   'maincategory__categories', 'vendor', 'status', 'model',]
+    search_fields = ['title', 'maincategory__name',
+                     'maincategory__categories__name', 'vendor__user__email', 'status', 'model',]
+    list_editable = ['maincategory','vendor', 'status', 'model',]
+    list_display_links=['title']
 
     fieldsets = (
         ('Product Information', {

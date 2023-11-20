@@ -48,7 +48,7 @@ export default {
       topPicks: [],
       newArrivals: [],
       slider: [],
-      flash_sale_date: new Date("2023-12-10T00:00:00.000Z"),
+      flash_sale_date: "2023-12-10T00:00:00.000Z",
       currentPage: 1,
       perPage: 6,
       limit: 6,

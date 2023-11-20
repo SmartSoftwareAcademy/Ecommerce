@@ -11,24 +11,26 @@ import math
 import uuid
 from random import randint
 from django.conf import settings
+from difflib import get_close_matches
+
 BASE_DIR=settings.BASE_DIR
 
-image_dir = BASE_DIR / 'media' / 'products' / 'images'
-excel_file_path = os.path.join(
-    BASE_DIR, 'api', 'media', 'products', 'YOGISSHOPDATABASE.xlsx')
+image_dir = 'E:\projects\productimages'
+excel_file_path = 'E:\projects\Ecommerce\\api\media\products\YOGISSHOPDATABASE.xlsx'
 
 class ExcelProductsImport:
     def __init__(self):
         pass
 
     def find_matching_image(self,title):
-        for file_name in os.listdir('E:\projects\Ecommerce\\api\media\products\images'):
-            if any(substring.lower() in str(title) for substring in file_name.split(' ')):
-                return file_name
-        return 'other.png'  # Default image if no match is found
+        img_files = os.listdir(image_dir)
+        matches=get_close_matches(str(title), img_files, n=2, cutoff=0.5)
+        if matches:
+            return matches
+        return ['other.png']
 
     def import_products_and_images(self,vendor,supplier):
-        df = pd.read_excel('E:\projects\Ecommerce\\api\media\products\YOGISSHOPDATABASE.xlsx',dtype={'CODES': str})
+        df = pd.read_excel(excel_file_path,dtype={'CODES': str})
         # Fill NaN values with random unique numbers
         df['UNIT PRICE'].fillna(0.0,inplace=True)
         df['RETAIL PRICE'].fillna(0.0,inplace=True)
@@ -38,7 +40,7 @@ class ExcelProductsImport:
         df['UNIT PRICE'] = df.apply(lambda row: float(row['WHOLESALE PRICE']) / float(row['UNIT PRICE'])\
                                 if pd.isna(row['QTY']) else row['QTY'], axis=1)
         #replace empty values with 1
-        df['PACKAGING'].fillna(1,inplace=True)
+        df['PACKAGING'].fillna('piece(s)',inplace=True)
         df['CODES'] = df['CODES'].apply(lambda x: str(uuid.uuid4())[0:7] if pd.isna(x) else x)
         #df=df.head(1)
         for i, row in df.iterrows():
@@ -78,12 +80,15 @@ class ExcelProductsImport:
                 title=row['ITEM'],
             )
             # Find matching images for the product title
-            image_name = self.find_matching_image(product.title)
-            image_path = Path(image_dir) /image_name
-            with open(image_path, 'rb') as image_file:
-                pimage=ProductImages(product=product)
-                pimage.image.save(image_name,File(image_file))
-                pimage.save()
+            image_names = self.find_matching_image(product.title)
+            stock_display_img= Path(image_dir) /image_names[0]
+            for index,image_name in enumerate(image_names):
+                image_path = Path(image_dir) /image_name
+                with open(image_path, 'rb') as image_file:
+                    pimage=ProductImages(product=product)
+                    pimage.image.save(image_name,File(image_file))
+                    pimage.save()
+
             # Create and save StockInventory instances for each size variation
             punit=re.search(r'([a-zA-Z]+)',str(packaging))
             punit=punit.group(0) if punit else 'piece(s)'
@@ -118,12 +123,19 @@ class ExcelProductsImport:
                 'serial':serial,
                 'supplier':supplier,
                 'availability':'In Stock',
+                'is_new_arrival':True,
+                'is_top_pick':True,
+                'is_deal_of_the_day':True,
+                'is_flash_sale':True,
                 },
                 size=size,
                 serial=serial,
                 sku=sku,
                 stock_level=row['QTY'],
             )
+            with open(stock_display_img, 'rb') as image_file:
+                stock.slider_image.save(image_name, File(image_file))
+                stock.save()
 
-    # Print a message indicating successful import
-    print("Products and variations imported successfully.")
+            # Print a message indicating successful import
+            print("Products and variations imported successfully.")
