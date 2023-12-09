@@ -3,9 +3,9 @@ var CryptoJS = require("crypto-js");
 
 var tokenString = "";
 try {
-    if (localStorage.user.trim() != "") {
+    if (sessionStorage.user.trim() != null) {
         tokenString = CryptoJS.AES.decrypt(
-            JSON.parse(localStorage.user).token,
+            JSON.parse(sessionStorage.user).token,
             "mnopqr",
         )
             .toString(CryptoJS.enc.Utf8)

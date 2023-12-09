@@ -56,6 +56,32 @@ export default {
 <template>
   <div class="card">
     <div class="card-body">
+      <div class="row align-items-center">
+        <div class="col-sm-12">
+          <b-carousel
+            id="carousel-1"
+            v-model="slide"
+            :interval="4000"
+            controls
+            indicators
+            background="#ababab"
+            img-width="1024"
+            img-height="480"
+            style="text-shadow: 1px 1px 2px #333"
+            @sliding-start="onSlideStart"
+            @sliding-end="onSlideEnd"
+          >
+            <!-- Text slides with image -->
+            <b-carousel-slide
+              v-for="product in orderData"
+              :key="product.id"
+              :caption="product.product__title"
+              text="Nulla vitae elit libero, a pharetra augue mollis interdum."
+              img-src="https://picsum.photos/1024/480/?image=52"
+            ></b-carousel-slide>
+          </b-carousel>
+        </div>
+      </div>
       <div class="float-end">
         <b-dropdown
           right
@@ -75,25 +101,22 @@ export default {
           <a class="dropdown-item" href="#">Weekly</a>
         </b-dropdown>
       </div>
-
-      <h4 class="card-title mb-4">Top Selling Products</h4>
-
+      <h4 class="card-title mb-4 mt-2">Top Selling Products</h4>
       <div
         class="row align-items-center no-gutters mt-3"
         v-for="product in orderData"
         :key="product.index"
       >
-        <div class="col-sm-3">
+        <div class="col-sm-12">
           <p class="text-truncate mt-1 mb-0">
-            <i class="mdi mdi-circle-medium text-primary me-2"></i>
-            {{ getFirstTwoWords(product.product__title) }}
+            <i class="mdi mdi-circle-medium text-secondary me-2"></i>
+            {{ product.product__title }}
           </p>
         </div>
-
-        <div class="col-sm-9">
+        <div class="col-sm-12">
           <b-progress
             :value="product.total_sales"
-            variant="primary"
+            variant="warning"
             class="mt-1"
             height="6px"
           ></b-progress>

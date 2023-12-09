@@ -1,0 +1,16 @@
+# build stage
+FROM node:14 as build-stage
+WORKDIR /app
+COPY package*.json ./
+RUN npm install --legacy-peer-deps
+COPY . .
+RUN npm run build
+
+# production stage
+FROM nginx:stable-alpine as production-stage
+# Add nginx config
+COPY docker/nginx.conf /etc/nginx/nginx.conf
+COPY --from=build-stage /app/dist /usr/share/nginx/html
+
+EXPOSE 8080
+CMD ["nginx", "-g", "daemon off;"]

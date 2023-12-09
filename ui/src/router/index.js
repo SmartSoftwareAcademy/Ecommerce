@@ -69,7 +69,7 @@ router.beforeEach((routeTo, routeFrom, next) => {
     } else if (process.env.VUE_APP_DEFAULT_AUTH === "bengoboxAuth") {
         //const publicPages = ['/', '/login', '/register', '/forgot-password'];
         //const authpage = !publicPages.includes(routeTo.path);
-        const loggeduser = localStorage.getItem('user');
+        const loggeduser = sessionStorage.getItem('user');
 
         if (routeTo.meta.authRequired && !loggeduser) {
             return next('/login');

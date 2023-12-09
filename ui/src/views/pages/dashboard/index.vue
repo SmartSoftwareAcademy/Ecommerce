@@ -58,6 +58,7 @@ export default {
   },
   mounted() {
     this.updateArrays();
+    console.log(sessionStorage.user)
   },
   methods: {
     updateArrays() {

@@ -253,7 +253,7 @@ export default {
         maincategories: this.maincat.id,
         categories: JSON.stringify(this.cat),
         subcategories: JSON.stringify(this.subcat),
-        vendor: JSON.parse(localStorage.user).id,
+        vendor: JSON.parse(sessionStorage.user).id,
         supplier: this.supplier.id,
         usage: this.usage,
         is_flash_sale: this.is_flash_sale,

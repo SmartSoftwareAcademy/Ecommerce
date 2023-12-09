@@ -14,6 +14,7 @@ import 'vuetify/dist/vuetify.css'
 import 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import App from './App.vue'
+import axios from "@/Axiosconfig"
 var CryptoJS = require("crypto-js");
 
 //API ENDPOINT CONFIG
@@ -28,9 +29,9 @@ window.$http = ref + "/api/";
 var tokenString = "";
 
 try {
-  if (localStorage.user.trim() != "") {
+  if (sessionStorage.user.trim() != "") {
     tokenString = CryptoJS.AES.decrypt(
-      JSON.parse(localStorage.user).token,
+      JSON.parse(sessionStorage.user).token,
       "mnopqr",
     )
       .toString(CryptoJS.enc.Utf8)
@@ -43,6 +44,7 @@ window.$tokenString = tokenString;
 window.$headers = {
   Authorization: `Token ${window.$tokenString}`,
 };
+axios.defaults.headers.common['Authorization'] = `Token  ${window.$tokenString}`
 import VueMask from 'v-mask'
 Vue.config.productionTip = false
 

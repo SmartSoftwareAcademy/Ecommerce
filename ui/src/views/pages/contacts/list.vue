@@ -41,7 +41,7 @@ export default {
       title: "Users List",
       items: [
         {
-          text: "USER:" + JSON.parse(localStorage.user).username,
+          text: "USER:" + JSON.parse(sessionStorage.user).username,
         },
         {
           text: "Users List",

@@ -46,8 +46,8 @@ export default {
   },
   created() {},
   mounted() {
-    this.profile = this.$route.params.user || JSON.parse(localStorage.user);
-    this.addresses = JSON.parse(localStorage.addresses).address;
+    this.profile = this.$route.params.user || JSON.parse(sessionStorage.user);
+    this.addresses = JSON.parse(sessionStorage.addresses).address;
     this.myOrders();
   },
   methods: {

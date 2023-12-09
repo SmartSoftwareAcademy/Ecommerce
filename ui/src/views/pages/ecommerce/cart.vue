@@ -344,7 +344,7 @@ export default {
     },
     clearCart() {
       axios
-        .delete(window.$http + `cart/clear/${0}/${JSON.parse(localStorage.user).id}/`)
+        .delete(window.$http + `cart/clear/${0}/${JSON.parse(sessionStorage.user).id}/`)
         .then((response) => {
           this.$store.dispatch("cart/clearCart");
           this.message = response.data.message.toString();
@@ -358,7 +358,7 @@ export default {
         });
     },
     addFavorites(product) {
-      if (!localStorage.getItem("user")) {
+      if (!sessionStorage.getItem("user")) {
         this.$router.push({ name: "login" });
         return;
       }

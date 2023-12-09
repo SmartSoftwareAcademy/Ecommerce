@@ -31,7 +31,6 @@ function login(email, password) {
                 "mnopqr",
             ).toString();
             //fetch cart items
-            axios.defaults.headers.common['Authorization'] = `Token ${user.user.token}`;
             axios.get(window.$http + `cart/?user_id=${user.user.id}`)
                 .then(res => {
                     axios.get()
@@ -79,16 +78,16 @@ function login(email, password) {
                         var role = r.toLowerCase();
                         if (role === 'admin' || role === 'vendor' || role === 'salesperson' || role === 'manager') {
                             console.log(role);
-                            localStorage.setItem("isadmin", true);
+                            sessionStorage.setItem("isadmin", true);
                         }
                     });
                 }
                 // store user details and jwt token in local storage to keep user logged in between page refreshes
-                localStorage.setItem("user", JSON.stringify(responseJson));
-                localStorage.setItem("user_addresses", JSON.stringify(user.addresses));
+                sessionStorage.setItem("user", JSON.stringify(responseJson));
+                sessionStorage.setItem("user_addresses", JSON.stringify(user.addresses));
                 if (JSON.stringify(user.addresses).includes('address')) {
                     console.log(user.addresses)
-                    localStorage.setItem("addresses", JSON.stringify(user.addresses));
+                    sessionStorage.setItem("addresses", JSON.stringify(user.addresses));
                     store.dispatch('address/addAddresses', user.addresses);
                     var len = user.addresses.address.filter((e) => e.default_address === true).length;
                     var addr = null;
@@ -96,7 +95,7 @@ function login(email, password) {
                         addr = user.addresses.address.filter((e) => e.default_address === true)[0];
                         console.log(addr)
                         store.dispatch('address/addDefaultAddresses', addr);
-                        localStorage.setItem("default_address", JSON.stringify(addr))
+                        sessionStorage.setItem("default_address", JSON.stringify(addr))
                         axios
                             .get(window.$http + `pickup_stations?region=` + addr.region__region, {
                                 headers: {
@@ -106,7 +105,7 @@ function login(email, password) {
                             })
                             .then((response) => {
                                 store.dispatch('address/addDeliveryAddresses', response.data['results']);
-                                localStorage.setItem("delivery_addresses", response.data['results']);
+                                sessionStorage.setItem("delivery_addresses", response.data['results']);
                             })
                             .catch((e) => {
                                 console.log(e);
@@ -114,7 +113,7 @@ function login(email, password) {
                     } else {
                         addr = user.addresses.address[0];
                         store.dispatch('address/addDefaultAddresses', addr);
-                        localStorage.setItem("default_address", JSON.stringify(addr));
+                        sessionStorage.setItem("default_address", JSON.stringify(addr));
                         axios
                             .get(window.$http + `delivery_addresses?region=` + addr.region__region, {
                                 headers: {
@@ -124,7 +123,7 @@ function login(email, password) {
                             })
                             .then((response) => {
                                 store.dispatch('address/addDeliveryAddresses', response.data['results']);
-                                localStorage.setItem("delivery_addresses", response.data['results']);
+                                sessionStorage.setItem("delivery_addresses", response.data['results']);
                             })
                             .catch((e) => {
                                 console.log(e);
@@ -132,7 +131,7 @@ function login(email, password) {
                     }
                 } else {
                     store.dispatch('address/addDefaultAddresses', {});
-                    localStorage.setItem("delivery_addresses", {});
+                    sessionStorage.setItem("delivery_addresses", {});
 
                 }
             }
@@ -145,7 +144,7 @@ function login(email, password) {
 
 function logout() {
     // remove user from local storage to log user out
-    localStorage.clear();
+    sessionStorage.clear();
     this.$router.push('/');
     window.location.reload();
 }

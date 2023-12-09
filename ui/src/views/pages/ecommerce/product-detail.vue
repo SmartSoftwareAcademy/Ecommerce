@@ -192,7 +192,9 @@
                       <div v-if="$route.params.stockitem.size">
                         <p
                           class="badge badge-pill bg-info"
-                          v-if="$route.params.stockitem.size.unit_dicount_retail_price > 0"
+                          v-if="
+                            $route.params.stockitem.size.unit_dicount_retail_price > 0
+                          "
                         >
                           {{
                             (
@@ -217,7 +219,8 @@
                           Upto
                           {{
                             (
-                              ((product.retail_price - product.discount_price) / product.retail_price) *
+                              ((product.retail_price - product.discount_price) /
+                                product.retail_price) *
                               100
                             ).toFixed(2)
                           }}% Extra Discount
@@ -395,11 +398,10 @@ export default {
       return firstTwoWords;
     },
     addToCart(item) {
-      if (!localStorage.getItem("user")) {
+      if (!sessionStorage.getItem("user")) {
         this.$router.push({ name: "login" });
         return;
       }
-      console.log(item);
       var retail_price = 0;
       if (item.size != null) {
         console.log("Has size...");
@@ -419,10 +421,8 @@ export default {
           retail_price = item.product.retail_price;
         }
       }
-      console.log(item);
-
       var cartItem = {
-        user: JSON.parse(localStorage.user).id,
+        user: JSON.parse(sessionStorage.user).id,
         product: item.product,
         size: item.size,
         stock: item.id,
@@ -448,7 +448,7 @@ export default {
         });
     },
     addFavorites(item) {
-      if (!localStorage.getItem("user")) {
+      if (!sessionStorage.getItem("user")) {
         this.$router.push({ name: "login" });
         return;
       }
@@ -478,7 +478,6 @@ export default {
       this.message = "Success!Item added to Favorites!";
       this.alert_type = "success";
       this.showAlert = true;
-      console.log(this.$store.state.favorites);
     },
   },
 };

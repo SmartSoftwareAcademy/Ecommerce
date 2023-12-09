@@ -529,7 +529,7 @@ export default {
       formdata.append("paycode", this.paycode.toUpperCase());
       formdata.append("status", this.trstatus);
       formdata.append("paymethod", this.paymentMethod);
-      formdata.append("attendant", JSON.parse(localStorage.user).id);
+      formdata.append("attendant", JSON.parse(sessionStorage.user).id);
       this.submitsale(formdata);
     },
     handleSubmit() {},

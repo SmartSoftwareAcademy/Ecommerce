@@ -41,8 +41,8 @@ export default {
   },
   mounted() {
     document.body.classList.add("authentication-bg");
-    for (var i = 0; i < localStorage.length; i++) {
-      if (localStorage.key(i).toString() === "token") {
+    for (var i = 0; i < sessionStorage.length; i++) {
+      if (sessionStorage.key(i).toString() === "token") {
         console.log("");
       }
     }

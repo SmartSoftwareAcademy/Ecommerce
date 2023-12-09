@@ -202,7 +202,7 @@ export default {
     },
     addAddress() {
       var data = {
-        customer: JSON.parse(localStorage.user).id,
+        customer: JSON.parse(sessionStorage.user).id,
         region: this.selectedCity[0],
         city: this.selectedTown[0],
         address_label: this.address_label,
@@ -215,13 +215,13 @@ export default {
         .post(`addresses/`, data)
         .then(() => {
           this.$store.dispatch("address/addDefaultAddresses", data);
-          localStorage.setItem("default_address", JSON.stringify(data));
+          sessionStorage.setItem("default_address", JSON.stringify(data));
           axios.get(`pickup_stations/?region=` + this.selectedCity).then((response) => {
             this.$store.dispatch(
               "address/addDeliveryAddresses",
               response.data["results"]
             );
-            localStorage.setItem(
+            sessionStorage.setItem(
               "delivery_addresses",
               JSON.stringify(response.data["results"])
             );
@@ -248,7 +248,7 @@ export default {
     },
     editAddress() {
       var data = {
-        customer: JSON.parse(localStorage.user).id,
+        customer: JSON.parse(sessionStorage.user).id,
         id: this.id,
         region: this.selectedCity[0],
         city: this.selectedTown[0],
@@ -262,13 +262,13 @@ export default {
         .put(`addresses/` + this.id + "/", data)
         .then(() => {
           this.$store.dispatch("address/addDefaultAddresses", data);
-          localStorage.setItem("default_address", JSON.stringify(data));
+          sessionStorage.setItem("default_address", JSON.stringify(data));
           axios.get(`delivery_address?region=` + this.selectedCity).then((response) => {
             this.$store.dispatch(
               "address/addDeliveryAddresses",
               response.data["results"]
             );
-            localStorage.setItem(
+            sessionStorage.setItem(
               "delivery_addresses",
               JSON.stringify(response.data["results"])
             );

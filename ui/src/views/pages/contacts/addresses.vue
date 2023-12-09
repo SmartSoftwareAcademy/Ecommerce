@@ -153,7 +153,7 @@ export default {
   },
   methods: {
     updatearray() {
-      this.addresses = JSON.parse(localStorage.addresses).address;
+      this.addresses = JSON.parse(sessionStorage.addresses).address;
     },
     selectrec(
       id,

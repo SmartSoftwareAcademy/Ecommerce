@@ -39,7 +39,7 @@
             v-model="pagelayout"
             name="checkbox-1"
             value="l"
-            unchecked-value="p"
+            unchecked-value="l"
             >&nbsp; Landscape </b-form-checkbox
           >&nbsp;
           <b-form-checkbox
@@ -76,11 +76,10 @@ export default {
     uniqueCars: Object,
     showme: Boolean,
     printedpdf: Boolean,
-    concodance: Number,
   },
   data() {
     return {
-      pagelayout: "l",
+      pagelayout: "p",
     };
   },
   methods: {
@@ -98,7 +97,6 @@ export default {
       autoTable();
     },
     generatePDF(event) {
-      //alert();
       const d = new Date();
       const year = d.getFullYear();
       const month = d.getMonth();
@@ -200,6 +198,7 @@ export default {
         doc.autoTable({
           head: head,
           body: body,
+
           // margin: { left: 5.5, top: 52 },
           startY: 44,
           margin: { horizontal: 0 },
@@ -223,10 +222,6 @@ export default {
           bodyStyles: { lineColor: [0, 0, 0] },
           theme: "grid",
         });
-        // Simple html example
-        //alert();
-        // doc.autoTable({ html: "#table" });
-        //alert(filename);
         //page numbering
         var height = 190;
         var width = 290;
@@ -239,7 +234,7 @@ export default {
           doc.setPage(i);
           doc.text(
             `BENGOBOX Kenya | E-COMMERCE | YOGIS  DELIGHT                            Prepared by:${
-              JSON.parse(localStorage.user).email
+              JSON.parse(sessionStorage.user).email
             }` +
               "                                 Page " +
               String(i) +
@@ -259,7 +254,6 @@ export default {
         this.$bvModal.hide("modal-Print");
       }
     },
-
     getmonth(d) {
       const monthNames = [
         "Jan",

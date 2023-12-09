@@ -9,7 +9,7 @@ export const menuItems = [
         label: "Home",
         icon: "uil-home-alt",
         badge: {
-            variant: "primary",
+            variant: "warning",
             text: "GO"
         },
         link: "/"
@@ -19,7 +19,7 @@ export const menuItems = [
         label: "Dashboard",
         icon: "uil-bag",
         badge: {
-            variant: "primary",
+            variant: "warning",
             text: "Overview"
         },
         link: "/Dashboard"
@@ -64,6 +64,12 @@ export const menuItems = [
         icon: "uil-store",
         subItems: [
             {
+                id: 5,
+                label: "menuitems.ecommerce.list.products",
+                link: "/ecommerce/products",
+                parentId: 6
+            },
+            {
                 id: 6,
                 label: "Manage Products",
                 link: "/ecommerce/manage_products",
@@ -71,7 +77,7 @@ export const menuItems = [
             },
             {
                 id: 7,
-                label: "Add Product",
+                label: "menuitems.ecommerce.list.addproduct",
                 link: "/ecommerce/add-product",
                 parentId: 6
             },
@@ -121,6 +127,37 @@ export const menuItems = [
         ]
     },
     {
+        id: 15,
+        label: "HR",
+        icon: "uil-building",
+        subItems: [
+            {
+                id: 16,
+                label: "Employees",
+                link: "/contacts/list",
+                parentId: 15
+            },
+            {
+                id: 17,
+                label: "menuitems.ecommerce.list.customers",
+                link: "/humanresource/customers",
+                parentId: 15
+            },
+            {
+                id: 18,
+                label: "Addressbook",
+                link: "/humanresource/parts/Addressbook",
+                parentId: 15
+            },
+            {
+                id: 19,
+                label: "Supliers",
+                link: "/humanresource/Suppliers",
+                parentId: 15
+            },
+        ]
+    },
+    {
         id: 18,
         label: "Records",
         icon: "uil-invoice",
@@ -146,25 +183,23 @@ export const menuItems = [
         ]
     },
     {
-        id: 20,
-        label: "HR",
-        icon: "uil-invoice",
+        id: 2,
+        label: "Reports",
+        icon: "uil-file",
+        badge: {
+            variant: "warning",
+            text: "Analytics"
+        },
+        link: "/report"
+    },
+    {
+        id: 21,
+        label: "Security",
+        icon: "uil-book-alt",
         subItems: [
             {
-                id: 10,
-                label: "menuitems.ecommerce.list.customers",
-                link: "/humanresource/Customers",
-                parentId: 6
-            },
-            {
-                id: 11,
-                label: "Suppliers",
-                link: "/humanresource/Suppliers",
-                parentId: 6
-            },
-            {
-                id: 12,
-                label: "Employees",
+                id: 23,
+                label: "Users",
                 link: "/contacts/list",
                 parentId: 21
             }

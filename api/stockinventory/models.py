@@ -33,19 +33,6 @@ class StockInventory(models.Model):
         verbose_name = 'Stock Inventory'
         verbose_name_plural = 'Stock Inventory'
 
-class FrontStore(models.Model):
-    flash_sale_end_date=models.DateTimeField(default=datetime.now())
-    slider_products=models.ManyToManyField(StockInventory,blank=True,null=True)
-    slider_text = models.CharField(max_length=100, default="Upto 60% + Extra 10%")
-
-    def __str__(self):
-        return "Front Store Settings"
-
-    class Meta:
-        db_table = 'storefront'
-        verbose_name = 'Front Store Settings'
-        verbose_name_plural = 'Front Store Settings'
-
 class Review(models.Model):
     stock = models.ForeignKey(
         StockInventory, on_delete=models.CASCADE, related_name='reviews')
@@ -63,3 +50,15 @@ class Review(models.Model):
         managed = True
         verbose_name_plural = "Reviews"
 
+class FrontStore(models.Model):
+    flash_sale_end_date=models.DateTimeField(default=datetime.now())
+    slider_products=models.ManyToManyField(StockInventory,blank=True,null=True)
+    slider_text = models.CharField(max_length=100, default="Upto 60% + Extra 10%")
+
+    def __str__(self):
+        return "Front Store Settings"
+
+    class Meta:
+        db_table = 'storefront'
+        verbose_name = 'Front Store Settings'
+        verbose_name_plural = 'Front Store Settings'

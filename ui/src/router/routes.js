@@ -1,7 +1,7 @@
 import store from '@/state/store'
 import Layout from "../views/layouts/Layout";
 import PageNotFound from '../views/pages/404/PageNotFound.vue';
-
+import resetTimer from '@/helpers/bengoboxAuth/userActivity';
 
 export default [{
   path: '/login',
@@ -12,6 +12,7 @@ export default [{
       // If the user is already logged in
       if (store.getters['auth/loggedIn']) {
         // Redirect to the home page instead
+        resetTimer();
         next({
           name: 'home'
         })
@@ -78,7 +79,7 @@ export default [{
       )
       // Navigate back to previous page, or home as a fallback
       next(authRequiredOnPreviousRoute ? {
-        name: 'home'
+        name: 'login'
       } : {
         ...routeFrom
       })
@@ -106,7 +107,7 @@ export default [{
       path: '/blog',
       name: 'Blog',
       meta: {
-        authRequired: false,
+        authRequired: true,
       },
       component: () => import('../views/pages/blog/Blog')
     },
@@ -114,7 +115,7 @@ export default [{
       path: '/post',
       name: 'Post',
       meta: {
-        authRequired: false,
+        authRequired: true,
       },
       component: () => import('../views/pages/blog/Post')
     },
@@ -138,7 +139,7 @@ export default [{
       path: '/ecommerce/favorites/favorites',
       name: 'Favorites',
       meta: {
-        authRequired: false
+        authRequired: true
       },
       component: () => import('../views/pages/ecommerce/favorites/favorites')
     },
@@ -146,7 +147,7 @@ export default [{
       path: '/ecommerce/cart',
       name: 'Cart',
       meta: {
-        authRequired: false
+        authRequired: true
       },
       component: () => import('../views/pages/ecommerce/cart')
     },
@@ -345,39 +346,6 @@ export default [{
   },
   component: () => import('../views/pages/contacts/grid')
 },
-
-{
-  path: '/charts/apex',
-  name: 'apex',
-  meta: {
-    authRequired: true,
-  },
-  component: () => import('../views/pages/charts/apex/index')
-},
-{
-  path: '/charts/chartist',
-  name: 'chartist',
-  meta: {
-    authRequired: true,
-  },
-  component: () => import('../views/pages/charts/chartist/index')
-},
-{
-  path: '/charts/chartjs',
-  name: 'chartjs',
-  meta: {
-    authRequired: true,
-  },
-  component: () => import('../views/pages/charts/chartjs/index')
-},
-{
-  path: '/charts/echart',
-  name: 'echart',
-  meta: {
-    authRequired: true,
-  },
-  component: () => import('../views/pages/charts/echart/index')
-},
 {
   path: '/Dashboard',
   name: 'dashboard',
@@ -385,5 +353,14 @@ export default [{
     authRequired: true,
   },
   component: () => import('../views/pages/dashboard/Dashboard')
-},
+  },
+  //Reports
+  {
+    path: '/report',
+    name: 'report',
+    meta: {
+      authRequired: true,
+    },
+    component: () => import('../views/pages/reporting/report')
+  },
 ]

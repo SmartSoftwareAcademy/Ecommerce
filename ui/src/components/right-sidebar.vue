@@ -132,50 +132,6 @@ export default {
           </div>
         </div>
         <!-- Settings -->
-        <hr class="mt-0" />
-        <h6 class="text-center mb-0">Choose Layouts</h6>
-        <div class="p-4">
-          <div class="mb-2">
-            <router-link
-              tag="a"
-              target="_blank"
-              to="//minible-v-light.vuejs.themesbrand.com/"
-            >
-              <img
-                src="@/assets/images/layouts/layout-1.jpg"
-                class="img-fluid img-thumbnail"
-                alt
-              />
-            </router-link>
-          </div>
-          <div class="mb-2">
-            <router-link
-              tag="a"
-              target="_blank"
-              to="//minible-v-dark.vuejs.themesbrand.com/"
-            >
-              <img
-                src="@/assets/images/layouts/layout-2.jpg"
-                class="img-fluid img-thumbnail"
-                alt
-              />
-            </router-link>
-          </div>
-
-          <div class="mb-2">
-            <router-link
-              tag="a"
-              target="_blank"
-              to="//minible-v-rtl.vuejs.themesbrand.com/"
-            >
-              <img
-                src="@/assets/images/layouts/layout-3.jpg"
-                class="img-fluid img-thumbnail"
-                alt
-              />
-            </router-link>
-          </div>
-        </div>
       </simplebar>
       <!-- end slimscroll-menu-->
     </div>

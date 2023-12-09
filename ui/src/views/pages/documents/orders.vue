@@ -34,7 +34,7 @@ export default {
       title: "Order List",
       items: [
         {
-          text: "USER:" + JSON.parse(localStorage.user).name,
+          text: "USER:" + JSON.parse(sessionStorage.user).name,
         },
         {
           text: "Orders",
@@ -273,7 +273,7 @@ export default {
     <div class="row justify-content-between">
       <div class="col-sm-6">
         <div class="row justify-content-between">
-          <div class="col-sm-2">
+          <div class="col-sm-3">
             <button
               type="button"
               class="btn btn-warning mb-3"
@@ -282,7 +282,7 @@ export default {
               <i class="mdi mdi-plus me-1"></i> Raise Invoice
             </button>
           </div>
-          <div class="col-sm-2">
+          <div class="col-sm-3">
             <button
               class="btn btn-secondary waves-effect waves-light uil-export"
               @click="getrpt()"
@@ -290,7 +290,7 @@ export default {
               Export to CSV
             </button>
           </div>
-          <div class="col-sm-2">
+          <div class="col-sm-3">
             <button
               @click="printpdf('p')"
               v-b-modal.modal-Print

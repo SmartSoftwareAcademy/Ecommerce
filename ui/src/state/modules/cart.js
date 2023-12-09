@@ -30,7 +30,7 @@ export const mutations = {
             state.total += item.item_total + state.tax;
             state.cart_items_count = state.items.length;
         }
-        localStorage.setItem("cart_items_count", state.cart_items_count);
+        sessionStorage.setItem("cart_items_count", state.cart_items_count);
     },
     updateCartItem(state, { item, quantity }) {
         item.quantity = quantity;

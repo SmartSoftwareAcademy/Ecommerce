@@ -7,7 +7,7 @@
 <script>
 import appConfig from "@/app.config";
 import { notificationMethods } from "@/state/helpers";
-import store from "@/state/store";
+//import store from "@/state/store";
 
 export default {
   name: "app",
@@ -29,18 +29,18 @@ export default {
     },
   },
   created() {
-    window.addEventListener("beforeunload", this.removeUser());
+    //window.addEventListener("beforeunload", this.removeUser());
   },
   mounted() {
     // document.getElementsByTagName("html")[0].setAttribute("dir", "rtl");
-    window.addEventListener("beforeunload", this.removeUser());
+    //window.addEventListener("beforeunload", this.removeUser());
   },
   methods: {
     clearNotification: notificationMethods.clear,
-    removeUser() {
-      store.dispatch("authfack/logout");
-      this.$route.push("/login");
-    },
+    // removeUser() {
+    //   store.dispatch("authfack/logout");
+    //   this.$route.push("/login");
+    // },
   },
 };
 </script>

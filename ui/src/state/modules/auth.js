@@ -41,7 +41,7 @@ export const actions = {
     logOut({ commit }) {
         // eslint-disable-next-line no-unused-vars
         commit('SET_CURRENT_USER', null)
-        localStorage.clear();
+        sessionStorage.clear();
         return new Promise((resolve, reject) => {
             // eslint-disable-next-line no-unused-vars
             getFirebaseBackend().logout().then((response) => {
@@ -90,5 +90,5 @@ export const actions = {
 // ===
 
 function saveState(key, state) {
-    window.localStorage.setItem(key, JSON.stringify(state))
+    window.sessionStorage.setItem(key, JSON.stringify(state))
 }

@@ -34,7 +34,7 @@ export default {
       title: "Products",
       items: [
         {
-          text: "USER:" + JSON.parse(localStorage.user).username,
+          text: "USER:" + JSON.parse(sessionStorage.user).username,
         },
         {
           text: "Products",
@@ -65,7 +65,7 @@ export default {
           label: "Image", // Add a label for the image column
         },
         {
-          key: "product.sku", // Update the key to access the SKU from the product
+          key: "sku", // Update the key to access the SKU from the product
           sortable: true,
           label: "SKU", // Add a label for the SKU column
         },
@@ -75,12 +75,12 @@ export default {
           label: "Product Title", // Add a label for the product title column
         },
         {
-          key: "product.retail_price", // Update the key to access the product retail_price
+          key: "retail_price", // Update the key to access the product retail_price
           sortable: true,
           label: "retail_price", // Add a label for the retail_price column
         },
         {
-          key: "product.discount_price", // Update the key to access the Discount  Price
+          key: "discount_price", // Update the key to access the Discount  Price
           sortable: true,
           label: "Discount  Price", // Add a label for the Discount  Price column
         },

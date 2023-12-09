@@ -60,7 +60,7 @@ export default {
     return {
       subtotal: 0.84,
       tax: 0.16,
-      user: JSON.parse(localStorage.user).name,
+      user: JSON.parse(sessionStorage.user).name,
     };
   },
   computed: {

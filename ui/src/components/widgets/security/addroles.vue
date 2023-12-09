@@ -16,7 +16,7 @@ export default {
             title: "",
             items: [
                 {
-                    text: "USER: " + JSON.parse(localStorage.user).username,
+                    text: "USER: " + JSON.parse(sessionStorage.user).username,
                 },
                 {
                     text: "Role List",
@@ -54,14 +54,14 @@ export default {
     },
     watch: {
         addroleslog(newValue) {
-            var curentuser = JSON.parse(localStorage.user).email
+            var curentuser = JSON.parse(sessionStorage.user).email
             var currentdate = new Date();
             const data = {
                 datetime: currentdate,
                 useremail: curentuser,
                 application: window.navigator.userAgent,
                 details: `Add Roles:${newValue},\nDetails(role name:${this.rname},\ndescription:${this.description},\nscreens[${this.selectedlists}])`,
-                computer: window.localStorage.clientip
+                computer: window.sessionStorage.clientip
             }
             axios
                 .post(window.$http + "AuditLogs", data, { headers: window.$headers })
@@ -188,7 +188,7 @@ export default {
             //   select: 1,
             // };
             axios
-                .post(window.$http + `controlselection/`, data, { headers: { "Authorization": `Bearer ${CryptoJS.AES.decrypt(JSON.parse(localStorage.user).token, "mnopqr").toString(CryptoJS.enc.Utf8).trim()}` } })
+                .post(window.$http + `controlselection/`, data, { headers: { "Authorization": `Bearer ${CryptoJS.AES.decrypt(JSON.parse(sessionStorage.user).token, "mnopqr").toString(CryptoJS.enc.Utf8).trim()}` } })
                 .then((response) => {
                     this.screenlist = response;
                     // JSON responses are automatically parsed.

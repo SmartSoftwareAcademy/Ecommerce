@@ -86,7 +86,7 @@ export default {
   mounted() {
     this.getuserAddress();
     this.cartItems = this.$route.params.cartItems;
-    this.user = JSON.parse(localStorage.user);
+    this.user = JSON.parse(sessionStorage.user);
     this.orderNo = this.$route.params.orderNo;
     console.log(this.useraddr);
   },

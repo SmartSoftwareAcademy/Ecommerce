@@ -27,7 +27,7 @@ class ProductsAdmin(admin.ModelAdmin):
                    'maincategory__categories', 'vendor', 'status', 'model',]
     search_fields = ['title', 'maincategory__name',
                      'maincategory__categories__name', 'vendor__user__email', 'status', 'model',]
-    list_editable = ['maincategory','vendor', 'status', 'model',]
+    list_editable = ['maincategory', 'vendor', 'status', 'model',]
     list_display_links=['title']
 
     fieldsets = (

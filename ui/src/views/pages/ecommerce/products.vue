@@ -386,10 +386,10 @@ export default {
       this.page = newPage;
       this.limit = this.pageSize;
       this.offset = (this.page - 1) * this.pageSize;
-      this.applyFilter("");
+      this.updatearrays("");
     },
     addFavorites(item) {
-      if (!localStorage.getItem("user")) {
+      if (!sessionStorage.getItem("user")) {
         this.$router.push({ name: "login" });
         return;
       }

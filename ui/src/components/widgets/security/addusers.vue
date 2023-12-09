@@ -60,7 +60,7 @@ export default {
         .get(window.http + `UserRoles`, {
           headers: {
             Authorization: `Bearer ${CryptoJS.AES.decrypt(
-              JSON.parse(localStorage.user).token,
+              JSON.parse(sessionStorage.user).token,
               "mnopqr"
             )
               .toString(CryptoJS.enc.Utf8)

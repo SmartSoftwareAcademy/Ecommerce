@@ -222,7 +222,7 @@ export default {
       element.classList.toggle("show");
     },
     logoutUser() {
-      localStorage.clear();
+      sessionStorage.clear();
       this.$router.push({
         path: "/",
       });
@@ -349,56 +349,6 @@ export default {
           </b-dropdown-item>
         </b-dropdown>
 
-        <b-dropdown variant="white" class="d-none d-lg-inline-block ms-1" toggle-class="header-item noti-icon" right
-          menu-class="dropdown-menu-lg">
-          <template v-slot:button-content>
-            <i class="uil-apps"></i>
-          </template>
-          <div class="px-lg-2">
-            <div class="row no-gutters">
-              <div class="col">
-                <a class="dropdown-icon-item" href="#">
-                  <img src="@/assets/images/brands/github.png" alt="Github" />
-                  <span>{{ $t("navbar.dropdown.site.list.github") }}</span>
-                </a>
-              </div>
-              <div class="col">
-                <a class="dropdown-icon-item" href="#">
-                  <img src="@/assets/images/brands/bitbucket.png" alt="bitbucket" />
-                  <span>{{ $t("navbar.dropdown.site.list.bitbucket") }}</span>
-                </a>
-              </div>
-              <div class="col">
-                <a class="dropdown-icon-item" href="#">
-                  <img src="@/assets/images/brands/dribbble.png" alt="dribbble" />
-                  <span>{{ $t("navbar.dropdown.site.list.dribbble") }}</span>
-                </a>
-              </div>
-            </div>
-
-            <div class="row no-gutters">
-              <div class="col">
-                <a class="dropdown-icon-item" href="#">
-                  <img src="@/assets/images/brands/dropbox.png" alt="dropbox" />
-                  <span>{{ $t("navbar.dropdown.site.list.dropbox") }}</span>
-                </a>
-              </div>
-              <div class="col">
-                <a class="dropdown-icon-item" href="#">
-                  <img src="@/assets/images/brands/mail_chimp.png" alt="mail_chimp" />
-                  <span>{{ $t("navbar.dropdown.site.list.mailchimp") }}</span>
-                </a>
-              </div>
-              <div class="col">
-                <a class="dropdown-icon-item" href="#">
-                  <img src="@/assets/images/brands/slack.png" alt="slack" />
-                  <span>{{ $t("navbar.dropdown.site.list.slack") }}</span>
-                </a>
-              </div>
-            </div>
-          </div>
-        </b-dropdown>
-
         <div class="dropdown d-none d-lg-inline-block ms-1">
           <button type="button" class="btn header-item noti-icon waves-effect" data-toggle="fullscreen"
             @click="initFullScreen">
@@ -523,10 +473,10 @@ export default {
 
         <b-dropdown class="d-inline-block" toggle-class="header-item" right variant="white">
           <template v-slot:button-content>
-            <img class="rounded-circle header-profile-user" src="@/assets/images/users/avatar-4.jpg"
+            <img class="rounded-circle header-profile-user" src="@/assets/logo.png"
               alt="Header Avatar" />
             <span
-              class="d-none d-xl-inline-block ms-1 fw-medium font-size-15">{{ $t("navbar.dropdown.marcus.text") }}</span>
+              class="d-none d-xl-inline-block ms-1 fw-medium font-size-15">{{ $t("Admin User") }}</span>
             <i class="uil-angle-down d-none d-xl-inline-block font-size-15"></i>
           </template>
 

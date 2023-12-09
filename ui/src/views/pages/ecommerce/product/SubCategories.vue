@@ -37,7 +37,7 @@ export default {
       modaltitle: "Add SubCategories",
       items: [
         {
-          text: "USER:" + JSON.parse(localStorage.user).username,
+          text: "USER:" + JSON.parse(sessionStorage.user).username,
         },
         {
           text: "SubCategories",

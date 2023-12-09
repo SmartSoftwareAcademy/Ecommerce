@@ -4,7 +4,7 @@
     <div class="row justify-content-between">
       <div class="col-sm-6">
         <div class="row justify-content-between">
-          <div class="col-sm-2">
+          <div class="col-sm-3">
             <button
               type="button"
               class="btn btn-warning mb-3"
@@ -13,7 +13,7 @@
               <i class="mdi mdi-plus me-1"></i> Record Transaction
             </button>
           </div>
-          <div class="col-sm-2">
+          <div class="col-sm-3">
             <button
               class="btn btn-secondary waves-effect waves-light uil-export"
               @click="getrpt()"
@@ -21,7 +21,7 @@
               Export to CSV
             </button>
           </div>
-          <div class="col-sm-2">
+          <div class="col-sm-3">
             <button
               @click="printpdf('p')"
               v-b-modal.modal-Print
@@ -292,7 +292,7 @@ export default {
     return {
       items: [
         {
-          text: "USER:" + JSON.parse(localStorage.user).name,
+          text: "USER:" + JSON.parse(sessionStorage.user).name,
         },
         {
           text: "Transactions",

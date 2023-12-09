@@ -11,7 +11,7 @@ export const mutations = {
         if (existingItem.length==0) {
             state.items.push(item);
             state.favorites_items_count = state.items.length;
-            localStorage.setItem("favorites_items_count", state.favorites_items_count);
+            sessionStorage.setItem("favorites_items_count", state.favorites_items_count);
         }
         console.log(state.items)
         console.log(state.items.length)

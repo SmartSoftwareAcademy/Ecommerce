@@ -18,10 +18,8 @@ class Sales(models.Model):
     date_updated = models.DateTimeField(auto_now=True)
     status = models.CharField(
         max_length=20, default="pending", blank=True, null=True)
-    paymethod = models.CharField(
-        max_length=20, default="cash", blank=True, null=True)
-    sales_type = models.CharField(
-        max_length=20, default="walk-in customer")
+    paymethod = models.CharField(max_length=20,choices=(("cash","Cash"),("mpesa","Mpesa"),("mpesa_on_delivery","Mpesa on Delivery")), default="cash", blank=True, null=True)
+    sales_type = models.CharField(max_length=20,choices=(("walk-in","walk-in customer"),("online","online customer")),default="walk-in customer")
 
     def __str__(self):
         return self.code

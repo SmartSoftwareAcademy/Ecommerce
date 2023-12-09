@@ -148,7 +148,7 @@ export default {
   mounted() {},
   methods: {
     addToCart(product) {
-      if (!localStorage.getItem("user")) {
+      if (!sessionStorage.getItem("user")) {
         this.$router.push({ name: "login" });
         return;
       }

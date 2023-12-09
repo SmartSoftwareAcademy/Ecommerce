@@ -153,11 +153,11 @@ export default {
     }),
   },
   mounted() {
-    //alert(localStorage.user)
-    if (localStorage.user) {
+    //alert(sessionStorage.user)
+    if (sessionStorage.user) {
       this.loggedIn = true;
     }
-    if (localStorage.isadmin) {
+    if (sessionStorage.isadmin) {
       this.adminstaff = true;
       //this.$router.push({ name: "dashboard" });
     }

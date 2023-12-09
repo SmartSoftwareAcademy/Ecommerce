@@ -2,7 +2,7 @@ import { userService } from '../../helpers/bengoboxAuth/user.service';
 import router from '../../router/index'
 import Swal from 'sweetalert2';
 
-const user = JSON.parse(localStorage.getItem('user'));
+const user = JSON.parse(sessionStorage.getItem('user'));
 export const state = user
     ? { status: { loggeduser: true }, user }
     : { status: {}, user: null };

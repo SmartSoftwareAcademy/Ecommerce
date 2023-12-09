@@ -35,7 +35,7 @@ export default {
       title: "Customers",
       items: [
         {
-          text: "USER:" + JSON.parse(localStorage.user).username,
+          text: "USER:" + JSON.parse(sessionStorage.user).username,
         },
         {
           text: "Customers",
