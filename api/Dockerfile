@@ -33,10 +33,9 @@ COPY . /app/
 
 #collect static
 RUN python manage.py collectstatic --noinput
-#install gunicorn
-RUN pip install gunicorn
+
 # Expose the port that the application will run on
-EXPOSE 8000
+EXPOSE 8001
 
 # Define the command to run your application
-CMD ["gunicorn", "ecommerce.wsgi:application", "--bind", "0.0.0.0:8000"]
+CMD ["gunicorn", "ecommerce.wsgi:application", "--bind", "0.0.0.0:8001"]

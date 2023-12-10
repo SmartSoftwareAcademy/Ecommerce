@@ -1,5 +1,14 @@
 import axios from 'axios';
 var CryptoJS = require("crypto-js");
+//API ENDPOINT CONFIG
+var href = window.location.href;
+var arr = href.split("/");
+var arr2 = arr[2].split(":");
+
+window.$localurl = arr2[0] + "";
+var ref = arr[0] + "//" + arr2[0] + ":8001";
+var baseURL =ref + "/api/";
+window.$http = ref + "/api/";
 
 var tokenString = "";
 try {
@@ -16,7 +25,7 @@ try {
 }
 
 const instance = axios.create({
-    baseURL: 'http://localhost:8000/api/', // Replace with your Django backend URL
+    baseURL: baseURL, // Replace with your Django backend URL
     timeout: 360000, // 6 mins timeout
     headers: {
         "Content-Type": ["application/json"],

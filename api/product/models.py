@@ -84,7 +84,7 @@ class ProductImages(models.Model):
 
 class Products(models.Model):
     maincategory = models.ForeignKey(
-        MainCategory, on_delete=models.CASCADE, null=True, blank=True)
+        MainCategory, on_delete=models.CASCADE, null=True, blank=True,related_name='products')
     vendor = models.ForeignKey(
         Vendor, on_delete=models.CASCADE, related_name="products", null=True, blank=True)
     model = models.CharField(max_length=255, blank=True, null=True)
@@ -114,7 +114,7 @@ class Products(models.Model):
         return self
 
 class ProductSize(models.Model):
-    product = models.ForeignKey(Products, on_delete=models.CASCADE)
+    product = models.ForeignKey(Products, on_delete=models.CASCADE,related_name='sizes')
     size = models.CharField(max_length=10,default="0")
     unit=models.ForeignKey(Unit,on_delete=models.SET_NULL,related_name='sizes',null=True)
     unit_price=models.FloatField(max_length=100,default=0)

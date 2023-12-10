@@ -23,7 +23,7 @@ var arr = href.split("/");
 var arr2 = arr[2].split(":");
 
 window.$localurl = arr2[0] + "";
-var ref = arr[0] + "//" + arr2[0] + ":8000";
+var ref = arr[0] + "//" + arr2[0] + ":8001";
 window.$http = ref + "/api/";
 
 var tokenString = "";
