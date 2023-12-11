@@ -17,12 +17,12 @@ services:
     volumes:
       - /home/titusdev/projects/Ecommerce/backups:/app/backups
     command: gunicorn ecommerce.wsgi:application --bind 0.0.0.0:8001 -w 4 --timeout 120
-  # bengoboxui:
-  #   container_name: bengoboxui
-  #   environment:
-  #     - VUE_APP_BASE_URL='http://localhost:8001/api/'
-  #   image: bengoboxui:latest
-  #   ports:
-  #     - "3000:8080"
-    # depends_on:
-    #   - bengoboxapi
+  bengoboxui:
+    container_name: bengoboxui
+    environment:
+      - VUE_APP_BASE_URL='http://localhost:8001/api/'
+    image: bengoboxui:latest
+    ports:
+      - "3000:8080"
+    depends_on:
+      - bengoboxapi

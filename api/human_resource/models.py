@@ -13,6 +13,11 @@ class Employee(models.Model):
         Group, on_delete=models.SET_NULL, blank=True, null=True)
     salary = models.PositiveIntegerField(default=1000)
 
+    class Meta:
+        db_table="employees"
+        managed = True
+        verbose_name_plural = "Employees"
+
     def __str__(self) -> str:
         return self.user.username
 
@@ -24,6 +29,11 @@ class Supplier(models.Model):
     address = models.ManyToManyField('BusinessAddress')
     delivery_regions=models.ManyToManyField("DeliveryRegions",blank=True, null=True)
 
+    class Meta:
+        db_table="suppliers"
+        managed = True
+        verbose_name_plural = "Suppliers"
+
     def __str__(self) -> str:
         return self.name
 
@@ -31,6 +41,11 @@ class Supplier(models.Model):
 class Customer(models.Model):
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, related_name='customer')
+    
+    class Meta:
+        db_table="customers"
+        managed = True
+        verbose_name_plural = "Customers"
 
     def __str__(self) -> str:
         return self.user.username
@@ -46,6 +61,7 @@ class BusinessAddress(models.Model):
         max_length=15, default="07000043578", blank=True, null=True)
 
     class Meta:
+        db_table="business_addresses"
         managed = True
         verbose_name_plural = "Business Addresses"
 
@@ -65,6 +81,7 @@ class AddressBook(models.Model):
     default_address = models.BooleanField(default=False,verbose_name="Default Address")
 
     class Meta:
+        db_table="address_book"
         managed = True
         verbose_name_plural = "AddressBook"
 
@@ -83,6 +100,7 @@ class DeliveryRegions(models.Model):
         return self.region
 
     class Meta:
+        db_table="delivery_regions"
         managed = True
         verbose_name_plural = "Delivery Regions"
 
@@ -106,4 +124,5 @@ class PickupStations(models.Model):
 
     class Meta:
         managed = True
+        db_table="pickup_stattions"
         verbose_name_plural = "Pickup Stations"

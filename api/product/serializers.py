@@ -42,11 +42,11 @@ class SubCategoriesSerializer(serializers.ModelSerializer):
 
 
 class CategoriesSerializer(serializers.ModelSerializer):
-    Subcategories = SubCategoriesSerializer(many=True, required=False)
+    subcategories = SubCategoriesSerializer(many=True, required=False)
 
     class Meta:
         model = Category
-        fields =  ('id','name','display_image','Subcategories')
+        fields =  ('id','name','display_image','subcategories')
         depth = 1
 
 

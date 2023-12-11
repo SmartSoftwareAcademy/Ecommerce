@@ -16,12 +16,10 @@
 
 
 -- Dumping database structure for bengomall
-DROP DATABASE IF EXISTS `bengomall`;
 CREATE DATABASE IF NOT EXISTS `bengomall` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
 USE `bengomall`;
 
 -- Dumping structure for table bengomall.authmanagement_emailconfig
-DROP TABLE IF EXISTS `authmanagement_emailconfig`;
 CREATE TABLE IF NOT EXISTS `authmanagement_emailconfig` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `from_email` varchar(100) NOT NULL,
@@ -36,7 +34,6 @@ CREATE TABLE IF NOT EXISTS `authmanagement_emailconfig` (
 -- Dumping data for table bengomall.authmanagement_emailconfig: ~0 rows (approximately)
 
 -- Dumping structure for table bengomall.authmanagement_myuser
-DROP TABLE IF EXISTS `authmanagement_myuser`;
 CREATE TABLE IF NOT EXISTS `authmanagement_myuser` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `password` varchar(128) NOT NULL,
@@ -68,7 +65,6 @@ INSERT IGNORE INTO `authmanagement_myuser` (`id`, `password`, `last_login`, `is_
 	(17, 'pbkdf2_sha256$600000$ioRdHIpgsuKuDNG1FLi1Dp$hGhGZor02Slong87eb6r1oxzxyNWKhTP+StI6KLqwLg=', NULL, 0, 'janedoe', 'Jane', 'Doe', 1, '2023-11-21 15:33:32.119908', 'janedoe@user.com', '+254743793907', 'Female', 'user/profile/images/Bites_1.jpg', 'TDBSoft', '192.168.0.1', 'Phone', 1);
 
 -- Dumping structure for table bengomall.authmanagement_myuser_groups
-DROP TABLE IF EXISTS `authmanagement_myuser_groups`;
 CREATE TABLE IF NOT EXISTS `authmanagement_myuser_groups` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `myuser_id` bigint NOT NULL,
@@ -86,7 +82,6 @@ INSERT IGNORE INTO `authmanagement_myuser_groups` (`id`, `myuser_id`, `group_id`
 	(8, 15, 5);
 
 -- Dumping structure for table bengomall.authmanagement_myuser_user_permissions
-DROP TABLE IF EXISTS `authmanagement_myuser_user_permissions`;
 CREATE TABLE IF NOT EXISTS `authmanagement_myuser_user_permissions` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `myuser_id` bigint NOT NULL,
@@ -101,7 +96,6 @@ CREATE TABLE IF NOT EXISTS `authmanagement_myuser_user_permissions` (
 -- Dumping data for table bengomall.authmanagement_myuser_user_permissions: ~0 rows (approximately)
 
 -- Dumping structure for table bengomall.authtoken_token
-DROP TABLE IF EXISTS `authtoken_token`;
 CREATE TABLE IF NOT EXISTS `authtoken_token` (
   `key` varchar(40) NOT NULL,
   `created` datetime(6) NOT NULL,
@@ -117,7 +111,6 @@ INSERT IGNORE INTO `authtoken_token` (`key`, `created`, `user_id`) VALUES
 	('c4c077860dbce97cc4f9f5dda918b537248004ca', '2023-11-02 16:10:55.110045', 15);
 
 -- Dumping structure for table bengomall.auth_group
-DROP TABLE IF EXISTS `auth_group`;
 CREATE TABLE IF NOT EXISTS `auth_group` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(150) NOT NULL,
@@ -135,7 +128,6 @@ INSERT IGNORE INTO `auth_group` (`id`, `name`) VALUES
 	(2, 'vendor');
 
 -- Dumping structure for table bengomall.auth_group_permissions
-DROP TABLE IF EXISTS `auth_group_permissions`;
 CREATE TABLE IF NOT EXISTS `auth_group_permissions` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `group_id` int NOT NULL,
@@ -150,7 +142,6 @@ CREATE TABLE IF NOT EXISTS `auth_group_permissions` (
 -- Dumping data for table bengomall.auth_group_permissions: ~0 rows (approximately)
 
 -- Dumping structure for table bengomall.auth_permission
-DROP TABLE IF EXISTS `auth_permission`;
 CREATE TABLE IF NOT EXISTS `auth_permission` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
@@ -329,7 +320,6 @@ INSERT IGNORE INTO `auth_permission` (`id`, `name`, `content_type_id`, `codename
 	(164, 'Can view Mpesa Transactions', 41, 'view_transaction');
 
 -- Dumping structure for table bengomall.cart
-DROP TABLE IF EXISTS `cart`;
 CREATE TABLE IF NOT EXISTS `cart` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `quantity` int unsigned NOT NULL,
@@ -352,7 +342,6 @@ INSERT IGNORE INTO `cart` (`id`, `quantity`, `item_subtotal`, `tax`, `item_total
 	(32, 1, 300, 0, 300, 13, 300, 2129);
 
 -- Dumping structure for table bengomall.categories
-DROP TABLE IF EXISTS `categories`;
 CREATE TABLE IF NOT EXISTS `categories` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
@@ -474,7 +463,6 @@ INSERT IGNORE INTO `categories` (`id`, `name`, `display_image`, `status`) VALUES
 	(452, 'Pork', '', 1);
 
 -- Dumping structure for table bengomall.categories_subcategories
-DROP TABLE IF EXISTS `categories_subcategories`;
 CREATE TABLE IF NOT EXISTS `categories_subcategories` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `category_id` bigint NOT NULL,
@@ -622,7 +610,6 @@ INSERT IGNORE INTO `categories_subcategories` (`id`, `category_id`, `subcategory
 	(2020, 452, 504);
 
 -- Dumping structure for table bengomall.django_admin_log
-DROP TABLE IF EXISTS `django_admin_log`;
 CREATE TABLE IF NOT EXISTS `django_admin_log` (
   `id` int NOT NULL AUTO_INCREMENT,
   `action_time` datetime(6) NOT NULL,
@@ -6546,7 +6533,6 @@ INSERT IGNORE INTO `django_session` (`session_key`, `session_data`, `expire_date
 	('zw73uqt7cf08hzmh3aroey00dcd1zb7o', '.eJxVjDsOwyAQBe9CHSGw-aZM7zOghV2CkwgkY1dR7h5bcpG0b2bemwXY1hK2TkuYkV2ZHNnld4yQnlQPgg-o98ZTq-syR34o_KSdTw3pdTvdv4MCvez1YIS0grxR5B2RlDZJL9CpGLN1xow5OcqaxqgHRA1Wg4k7x6y9wpzZ5wv6KDiD:1r2q2Q:b_d3lHNn23FxHtSbUJcJlrkUaUh9cC9hBtt5cYDrotc', '2023-11-28 12:48:54.932368');
 
 -- Dumping structure for table bengomall.human_resource_addressbook
-DROP TABLE IF EXISTS `human_resource_addressbook`;
 CREATE TABLE IF NOT EXISTS `human_resource_addressbook` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `address_label` varchar(255) NOT NULL,
@@ -6572,7 +6558,6 @@ INSERT IGNORE INTO `human_resource_addressbook` (`id`, `address_label`, `phone`,
 	(2, 'address1', '+254743793901', '+254743793901', '57-40100', 1, 1, 1, 2);
 
 -- Dumping structure for table bengomall.human_resource_businessaddress
-DROP TABLE IF EXISTS `human_resource_businessaddress`;
 CREATE TABLE IF NOT EXISTS `human_resource_businessaddress` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `state` varchar(50) NOT NULL,
@@ -6589,7 +6574,6 @@ INSERT IGNORE INTO `human_resource_businessaddress` (`id`, `state`, `city`, `box
 	(1, 'Nyanza', 'Kisumu', '00100-397', '15-40100', '07000043578', '07000043578');
 
 -- Dumping structure for table bengomall.human_resource_customer
-DROP TABLE IF EXISTS `human_resource_customer`;
 CREATE TABLE IF NOT EXISTS `human_resource_customer` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `user_id` bigint NOT NULL,
@@ -6603,7 +6587,6 @@ INSERT IGNORE INTO `human_resource_customer` (`id`, `user_id`) VALUES
 	(1, 15);
 
 -- Dumping structure for table bengomall.human_resource_deliveryregions
-DROP TABLE IF EXISTS `human_resource_deliveryregions`;
 CREATE TABLE IF NOT EXISTS `human_resource_deliveryregions` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `region` varchar(255) NOT NULL,
@@ -6620,7 +6603,6 @@ INSERT IGNORE INTO `human_resource_deliveryregions` (`id`, `region`, `city`, `do
 	(2, 'Nairobi', 'Nairobi CBD', 0, 300);
 
 -- Dumping structure for table bengomall.human_resource_employee
-DROP TABLE IF EXISTS `human_resource_employee`;
 CREATE TABLE IF NOT EXISTS `human_resource_employee` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `national_id` varchar(10) NOT NULL,
@@ -6640,7 +6622,6 @@ INSERT IGNORE INTO `human_resource_employee` (`id`, `national_id`, `salary`, `po
 	(1, '43337878', 15000, 3, 17);
 
 -- Dumping structure for table bengomall.human_resource_pickupstations
-DROP TABLE IF EXISTS `human_resource_pickupstations`;
 CREATE TABLE IF NOT EXISTS `human_resource_pickupstations` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `pickup_location` varchar(255) NOT NULL,
@@ -6662,7 +6643,6 @@ INSERT IGNORE INTO `human_resource_pickupstations` (`id`, `pickup_location`, `de
 	(1, 'Old Nation', 'Old nation building first floor, room b9', 'Mon-Fri 0800hrs - 1700hrs;Sat 0800hrs - 1300hrs', 'MPESA On Delivery, Cards', 'https://goo.gl/maps/p2QAwb7jbmxuJcb36', '076353535353', 85, 2);
 
 -- Dumping structure for table bengomall.human_resource_supplier
-DROP TABLE IF EXISTS `human_resource_supplier`;
 CREATE TABLE IF NOT EXISTS `human_resource_supplier` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
@@ -6678,7 +6658,6 @@ INSERT IGNORE INTO `human_resource_supplier` (`id`, `name`, `user_id`) VALUES
 	(2, 'ALITECH', 16);
 
 -- Dumping structure for table bengomall.human_resource_supplier_address
-DROP TABLE IF EXISTS `human_resource_supplier_address`;
 CREATE TABLE IF NOT EXISTS `human_resource_supplier_address` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `supplier_id` bigint NOT NULL,
@@ -6696,7 +6675,6 @@ INSERT IGNORE INTO `human_resource_supplier_address` (`id`, `supplier_id`, `busi
 	(2, 2, 1);
 
 -- Dumping structure for table bengomall.human_resource_supplier_delivery_regions
-DROP TABLE IF EXISTS `human_resource_supplier_delivery_regions`;
 CREATE TABLE IF NOT EXISTS `human_resource_supplier_delivery_regions` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `supplier_id` bigint NOT NULL,
@@ -6715,7 +6693,6 @@ INSERT IGNORE INTO `human_resource_supplier_delivery_regions` (`id`, `supplier_i
 	(3, 2, 2);
 
 -- Dumping structure for table bengomall.inventory
-DROP TABLE IF EXISTS `inventory`;
 CREATE TABLE IF NOT EXISTS `inventory` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `stock_level` int unsigned NOT NULL,
@@ -6973,7 +6950,6 @@ INSERT IGNORE INTO `inventory` (`id`, `stock_level`, `reorder_level`, `color_id`
 	(2341, 100, 5, NULL, 1261, 696, NULL, '12263646', '1019', 'New', 'In Stock', 0, 0, 0, 0, 0, '');
 
 -- Dumping structure for table bengomall.invoices
-DROP TABLE IF EXISTS `invoices`;
 CREATE TABLE IF NOT EXISTS `invoices` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `invoice_id` varchar(50) NOT NULL,
@@ -6998,7 +6974,6 @@ INSERT IGNORE INTO `invoices` (`id`, `invoice_id`, `created_at`, `updated_at`, `
 	(12, '1701110507167', '2023-11-27 21:27:35.424409', NULL, 885.00, 'pending', 1, 12);
 
 -- Dumping structure for table bengomall.main_categories
-DROP TABLE IF EXISTS `main_categories`;
 CREATE TABLE IF NOT EXISTS `main_categories` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
@@ -7060,7 +7035,6 @@ INSERT IGNORE INTO `main_categories` (`id`, `name`, `display_image`, `status`) V
 	(211, 'Meat', '', 1);
 
 -- Dumping structure for table bengomall.main_categories_categories
-DROP TABLE IF EXISTS `main_categories_categories`;
 CREATE TABLE IF NOT EXISTS `main_categories_categories` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `maincategory_id` bigint NOT NULL,
@@ -7188,7 +7162,6 @@ INSERT IGNORE INTO `main_categories_categories` (`id`, `maincategory_id`, `categ
 	(2021, 211, 452);
 
 -- Dumping structure for table bengomall.mpesa_transactions
-DROP TABLE IF EXISTS `mpesa_transactions`;
 CREATE TABLE IF NOT EXISTS `mpesa_transactions` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `clientName` varchar(255) NOT NULL,
@@ -7206,7 +7179,6 @@ INSERT IGNORE INTO `mpesa_transactions` (`id`, `clientName`, `clientId`, `transa
 	(2, 'Jane Doe', '6473738', 'deposit', 'HX56474Y8', '2023-11-14', 1000.00);
 
 -- Dumping structure for table bengomall.order
-DROP TABLE IF EXISTS `order`;
 CREATE TABLE IF NOT EXISTS `order` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `order_id` varchar(50) NOT NULL,
@@ -7233,7 +7205,6 @@ INSERT IGNORE INTO `order` (`id`, `order_id`, `created_at`, `order_amount`, `pay
 	(12, '1701110507167', '2023-11-27 21:27:35.412401', 885.00, 'pending', 'pending', 'pending', NULL, NULL, 'pending', 1, 1);
 
 -- Dumping structure for table bengomall.orderitems
-DROP TABLE IF EXISTS `orderitems`;
 CREATE TABLE IF NOT EXISTS `orderitems` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `retail_price` decimal(8,2) NOT NULL,
@@ -7253,7 +7224,6 @@ INSERT IGNORE INTO `orderitems` (`id`, `retail_price`, `quantity`, `total`, `ord
 	(14, 800.00, 1, 800, 12, 2122);
 
 -- Dumping structure for table bengomall.productimages
-DROP TABLE IF EXISTS `productimages`;
 CREATE TABLE IF NOT EXISTS `productimages` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `image` varchar(100) NOT NULL,
@@ -7580,7 +7550,6 @@ INSERT IGNORE INTO `productimages` (`id`, `image`, `product_id`) VALUES
 	(3529, 'products/20231127/slider3_IBzn9Ke.jpg', 1261);
 
 -- Dumping structure for table bengomall.products
-DROP TABLE IF EXISTS `products`;
 CREATE TABLE IF NOT EXISTS `products` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `model` varchar(255) DEFAULT NULL,
@@ -7736,7 +7705,6 @@ INSERT IGNORE INTO `products` (`id`, `model`, `title`, `description`, `retail_pr
 	(1261, NULL, 'Bar Soap 123', 'Bar soap', 0, 0, 1, '2023-11-27 20:27:53.000000', '2023-11-27 20:43:15.806508', NULL, NULL, 166, 1, 0);
 
 -- Dumping structure for table bengomall.product_productcolor
-DROP TABLE IF EXISTS `product_productcolor`;
 CREATE TABLE IF NOT EXISTS `product_productcolor` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `color` varchar(20) NOT NULL,
@@ -7749,7 +7717,6 @@ CREATE TABLE IF NOT EXISTS `product_productcolor` (
 -- Dumping data for table bengomall.product_productcolor: ~0 rows (approximately)
 
 -- Dumping structure for table bengomall.product_productsize
-DROP TABLE IF EXISTS `product_productsize`;
 CREATE TABLE IF NOT EXISTS `product_productsize` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `size` varchar(10) NOT NULL,
@@ -7841,7 +7808,6 @@ INSERT IGNORE INTO `product_productsize` (`id`, `size`, `unit_price`, `unit_disc
 	(769, '100', 20, 0, 1261, 52, 30);
 
 -- Dumping structure for table bengomall.reviews
-DROP TABLE IF EXISTS `reviews`;
 CREATE TABLE IF NOT EXISTS `reviews` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `text` longtext NOT NULL,
@@ -7860,7 +7826,6 @@ CREATE TABLE IF NOT EXISTS `reviews` (
 -- Dumping data for table bengomall.reviews: ~0 rows (approximately)
 
 -- Dumping structure for table bengomall.sales
-DROP TABLE IF EXISTS `sales`;
 CREATE TABLE IF NOT EXISTS `sales` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `code` varchar(100) DEFAULT NULL,
@@ -7893,7 +7858,6 @@ INSERT IGNORE INTO `sales` (`id`, `code`, `sub_total`, `grand_total`, `tax_amoun
 	(38, 'N81Q2TBEDR', 252, 300, 48, 0.16, 400, 100, '2023-11-27 21:30:34.582181', '2023-11-27 21:30:34.582181', 'completed', 'cash', 'walk-in customer', NULL);
 
 -- Dumping structure for table bengomall.salesitems
-DROP TABLE IF EXISTS `salesitems`;
 CREATE TABLE IF NOT EXISTS `salesitems` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `retail_price` double NOT NULL,
@@ -7922,7 +7886,6 @@ INSERT IGNORE INTO `salesitems` (`id`, `retail_price`, `qty`, `total`, `date_add
 	(43, 300, 1, 300, '2023-11-27 21:30:34.609177', '2023-11-27 21:30:34.609177', 38, 2130);
 
 -- Dumping structure for table bengomall.savedproducts
-DROP TABLE IF EXISTS `savedproducts`;
 CREATE TABLE IF NOT EXISTS `savedproducts` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `is_favorite` tinyint(1) NOT NULL,
@@ -7944,7 +7907,6 @@ CREATE TABLE IF NOT EXISTS `savedproducts` (
 -- Dumping data for table bengomall.savedproducts: ~0 rows (approximately)
 
 -- Dumping structure for table bengomall.storefront
-DROP TABLE IF EXISTS `storefront`;
 CREATE TABLE IF NOT EXISTS `storefront` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `flash_sale_end_date` datetime(6) NOT NULL,
@@ -7957,7 +7919,6 @@ INSERT IGNORE INTO `storefront` (`id`, `flash_sale_end_date`, `slider_text`) VAL
 	(1, '2024-04-30 18:25:44.000000', 'Upto 60% + Extra 10%');
 
 -- Dumping structure for table bengomall.storefront_slider_products
-DROP TABLE IF EXISTS `storefront_slider_products`;
 CREATE TABLE IF NOT EXISTS `storefront_slider_products` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `frontstore_id` bigint NOT NULL,
@@ -7975,7 +7936,6 @@ INSERT IGNORE INTO `storefront_slider_products` (`id`, `frontstore_id`, `stockin
 	(17, 1, 2329);
 
 -- Dumping structure for table bengomall.subcategories
-DROP TABLE IF EXISTS `subcategories`;
 CREATE TABLE IF NOT EXISTS `subcategories` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
@@ -8110,7 +8070,6 @@ INSERT IGNORE INTO `subcategories` (`id`, `name`, `display_image`, `status`) VAL
 	(504, 'Pork', '', 1);
 
 -- Dumping structure for table bengomall.transactions
-DROP TABLE IF EXISTS `transactions`;
 CREATE TABLE IF NOT EXISTS `transactions` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `orderid` varchar(255) NOT NULL,
@@ -8132,7 +8091,6 @@ INSERT IGNORE INTO `transactions` (`id`, `orderid`, `checkoutid`, `timestamp`, `
 	(7, 'kCMv9Gwt6v', 'ws_CO_27112023202447545726651882', '20231127195318', 'MTc0Mzc5YmZiMjc5ZjlhYTliZGJjZjE1OGU5N2RkNzFhNDY3Y2QyZTBjODkzMDU5YjEwZjc4ZTZiNzJhZGExZWQyYzkxOTIwMjMxMTI3MTk1MzE4', 'pending');
 
 -- Dumping structure for table bengomall.units
-DROP TABLE IF EXISTS `units`;
 CREATE TABLE IF NOT EXISTS `units` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `unit_title` varchar(50) NOT NULL,
@@ -8180,7 +8138,6 @@ INSERT IGNORE INTO `units` (`id`, `unit_title`, `unit_symbol`) VALUES
 	(87, 'sacks', 'sacks');
 
 -- Dumping structure for table bengomall.vendors
-DROP TABLE IF EXISTS `vendors`;
 CREATE TABLE IF NOT EXISTS `vendors` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
@@ -8195,7 +8152,6 @@ INSERT IGNORE INTO `vendors` (`id`, `name`, `user_id`) VALUES
 	(1, 'YOGIS DELIGHT', 13);
 
 -- Dumping structure for table bengomall.vendors_address
-DROP TABLE IF EXISTS `vendors_address`;
 CREATE TABLE IF NOT EXISTS `vendors_address` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `vendor_id` bigint NOT NULL,
@@ -8212,7 +8168,6 @@ INSERT IGNORE INTO `vendors_address` (`id`, `vendor_id`, `businessaddress_id`) V
 	(1, 1, 1);
 
 -- Dumping structure for table bengomall.vendors_customers
-DROP TABLE IF EXISTS `vendors_customers`;
 CREATE TABLE IF NOT EXISTS `vendors_customers` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `vendor_id` bigint NOT NULL,
@@ -8227,7 +8182,6 @@ CREATE TABLE IF NOT EXISTS `vendors_customers` (
 -- Dumping data for table bengomall.vendors_customers: ~0 rows (approximately)
 
 -- Dumping structure for table bengomall.vendors_delivery_addresses
-DROP TABLE IF EXISTS `vendors_delivery_addresses`;
 CREATE TABLE IF NOT EXISTS `vendors_delivery_addresses` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `vendor_id` bigint NOT NULL,
@@ -8245,7 +8199,6 @@ INSERT IGNORE INTO `vendors_delivery_addresses` (`id`, `vendor_id`, `deliveryreg
 	(2, 1, 2);
 
 -- Dumping structure for table bengomall.vendors_employees
-DROP TABLE IF EXISTS `vendors_employees`;
 CREATE TABLE IF NOT EXISTS `vendors_employees` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `vendor_id` bigint NOT NULL,
@@ -8260,7 +8213,6 @@ CREATE TABLE IF NOT EXISTS `vendors_employees` (
 -- Dumping data for table bengomall.vendors_employees: ~0 rows (approximately)
 
 -- Dumping structure for table bengomall.vendors_suppliers
-DROP TABLE IF EXISTS `vendors_suppliers`;
 CREATE TABLE IF NOT EXISTS `vendors_suppliers` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `vendor_id` bigint NOT NULL,
@@ -8278,7 +8230,6 @@ INSERT IGNORE INTO `vendors_suppliers` (`id`, `vendor_id`, `supplier_id`) VALUES
 	(2, 1, 2);
 
 -- Dumping structure for table bengomall.vendor_ratiings
-DROP TABLE IF EXISTS `vendor_ratiings`;
 CREATE TABLE IF NOT EXISTS `vendor_ratiings` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `text` longtext NOT NULL,
